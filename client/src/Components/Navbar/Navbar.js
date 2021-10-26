@@ -14,12 +14,13 @@ function Navbar() {
   };
 
   return (
-    <nav>
-      <h1>Navbar</h1>
-      {buttonComponent("Home")}
-      {buttonComponent("Register")}
-      {buttonComponent("Account")}
-      {buttonComponent("Home")}
+    <nav className="flex flex-row justify-end p-6 ">
+      <div className="buttons-wrapper text-xl ">
+        {buttonComponent("Home")}
+        {buttonComponent("Search")}
+        {buttonComponent("Register")}
+        {buttonComponent("Login")}
+      </div>
     </nav>
   );
 }
