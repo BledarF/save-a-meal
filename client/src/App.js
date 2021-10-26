@@ -13,14 +13,7 @@ function App() {
       .then((data) => setData(data.message));
   }, []);
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>{!data ? "Loading..." : data}</p>
-      </header>
-    </div>
-  );
+  return <div className="App"></div>;
 }
 
 export default App;

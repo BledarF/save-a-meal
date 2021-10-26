@@ -25,5 +25,8 @@
   },
   "engines": {
     "node": "16.11.1"
+  },
+  "devDependencies": {
+    "eslint-config-prettier": "^8.3.0"
   }
 }
