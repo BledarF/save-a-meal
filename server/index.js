@@ -9,16 +9,16 @@ const restaurant = require("./Routers/restaurant");
 
 const PORT = process.env.PORT || 8080;
 const POSTGRES_URL =
-  process.env.POSTGRES || "postgres://localhost:5432/saveameal";
+	process.env.POSTGRES || "postgres://localhost:5432/saveameal";
 
 const { Pool, Client } = require("pg");
 
 const pool = new Pool({
-  connectionString: POSTGRES_URL,
+	connectionString: POSTGRES_URL,
 });
 
 const app = express();
-app.use(cors({ origin: "http://localhost:8080", credentials: true }));
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
