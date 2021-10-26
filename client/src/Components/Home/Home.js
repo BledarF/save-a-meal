@@ -8,14 +8,14 @@ import gpPhoto from "./TeamPhotos/Gurpratap.jpg";
 function Home() {
   return (
     <div className="text-2xl">
-      <section className="header flex flex-row items-center justify-center ">
+      <section className="header flex flex-row items-center justify-center">
         <div className=" header-wrapper flex flex-row justify-center items-center p-5">
           <img
             src="https://images.unsplash.com/photo-1592861956120-e524fc739696?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80"
             alt="mainImage"
             className="w-2/5 h-2/5"
           />
-          <h1 className="w-1/3 p-1 text-5xl font-extrabold  ml-10">
+          <h1 className="w-1/3 p-1 text-5xl text-white font-extrabold  ml-10">
             WE ARE BASICALLY FOOD HEROES BUT WORSE
           </h1>
         </div>
