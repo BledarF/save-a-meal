@@ -11,4 +11,6 @@ const pool = new Pool({
   connectionString: "postgres://localhost:5432/saveameal",
 });
 
+router.get("/", async function (req, res) {});
+
 module.exports = router;
