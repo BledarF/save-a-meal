@@ -1,8 +1,17 @@
 // server/index.js
 
 const express = require("express");
+require("dotenv").config();
 
 const PORT = process.env.PORT || 8080;
+const POSTGRES_URL =
+  process.env.POSTGRES || "postgres://localhost:5432/saveameal";
+
+const { Pool, Client } = require("pg");
+
+const pool = new Pool({
+  connectionString: POSTGRES_URL,
+});
 
 const app = express();
 
