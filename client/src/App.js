@@ -1,7 +1,6 @@
 // client/src/App.js
 
-import React from "react";
-import logo from "./logo.svg";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import {
   Route,
@@ -9,9 +8,12 @@ import {
   useHistory,
   Switch,
 } from "react-router-dom";
+import Home from "./Components/Home/Home";
+import Navbar from "./Components/Navbar/Navbar";
+import Register from "./Components/Register/Register";
 
 function App() {
-  const [data, setData] = React.useState(null);
+  const [data, setData] = useState(null);
 
   React.useEffect(() => {
     fetch("/api")
@@ -21,13 +23,14 @@ function App() {
 
   return (
     <div className="App">
+      <Navbar />
       <Router>
         <main>
           <Switch>
-            <Route exact path="/" component={Home} />
+            <Route exact path={["/home", "/"]} component={Home} />
             <Route exact path="/register" component={Register} />
-            <Route exact path="/search" component={Login} />
-            <Route exact path="/account" component={Home} />
+            {/* {/* <Route exact path="/search" component={} /> */}
+            {/* <Route exact path="/account" component={Home} /> */} */}
           </Switch>
         </main>
       </Router>
