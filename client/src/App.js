@@ -3,6 +3,12 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
+import {
+  Route,
+  BrowserRouter as Router,
+  useHistory,
+  Switch,
+} from "react-router-dom";
 
 function App() {
   const [data, setData] = React.useState(null);
@@ -13,7 +19,20 @@ function App() {
       .then((data) => setData(data.message));
   }, []);
 
-  return <div className="App"></div>;
+  return (
+    <div className="App">
+      <Router>
+        <main>
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/register" component={Register} />
+            <Route exact path="/search" component={} />
+            <Route exact path="/account" component={Home} />
+          </Switch>
+        </main>
+      </Router>
+    </div>
+  );
 }
 
 export default App;
