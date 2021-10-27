@@ -5,21 +5,32 @@ const cors = require("cors");
 const { v4: uuidv4 } = require("uuid");
 const { Pool, Client, Query } = require("pg");
 const { application, query } = require("express");
+const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
 router.use(cookieParser());
 
 const pool = new Pool({
 	connectionString: "postgres://localhost:5432/saveameal",
 });
-const client = pool.connect();
 
 router.post("/customer", async function (req, res) {
-	const { username, email, password, firstname, secondname, address } =
-		await req.body;
+	const client = await pool.connect();
+	const {
+		username,
+		email,
+		password,
+		firstname,
+		secondname,
+		streetname,
+		postcode,
+		town,
+	} = await req.body;
 	const salt = await bcrypt.genSalt(8);
 	const passwordEncrypted = await bcrypt.hash(password, salt);
 	const duplicateSQL = `SELECT username FROM users WHERE username=$1`;
 	const duplicate = await client.query(duplicateSQL, [username]);
+	// console.log(duplicate.rows);
 
 	if (duplicate.rows.length !== 0) {
 		res.json(
@@ -29,29 +40,47 @@ router.post("/customer", async function (req, res) {
 			400
 		);
 	} else {
+		const addressIDGen = crypto.randomInt(0, 1000000);
+		// console.log(addressIDGen);
+		const addingAddressSQL = `INSERT INTO addresses(id,streetname,postcode,town) VALUES ($1,$2,$3,$4)`;
+		await client.query(addingAddressSQL, [
+			addressIDGen,
+			streetname,
+			postcode,
+			town,
+		]);
+		const addingUserInfoSQL = `INSERT INTO customers (firstname,secondname,address_id) VALUES ($1,$2,$3)`;
+		await client.query(addingUserInfoSQL, [
+			firstname,
+			secondname,
+			addressIDGen,
+		]);
+		//
+		const getUserId = `SELECT id FROM customers WHERE firstname=$1`;
+		const userIdSQL = await client.query(getUserId, [firstname]);
+
+		console.log(userIdSQL);
+		//////////////////////////////
+		customer_id = userIdSQL.rows[0].id;
+		// console.log(userIdSQL);
+		const addingUsersSQL = `INSERT INTO users(username,password,email,customer_id,restaurant_id) VALUES ($1,$2,$3,$4,$5)`;
+		await client.query(addingUsersSQL, [
+			username,
+			passwordEncrypted,
+			email,
+			customer_id,
+			2000,
+		]);
 		res.status(200).json({ Message: "User Created!" }, 200);
 	}
-	const addingUserInfoSQL = `INSERT INTO customers (firstname,secondname,address) VALUES ($1,$2,$3)`;
-	await client.query(addingUserInfoSQL, [firstname, secondname, address]);
-
-	const getUserId = `SELECT id FROM customers WHERE firstname=$1`;
-	const userIdSQL = (await client).query(getUserId, [firstname]);
-	customer_id = userIdSQL.rows[0].id;
-
-	const addingUsersSQL = `INSERT INTO users(username,password,email,customer_id) VALUES ($1,$2,$3,$4)`;
-	await client.query(addingUsersSQL, [
-		username,
-		passwordEncrypted,
-		email,
-		customer_id,
-	]);
 
 	await client.release();
 });
 
 module.exports = router;
 
-router.post("/customer/verify", async function (req, res) {
+router.post("/verify", async function (req, res) {
+	const client = await pool.connect();
 	const { username, password, email } = await req.body;
 	const getPasswordSQL = `SELECT password FROM users WHERE username=$1`;
 	const hash = (await client).query(getPasswordSQL, [username]);
@@ -76,6 +105,7 @@ router.post("/customer/verify", async function (req, res) {
 });
 
 router.post("/restaurant", async function (req, res) {
+	const client = await pool.connect();
 	const {
 		name,
 		address,
@@ -104,10 +134,16 @@ router.post("/restaurant", async function (req, res) {
 	} else {
 		res.status(200).json({ Message: "User Created!" }, 200);
 	}
+
+	const addressIDGen = uuidv4(4);
+	const addingAddressSQL = `INSERT INTO addresses(id,streetname,postcode,town)`(
+		await client
+	).query(addingAddressSQL, [addressIDGen, streetname, postcode, town]); ///////
+
 	const addingUserInfoSQL = `INSERT INTO restaurants (name,address_id,telephone,description,start_time,end_time,available_days,current_slots) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`;
 	await client.query(addingUserInfoSQL, [
 		name,
-		address,
+		addressIDGen,
 		telephone,
 		description,
 		start_time,
@@ -129,28 +165,4 @@ router.post("/restaurant", async function (req, res) {
 	]);
 
 	await client.release();
-});
-
-router.post("/restaurant/verify", async function (req, res) {
-	const { username, password, email } = await req.body;
-	const getPasswordSQL = `SELECT password FROM users WHERE username=$1`;
-	const hash = (await client).query(getPasswordSQL, [username]);
-	if (hash.rows[0]) {
-		const hashing = hash.rows[0].password;
-		const result = await bcrypt.compare(password, hashing);
-		if (result) {
-			res.json({ status: "loggedIn" }, 200);
-		} else {
-			res.json({ status: "Incorrect password. Please try again" }, 400);
-		}
-	} else {
-		res.json(
-			{
-				status:
-					"Username does not exist. Please try again or register an account",
-			},
-			400
-		);
-	}
-	client.release();
 });
