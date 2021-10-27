@@ -5,15 +5,16 @@ const cors = require("cors");
 const { v4: uuidv4 } = require("uuid");
 const { Pool, Client } = require("pg");
 const { application } = require("express");
+const bcrypt = require("bcrypt");
+
 router.use(cookieParser());
 
 const pool = new Pool({
 	connectionString: "postgres://localhost:5432/saveameal",
 });
 
-const client = await pool.connect();
-
 router.post("/", async function (req, res) {
+	const client = await pool.connect();
 	const { username, password } = await req.body;
 	const sessionID = uuidv4();
 	const userKey = await client.query(`SELECT id FROM users WHERE username=$1`, [
@@ -32,6 +33,7 @@ router.post("/", async function (req, res) {
 });
 
 router.get("/cookie", async function (req, res) {
+	const client = await pool.connect();
 	const activeSession = await req.cookies;
 	const { user_id } = await req.body;
 	const sessionID = await client.query(
@@ -57,6 +59,7 @@ router.get("/cookie", async function (req, res) {
 });
 
 router.delete("/", async function () {
+	const client = await pool.connect();
 	const activeSession = await req.cookies;
 	const cookieUUID = activeSession.sessionID;
 	client.query(`DELETE FROM sessions WHERE uuid=$1)`, [cookieUUID]);
