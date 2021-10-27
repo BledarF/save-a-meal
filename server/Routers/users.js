@@ -9,7 +9,7 @@ const { application, query } = require("express");
 router.use(cookieParser());
 
 const pool = new Pool({
-	connectionString: "postgres://localhost:5432/saveameal",
+  connectionString: "postgres://localhost:5432/saveameal",
 });
 const client = pool.connect();
 
