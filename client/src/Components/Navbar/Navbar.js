@@ -19,7 +19,7 @@ function Navbar() {
         {buttonComponent("Home")}
         {buttonComponent("Search")}
         {buttonComponent("Register")}
-        {buttonComponent("Login")}
+        {buttonComponent("Account")}
       </div>
     </nav>
   );
