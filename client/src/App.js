@@ -11,7 +11,7 @@ import Home from "./Components/Home/Home";
 import Navbar from "./Components/Navbar/Navbar";
 import Footer from "./Components/Footer/Footer";
 import Register from "./Components/Register/Register";
-import Search from "./Components/Search/Search";
+import SearchPage from "./Components/Search/SearchPage";
 import Account from "./Components/Account/Account";
 
 function App() {
@@ -22,6 +22,7 @@ function App() {
 			.then((res) => res.json())
 			.then((data) => setData(data.message));
 	}, []);
+
 
 	return (
 		<div className="App">
@@ -39,6 +40,7 @@ function App() {
 			<Footer />
 		</div>
 	);
+
 }
 
 export default App;
