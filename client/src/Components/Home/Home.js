@@ -40,7 +40,7 @@ function Home() {
       <section className="header flex flex-row items-center justify-center">
         <div className="header-wrapper flex flex-col justify-center items-center">
           <img src={logo} alt="mainImage" className="mb-10 w-2/5" />
-          <h1 className="w-1/2 text-6xl text-yellow-500 font-extrabold">
+          <h1 className="w-1/2 text-5xl text-yellow-500 font-extrabold">
             WE ARE BASICALLY FOOD HEROES BUT WORSE
           </h1>
         </div>

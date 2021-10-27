@@ -14,8 +14,8 @@ function Navbar() {
   };
 
   return (
-    <nav className="flex flex-row justify-end p-6 ">
-      <div className="buttons-wrapper text-xl ">
+    <nav className="flex flex-row justify-end p-6 fixed w-full z-10">
+      <div className="buttons-wrapper text-xl">
         {buttonComponent("Home")}
         {buttonComponent("Search")}
         {buttonComponent("Register")}
