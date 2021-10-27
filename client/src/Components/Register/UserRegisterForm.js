@@ -34,6 +34,12 @@ function passwordErrorHandle(password, errors) {
   }
 }
 
+function fieldErrorHandle(values, field, errors) {
+  if (!values[field]) {
+    errors[field] = "Required";
+  }
+}
+
 function UserRegisterForm(props) {
   return (
     <div>
@@ -49,6 +55,8 @@ function UserRegisterForm(props) {
 
           emailErrorHandle(values.email, errors);
           passwordErrorHandle(values.password, errors);
+          fieldErrorHandle(values, "firstName", errors);
+          fieldErrorHandle(values, "lastName", errors);
 
           return errors;
         }}
@@ -62,9 +70,12 @@ function UserRegisterForm(props) {
           <Form>
             <div className="flex">
               <div>
-                <div className="flex-auto flex flex-row">
-                  <label htmlFor="email">Email</label>
+                <div className="flex-auto flex flex-row p-2">
+                  <label htmlFor="email" className="p-2">
+                    Email
+                  </label>
                   <Field
+                    className=" p-2"
                     id="email"
                     name="email"
                     placeholder="jane@acme.com"
@@ -76,27 +87,57 @@ function UserRegisterForm(props) {
                   component="div"
                   className="text-red-500"
                 />
-
-                <div className="flex-auto">
-                  <label htmlFor="password">Password</label>
-                  <Field id="password" name="password" placeholder="" />
+                <div className="flex-auto p-2">
+                  <label htmlFor="firstName" className="p-2">
+                    First Name
+                  </label>
+                  <Field
+                    id="firstName"
+                    name="firstName"
+                    placeholder="Jana"
+                    className="p-2"
+                  />
+                </div>
+                <ErrorMessage
+                  name="firstName"
+                  component="div"
+                  className="text-red-500"
+                />
+              </div>
+              <div>
+                <div className="flex-auto p-2">
+                  <label htmlFor="password" className="p-2">
+                    Password
+                  </label>
+                  <Field
+                    id="password"
+                    name="password"
+                    placeholder=""
+                    className="p-2"
+                  />
                 </div>
                 <ErrorMessage
                   name="password"
                   component="div"
                   className="text-red-500"
                 />
-              </div>
-              <div>
-                <div className="flex-auto">
-                  <label htmlFor="firstName">First Name</label>
-                  <Field id="firstName" name="firstName" placeholder="Jana" />
-                </div>
 
-                <div className="flex-auto">
-                  <label htmlFor="lastName">Last Name</label>
-                  <Field id="lastName" name="lastName" placeholder="Doe" />
+                <div className="flex-auto p-2">
+                  <label htmlFor="lastName" className="p-2">
+                    Last Name
+                  </label>
+                  <Field
+                    id="lastName"
+                    name="lastName"
+                    placeholder="Doe"
+                    className="p-2"
+                  />
                 </div>
+                <ErrorMessage
+                  name="lastName"
+                  component="div"
+                  className="text-red-500"
+                />
               </div>
             </div>
 
