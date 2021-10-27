@@ -6,7 +6,7 @@ function Navbar() {
     return (
       <a
         href={href}
-        class="py-4 px-2 text-white font-semibold hover:text-yellow-900 transition duration-300"
+        class="py-4 px-2 text-white font-semibold hover:text-yellow-900 transition duration-300 "
       >
         {buttonName}
       </a>
