@@ -3,14 +3,13 @@ const client = new Client("postgres://localhost:5432/saveameal");
 
 async function createDatabase() {
   await client.connect();
+  // createAddressesTable();
+  // createCustomerTable();
+  // createRestaurantsTable();
+  // createUsersTable();
+  // createSessionsTable();
+  // createOrdersTable();
   addSeedData();
-  //   createAddressesTable();
-  //   createCustomerTable();
-  //   createUsersTable();
-  //   createSessionsTable();
-  //   createRestaurantsTable();
-  //   createOrdersTable();
-
   return;
 }
 
@@ -67,17 +66,19 @@ async function addSeedData() {
   const sql7 = `INSERT INTO users(username,email,password,customer_id) VALUES('BledarF','BledarF@hotmail.com','thisismypassword',1)`;
   const sql8 = `INSERT INTO users(username,email,password,restaurant_id )VALUES('PretBarbican','PretBarbican@hotmail.com','thisismypassword',1)`;
   const sql9 = `INSERT INTO users(username,email,password,restaurant_id )VALUES('KFCWaterloo','PretWaterloo@hotmail.com','thisismypassword',2)`;
+  const sql10 = `INSERT INTO orders(user_id,restaurant_id)VALUES(1,1)`;
 
   try {
-    await client.query(sql1);
-    await client.query(sql2);
-    await client.query(sql3);
-    await client.query(sql4);
-    await client.query(sql5);
-    await client.query(sql6);
-    await client.query(sql7);
-    await client.query(sql8);
-    await client.query(sql9);
+    // await client.query(sql1);
+    // await client.query(sql2);
+    // await client.query(sql3);
+    // await client.query(sql4);
+    // await client.query(sql5);
+    // await client.query(sql6);
+    // await client.query(sql7);
+    // await client.query(sql8);
+    // await client.query(sql9);
+    await client.query(sql10);
 
     console.log("Data Seeded");
     return;
