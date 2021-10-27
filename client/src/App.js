@@ -11,7 +11,7 @@ import Home from "./Components/Home/Home";
 import Navbar from "./Components/Navbar/Navbar";
 import Footer from "./Components/Footer/Footer";
 import Register from "./Components/Register/Register";
-import Search from "./Components/Search/Search";
+import SearchPage from "./Components/Search/SearchPage";
 import Account from "./Components/Account/Account";
 
 function App() {
@@ -31,7 +31,7 @@ function App() {
           <Switch>
             <Route exact path={["/home", "/"]} component={Home} />
             <Route exact path="/register" component={Register} />
-            <Route exact path="/search" component={Search} />
+            <Route exact path="/search" component={SearchPage} />
             <Route exact path="/account" component={Account} />
           </Switch>
         </main>
