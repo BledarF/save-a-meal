@@ -12,7 +12,7 @@ function Register() {
         onClick={() => {
           setShowUserModal(true);
         }}
-        className="flex-initial bg-user-login  w-1/2 h-5/6 bg-cover  
+        className="flex-initial bg-user-login  w-1/2 h-full bg-cover  
       border-solid border-r-2 border-t-4 border-b-4 border-yellow-500 
       hover:border-transparent cursor-pointer
       "
@@ -29,7 +29,7 @@ function Register() {
         onClick={() => {
           setShowBuisnessModal(true);
         }}
-        className="flex-inital  bg-cafe-register bg-opacity-0 w-1/2 h-5/6 bg-cover
+        className="flex-inital  bg-cafe-register bg-opacity-0 w-1/2 h-full bg-cover
       border-solid border-l-2 border-t-4 border-b-4 border-yellow-500 
       hover:border-transparent cursor-pointer
       "

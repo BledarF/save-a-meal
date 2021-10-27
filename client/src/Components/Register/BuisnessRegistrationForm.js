@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { FormikStepper, FormikStep, InputField } from "formik-stepper";
@@ -35,104 +35,114 @@ function BuisnessRegistrationForm() {
     console.log(values);
 
     // FETCH POST REQUEST
+    setError("Error: not connected to the server");
 
     setSubmitting(false); //// Important
   };
 
+  const [error, setError] = useState("");
+
   return (
-    <FormikStepper
-      /// Accept all Formik props
-      onSubmit={onSubmit} /// onSubmit Function
-      initialValues={{
-        businessName: "",
-        email: "",
-        password: "",
-        privacy: false,
-        description: "",
-        town: "",
-        postcode: "",
-        streetname: "",
-        telephone: "",
-        monday: false,
-        tuesday: false,
-        wednesday: false,
-        thursday: false,
-        friday: false,
-        saturday: false,
-        sunday: false,
-        startTime: "",
-        endTime: "",
-        passwordConfirmation: "",
-      }}
-      validationSchema={validationSchema}
-      labelsColor="secondary" /// The text label color can be root variables or css => #fff
-      withStepperLine /// false as default and If it is false, it hides stepper line
-      nextBtnLabel="Next" /// Next as default
-      prevBtnLabel="Back" /// Prev as default
-      submitBtnLabel="Submit" /// Submit as default
-      nextBtnColor="warning" /// as default and The color can be root variables or css => #fff
-      prevBtnColor="danger" /// as default and The color can be root variables or css => #fff
-      submitBtnColor="success" /// as default and The color can be root variables or css => #fff
-    >
-      {/*  First Step */}
-      <FormikStep
-        label="Buisness Information" /// The text label of Step
-        withIcons="fa fa-user" // to add icon into the circle must add icon as class Name like Fontawesome
-        withNumbers /// If true, it hides the icon and shows the step number
-        iconColor="white" /// The color can be root variables or css => #fff
-        circleColor="#F59E0B" /// The color can be root variables or css => #fff
+    <div>
+      <FormikStepper
+        /// Accept all Formik props
+        onSubmit={onSubmit} /// onSubmit Function
+        initialValues={{
+          businessName: "",
+          email: "",
+          password: "",
+          privacy: false,
+          description: "",
+          town: "",
+          postcode: "",
+          streetname: "",
+          telephone: "",
+          monday: false,
+          tuesday: false,
+          wednesday: false,
+          thursday: false,
+          friday: false,
+          saturday: false,
+          sunday: false,
+          startTime: "",
+          endTime: "",
+          passwordConfirmation: "",
+        }}
+        validationSchema={validationSchema}
+        labelsColor="secondary" /// The text label color can be root variables or css => #fff
+        withStepperLine /// false as default and If it is false, it hides stepper line
+        nextBtnLabel="Next" /// Next as default
+        prevBtnLabel="Back" /// Prev as default
+        submitBtnLabel="Submit" /// Submit as default
+        nextBtnColor="warning" /// as default and The color can be root variables or css => #fff
+        prevBtnColor="danger" /// as default and The color can be root variables or css => #fff
+        submitBtnColor="success" /// as default and The color can be root variables or css => #fff
       >
-        <InputField name="businessName" label="Business Name" />
-        <InputField name="description" label="Description" />
-        <div className="flex">
-          <InputField className="mx-2" name="streetname" label="Street Name" />
-          <InputField className="mx-2" name="town" label="Town" />
-        </div>
+        {/*  First Step */}
+        <FormikStep
+          label="Buisness Information" /// The text label of Step
+          withIcons="fa fa-user" // to add icon into the circle must add icon as class Name like Fontawesome
+          withNumbers /// If true, it hides the icon and shows the step number
+          iconColor="white" /// The color can be root variables or css => #fff
+          circleColor="#F59E0B" /// The color can be root variables or css => #fff
+        >
+          <InputField name="businessName" label="Business Name" />
+          <InputField name="description" label="Description" />
+          <div className="flex">
+            <InputField
+              className="mx-2"
+              name="streetname"
+              label="Street Name"
+            />
+            <InputField className="mx-2" name="town" label="Town" />
+          </div>
 
-        <div className="flex">
-          <InputField className="mx-2" name="postcode" label="Postcode" />
-          <InputField className="mx-2" name="telephone" label="Telephone" />
-        </div>
-      </FormikStep>
-      {/* Second Step */}
-      <FormikStep
-        label="Avaliability" /// The text label of Step
-        withIcons="fa fa-user" // to add icon into the circle must add icon as class Name like Fontawesome
-        withNumbers /// If true, it hides the icon and shows the step number
-        iconColor="white" /// The color can be root variables or css => #fff
-        circleColor="#F59E0B" /// The color can be root variables or css => #fff
-      >
-        <InputField type="checkbox" name="monday" label="Monday" />
-        <InputField type="checkbox" name="tuesday" label="Tuesday" />
-        <InputField type="checkbox" name="wednesday" label="Wednesday" />
-        <InputField type="checkbox" name="thursday" label="Thursday" />
-        <InputField type="checkbox" name="friday" label="Friday" />
-        <InputField type="checkbox" name="saturday" label="Saturday" />
-        <InputField type="checkbox" name="sunday" label="Sunday" />
-        <InputField
-          name="startTime"
-          type="time"
-          label="Collection Start Time"
-        />
-        <InputField name="endTime" type="time" label="Collection End Time" />
-      </FormikStep>
+          <div className="flex">
+            <InputField className="mx-2" name="postcode" label="Postcode" />
+            <InputField className="mx-2" name="telephone" label="Telephone" />
+          </div>
+        </FormikStep>
+        {/* Second Step */}
+        <FormikStep
+          label="Avaliability" /// The text label of Step
+          withIcons="fa fa-user" // to add icon into the circle must add icon as class Name like Fontawesome
+          withNumbers /// If true, it hides the icon and shows the step number
+          iconColor="white" /// The color can be root variables or css => #fff
+          circleColor="#F59E0B" /// The color can be root variables or css => #fff
+        >
+          <InputField type="checkbox" name="monday" label="Monday" />
+          <InputField type="checkbox" name="tuesday" label="Tuesday" />
+          <InputField type="checkbox" name="wednesday" label="Wednesday" />
+          <InputField type="checkbox" name="thursday" label="Thursday" />
+          <InputField type="checkbox" name="friday" label="Friday" />
+          <InputField type="checkbox" name="saturday" label="Saturday" />
+          <InputField type="checkbox" name="sunday" label="Sunday" />
+          <InputField
+            name="startTime"
+            type="time"
+            label="Collection Start Time"
+          />
+          <InputField name="endTime" type="time" label="Collection End Time" />
+        </FormikStep>
 
-      {/* Third Step */}
-      <FormikStep
-        label="Login Info"
-        withIcons="fa fa-lock"
-        iconColor="white"
-        circleColor="#F59E0B"
-      >
-        <InputField name="email" label="Email" type="email" />
-        <InputField name="password" label="Password" type="password" />
-        <InputField
-          name="passwordConfirmation"
-          label="Confirm Password"
-          type="password"
-        />
-      </FormikStep>
-    </FormikStepper>
+        {/* Third Step */}
+        <FormikStep
+          label="Login Info"
+          withIcons="fa fa-lock"
+          iconColor="white"
+          circleColor="#F59E0B"
+        >
+          <InputField name="email" label="Email" type="email" />
+          <InputField name="password" label="Password" type="password" />
+          <InputField
+            name="passwordConfirmation"
+            label="Confirm Password"
+            type="password"
+          />
+        </FormikStep>
+      </FormikStepper>
+      <div className="text-red-500">{error}</div>
+    </div>
   );
 }
 
