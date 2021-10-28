@@ -49,7 +49,6 @@ async function createUsersTable() {
   const sql = `
   CREATE TABLE users(
   id SERIAL PRIMARY KEY,
-  username TEXT NOT NULL UNIQUE,
   email VARCHAR(250) NOT NULL UNIQUE, 
   password TEXT NOT NULL,
   customer_id  INTEGER  REFERENCES customers(id),
@@ -75,9 +74,9 @@ async function addSeedData() {
   const sql4 = `INSERT INTO customers(firstname,secondname,address_id,telephone)VALUES('Bledar','Ferati',1123,07353532525)`;
   const sql5 = `INSERT INTO restaurants(name,address_id,telephone,description,start_time,end_time,current_slots) VALUES('Pret Waterloo',1122,999,'We are a coffee shop that sells a variety of different pastries,coffee drinks and sandwiches. We sell vegan,halal and gluten-free food' , '17:35:00', '18:00:00', 10)`;
   const sql6 = `INSERT INTO restaurants(name,address_id,telephone,description,start_time,end_time,current_slots) VALUES('Kfc Liverpool Street',1121,911,'We are a fast food restaurant which sells high quality fried chicken.' , '19:40:00',' 20:00:00', 8)`;
-  const sql7 = `INSERT INTO users(username,email,password,customer_id) VALUES('BledarF','BledarF@hotmail.com','thisismypassword',1)`;
-  const sql8 = `INSERT INTO users(username,email,password,restaurant_id )VALUES('PretBarbican','PretBarbican@hotmail.com','thisismypassword',1)`;
-  const sql9 = `INSERT INTO users(username,email,password,restaurant_id )VALUES('KFCWaterloo','PretWaterloo@hotmail.com','thisismypassword',2)`;
+  const sql7 = `INSERT INTO users(email,password,customer_id) VALUES('BledarF@hotmail.com','thisismypassword',1)`;
+  const sql8 = `INSERT INTO users(email,password,restaurant_id )VALUES('PretBarbican@hotmail.com','thisismypassword',1)`;
+  const sql9 = `INSERT INTO users(email,password,restaurant_id )VALUES('PretWaterloo@hotmail.com','thisismypassword',2)`;
   const sql10 = `INSERT INTO orders(customer_id,restaurant_id)VALUES(1,1)`;
 
   try {
