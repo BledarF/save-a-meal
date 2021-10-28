@@ -2,10 +2,10 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import {
-  Route,
-  BrowserRouter as Router,
-  useHistory,
-  Switch,
+	Route,
+	BrowserRouter as Router,
+	useHistory,
+	Switch,
 } from "react-router-dom";
 import Home from "./Components/Home/Home";
 import Navbar from "./Components/Navbar/Navbar";
@@ -14,31 +14,67 @@ import Register from "./Components/Register/Register";
 import SearchPage from "./Components/Search/SearchPage";
 import Account from "./Components/Account/Account";
 
-function App() {
-  const [data, setData] = useState(null);
+// CONTEXT API
 
-  React.useEffect(() => {
-    fetch("/api")
-      .then((res) => res.json())
-      .then((data) => setData(data.message));
-  }, []);
+export const userContext = React.createContext({
+	// MAYBE GET FROM COOKIES INITIALLY?
+	user: null,
+	setUser: () => {},
+});
 
-  return (
-    <div className="App">
-      <Navbar />
-      <Router>
-        <main>
-          <Switch>
-            <Route exact path={["/home", "/"]} component={Home} />
-            <Route exact path="/register" component={Register} />
-            <Route exact path="/search" component={SearchPage} />
-            <Route exact path="/account" component={Account} />
-          </Switch>
-        </main>
-      </Router>
-      <Footer />
-    </div>
-  );
+function App(props) {
+	const [data, setData] = useState(null);
+	const [sessionUpdate, setSessionUpdate] = useState(0);
+
+	// CONTEXT API
+	const [user, setUser] = useState("");
+	const value = { user, setUser };
+
+	React.useEffect(() => {
+		if (sessionUpdate == 0) {
+			checkSessionExists();
+		}
+	});
+
+	async function checkSessionExists() {
+		setSessionUpdate(1);
+		try {
+			const response = await fetch(`http://localhost:8080/api/sessions/check`, {
+				method: "GET",
+				credentials: "include",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				// body: JSON.stringify(values),
+			});
+			const jsonResponse = await response.json();
+			console.log(jsonResponse);
+			if (jsonResponse.id) {
+				setUser(jsonResponse.id);
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	return (
+		<userContext.Provider value={value}>
+			<div className="App">
+				<Navbar checkSessionExists={checkSessionExists} />
+				<Router>
+					<main>
+						<Switch>
+							<Route exact path={["/home", "/"]} component={Home} />
+							<Route exact path="/register" component={Register} />
+							<Route exact path="/search" component={SearchPage} />
+							<Route exact path="/account" component={Account} />
+						</Switch>
+					</main>
+				</Router>
+				<Footer />
+			</div>
+		</userContext.Provider>
+	);
 }
 
 export default App;

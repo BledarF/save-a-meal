@@ -1,8 +1,11 @@
 import { useEffect, useContext, useState } from "react";
 import RestaurantCard from "./RestaurantCard";
+import RestaurantModal from "./RestaurantModal/RestaurantModal";
 
 function Results() {
   const [restaurants, setRestaurants] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [modalDetails, setModalDetails] = useState({});
 
   useEffect(() => {
     const pret = {
@@ -12,6 +15,12 @@ function Results() {
       town: "Old Street",
       times: "5pm-7pm",
       distance: "0.6km",
+      logoUrl:
+        "https://i.pinimg.com/originals/12/1a/e0/121ae05c213b2c37522e7fde2f4d8263.jpg",
+      description:
+        "we give only food no drinks or coffee, including fruits, salad bowls, sandwiches etc",
+      rating: "5",
+      slots: 5,
     };
     const costa = {
       imgUrl:
@@ -20,6 +29,11 @@ function Results() {
       town: "Shoreditch",
       times: "1pm-3pm",
       distance: "1.3km",
+      logo: "",
+      description:
+        "we give only food no drinks or coffee, including fruits, salad bowls, sandwiches etc",
+      rating: "5",
+      slots: 5,
     };
     const mcd = {
       imgUrl:
@@ -28,6 +42,11 @@ function Results() {
       town: "Canary Wharf",
       times: "8pm-11pm",
       distance: "9km",
+      logo: "",
+      description:
+        "we give only food no drinks or coffee, including fruits, salad bowls, sandwiches etc",
+      rating: "5",
+      slots: 5,
     };
     const antiannes = {
       imgUrl:
@@ -36,19 +55,34 @@ function Results() {
       town: "Liverpool Street",
       times: "9am-11am",
       distance: "2km",
+      logo: "",
+      description:
+        "we give only food no drinks or coffee, including fruits, salad bowls, sandwiches etc",
+      rating: "5",
+      slots: 5,
     };
     setRestaurants([pret, costa, mcd, antiannes]);
   }, []);
 
   const getRestaurants = function getRestaurantsListAsComponents() {
     return restaurants.map((restaurant) => (
-      <RestaurantCard details={restaurant} />
+      <RestaurantCard
+        details={restaurant}
+        setShowModal={setShowModal}
+        setModalDetails={setModalDetails}
+      />
     ));
   };
 
   return (
-    <main className="grid grid-cols-4 gap-4 align-start p-2">
+    <main className="results-wrapper grid grid-cols-4 gap-4 p-2">
       {getRestaurants()}
+      {showModal && (
+        <RestaurantModal
+          restaurantDetails={modalDetails}
+          setShowModal={setShowModal}
+        />
+      )}
     </main>
   );
 }

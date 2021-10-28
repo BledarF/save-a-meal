@@ -1,10 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var cookieParser = require("cookie-parser");
-const cors = require("cors");
-const { v4: uuidv4 } = require("uuid");
 const { Pool, Client, Query } = require("pg");
-const { application, query } = require("express");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 
@@ -15,6 +12,7 @@ const pool = new Pool({
 });
 
 router.post("/customer", async function (req, res) {
+
   const client = await pool.connect();
   const { username, email, password, firstname, secondname, streetname, postcode, town } = await req.body;
   const salt = await bcrypt.genSalt(8);
@@ -51,9 +49,12 @@ router.post("/customer", async function (req, res) {
   }
 
   await client.release();
+
+
 });
 
 module.exports = router;
+
 
 router.post("/verify", async function (req, res) {
   const client = await pool.connect();
@@ -174,4 +175,39 @@ router.get("/:id", async function (req, res) {
     console.log(err);
     res.status(400).json({ message: "Failed to fetch account details!" });
   }
+
+});
+
+router.post("/verify", async function (req, res) {
+	const client = await pool.connect();
+	const { password, email } = await req.body;
+	const getPasswordSQL = `SELECT password FROM users WHERE email=$1`;
+	const hash = await client.query(getPasswordSQL, [email]);
+	try {
+		const user_id_query = await client.query(
+			`SELECT id FROM users WHERE email=$1`,
+			[email]
+		);
+		// console.log(user_id_query.rows[0].id);
+		if (hash.rows[0]) {
+			const hashing = hash.rows[0].password;
+			const result = await bcrypt.compare(password, hashing);
+			if (result) {
+				res.json({ status: "loggedIn", id: user_id_query.rows[0].id }, 200);
+			} else {
+				res.json({ status: "Incorrect password. Please try again" }, 400);
+			}
+		} else {
+			res.json(
+				{
+					status:
+						"Email does not exist. Please try again or register an account",
+				},
+				400
+			);
+		}
+	} catch (err) {
+		res.status(400).json({ Message: err });
+	}
+	client.release();
 });

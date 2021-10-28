@@ -1,12 +1,8 @@
 var express = require("express");
 var router = express.Router();
 var cookieParser = require("cookie-parser");
-const cors = require("cors");
 const { v4: uuidv4 } = require("uuid");
 const { Pool, Client } = require("pg");
-const { application } = require("express");
-const bcrypt = require("bcrypt");
-const crypto = require("crypto");
 
 router.use(cookieParser());
 
@@ -16,10 +12,10 @@ const pool = new Pool({
 
 router.post("/", async function (req, res) {
 	const client = await pool.connect();
-	const { username, password } = await req.body;
+	const { email, password } = await req.body;
 	const sessionID = uuidv4();
-	const userKey = await client.query(`SELECT id FROM users WHERE username=$1`, [
-		username,
+	const userKey = await client.query(`SELECT id FROM users WHERE email=$1`, [
+		email,
 	]);
 
 	await client.query("INSERT INTO sessions (uuid, user_id) VALUES ($1, $2)", [
@@ -33,31 +29,21 @@ router.post("/", async function (req, res) {
 	console.log("released");
 });
 
-router.get("/", async function (req, res) {
+router.get("/check", async function (req, res) {
 	const client = await pool.connect();
 	const activeSession = await req.cookies;
-	const { user_id } = await req.body;
 	const sessionID = await client.query(
-		`SELECT uuid FROM sessions
-              WHERE user_id=$1`,
-		[user_id]
+		`SELECT user_id FROM sessions
+              WHERE uuid=$1`,
+		[activeSession.sessionID]
 	);
-	console.log(sessionID.rows[0]);
-	console.log(activeSession);
-
-	if (sessionID.rows[0]) {
-		if (activeSession.sessionID === sessionID.rows[0].uuid) {
-			res.json({ loggedIn: true });
-			console.log("passes");
-		} else {
-			res.json({ loggedIn: false });
-			console.log("fails 1");
-		}
-	} else {
-		res.json({ loggedIn: false });
-		console.log("fails 2");
+	console.log(activeSession.sessionID);
+	// console.log(sessionID);
+	try {
+		res.status(200).json({ id: sessionID.rows[0].user_id });
+	} catch (err) {
+		res.status(400).json({ Error: err });
 	}
-
 	client.release();
 });
 
@@ -65,13 +51,13 @@ router.delete("/", async function (req, res) {
 	const client = await pool.connect();
 	const activeSession = await req.cookies;
 	const cookieUUID = activeSession.sessionID;
-	console.log(cookieUUID);
-	try {
-		await client.query(`DELETE FROM sessions WHERE uuid=$1`, [cookieUUID]);
-		res.status(200).json({ Message: "Cookie Deleted!" }, 200);
-	} catch {
-		res.status(400).json({ Message: "Server Error" }, 400);
-	}
+	// console.log(cookieUUID);
+	res
+		.cookie("sessionID", cookieUUID, {
+			expires: new Date(Date.now() - 900000),
+			httpOnly: true,
+		})
+		.send("cookie updated");
 	client.release();
 });
 

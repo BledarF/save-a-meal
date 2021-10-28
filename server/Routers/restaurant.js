@@ -1,19 +1,16 @@
 var express = require("express");
 var router = express.Router();
 var cookieParser = require("cookie-parser");
-const cors = require("cors");
-const { v4: uuidv4 } = require("uuid");
 const { Pool, Client } = require("pg");
-const { application } = require("express");
-const { route } = require("./users");
 router.use(cookieParser());
 
 const pool = new Pool({
-  connectionString: "postgres://localhost:5432/saveameal",
+	connectionString: "postgres://localhost:5432/saveameal",
 });
 
 //Get all data regarding both restaurant details and corresponding addresses
 router.get("/", async function (req, res) {
+
   const client = await pool.connect();
   try {
     const allRestaurantData = await client.query(
@@ -25,10 +22,12 @@ router.get("/", async function (req, res) {
     res.status(400).json({ message: "Failed to fetch all restaurants" });
   }
   client.release();
+
 });
 
 //Get all addresses from each restaurant
 router.get("/addresses", async function (req, res) {
+
   const client = await pool.connect();
   try {
     const restaurantAddresses = await client.query(
@@ -53,10 +52,12 @@ router.get("/details", async function (req, res) {
     res.status(400).json({ message: "Failed to fetch all restaurant details" });
   }
   client.release();
+
 });
 
 //Get desired restaurant
 router.get("/:id", async function (req, res) {
+
   const client = await pool.connect();
   const { id } = req.params;
   try {
@@ -70,12 +71,14 @@ router.get("/:id", async function (req, res) {
     res.status(400).json({ message: "Failed to fetch restaurant" });
   }
   client.release();
+
 });
 
 //Get all past orders for the restaurant
 router.get("/:id/orders", async function (req, res) {
-  const client = await pool.connect();
-  const { id } = req.params;
+	const client = await pool.connect();
+	const { id } = req.params;
+
 
   try {
     const allRestaurantOrders = await client.query(
@@ -87,12 +90,14 @@ router.get("/:id/orders", async function (req, res) {
     console.log(err);
     res.status(400).json({ message: "Failed to fetch orders for the day." });
   }
+
 });
 
 //Gets all restaurant orders for the day
 router.get("/:id/orders/today", async function (req, res) {
-  const client = await pool.connect();
-  const { id } = req.params;
+	const client = await pool.connect();
+	const { id } = req.params;
+
 
   try {
     const restaurantOrdersToday = await client.query(
@@ -104,6 +109,8 @@ router.get("/:id/orders/today", async function (req, res) {
     console.log(err);
     res.status(400).json({ message: "Failed to fetch orders for the day." });
   }
+
+
 });
 
 //Gets all user account details
@@ -125,7 +132,9 @@ router.get("/:user_id/account_details", async function (req, res) {
 });
 
 //Update all restaurants details
+
 router.put("/:id/all/:uuid", async function (req, res) {
+
   const client = await pool.connect();
   const { id, uuid } = req.params;
   const { name, telephone, description, start_time, end_time, current_slots, street_name, postcode, town, M, TU, W, TH, F, SA, SU } = req.body;
@@ -152,7 +161,8 @@ router.put("/:id/all/:uuid", async function (req, res) {
     res.status(400).json({ message: "Failed to update account details." });
   }
 
-  client.release();
+
+	client.release();
 });
 
 //Update restaurants' login details
