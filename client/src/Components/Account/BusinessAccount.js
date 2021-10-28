@@ -117,7 +117,12 @@ const Tabs = ({ color }) => {
                   </p>
                 </div>
                 <div className={openTab === 4 ? "block" : "hidden"} id="link4">
-                  <AvailabilityTab></AvailabilityTab>
+                  <AvailabilityTab
+                    startTime={"12PM"}
+                    endTime={"2PM"}
+                    capacity={"9"}
+                    days={{ monday: true, tuesday: true }}
+                  ></AvailabilityTab>
                 </div>
               </div>
             </div>
