@@ -1,4 +1,7 @@
 import React from "react";
+import AccountTab from "./Tabs/AccountTab";
+import AddressTab from "./Tabs/AddressTab";
+import AvailabilityTab from "./Tabs/AvailabilityTab";
 
 const Tabs = ({ color }) => {
   const [openTab, setOpenTab] = React.useState(1);
@@ -91,25 +94,17 @@ const Tabs = ({ color }) => {
             <div className="px-4 py-5 ">
               <div className="tab-content tab-space">
                 <div className={openTab === 1 ? "block" : "hidden"} id="link1">
-                  <p>
-                    Collaboratively administrate empowered markets via
-                    plug-and-play networks. Dynamically procrastinate B2C users
-                    after installed base benefits.
-                    <br />
-                    <br /> Dramatically visualize customer directed convergence
-                    without revolutionary ROI.
-                  </p>
+                  <AccountTab
+                    email={"placeholder"}
+                    username={"placeholder"}
+                  ></AccountTab>
                 </div>
                 <div className={openTab === 2 ? "block" : "hidden"} id="link2">
-                  <p>
-                    Completely synergize resource taxing relationships via
-                    premier niche markets. Professionally cultivate one-to-one
-                    customer service with robust ideas.
-                    <br />
-                    <br />
-                    Dynamically innovate resource-leveling customer service for
-                    state of the art customer service.
-                  </p>
+                  <AddressTab
+                    postcode={"SW 18 0DE"}
+                    streetname={"placeholder Road"}
+                    town={"placeholder"}
+                  ></AddressTab>
                 </div>
                 <div className={openTab === 3 ? "block" : "hidden"} id="link3">
                   <p>
@@ -122,12 +117,7 @@ const Tabs = ({ color }) => {
                   </p>
                 </div>
                 <div className={openTab === 4 ? "block" : "hidden"} id="link4">
-                  <p>
-                    I have no idea what I'm doing lol
-                    <br />
-                    <br /> Dramatically maintain clicks-and-mortar solutions
-                    without functional solutions.
-                  </p>
+                  <AvailabilityTab></AvailabilityTab>
                 </div>
               </div>
             </div>
