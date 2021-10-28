@@ -78,34 +78,6 @@ router.post("/customer", async function (req, res) {
 
 module.exports = router;
 
-router.post("/verify", async function (req, res) {
-	const client = await pool.connect();
-	const { username, password, email } = await req.body;
-	const getPasswordSQL = `SELECT password FROM users WHERE username=$1`;
-	const hash = await client.query(getPasswordSQL, [username]);
-	try {
-		if (hash.rows[0]) {
-			const hashing = hash.rows[0].password;
-			const result = await bcrypt.compare(password, hashing);
-			if (result) {
-				res.json({ status: "loggedIn" }, 200);
-			} else {
-				res.json({ status: "Incorrect password. Please try again" }, 400);
-			}
-		} else {
-			res.json(
-				{
-					status:
-						"Username does not exist. Please try again or register an account",
-				},
-				400
-			);
-		}
-	} catch (err) {
-		res.status(400).json({ Message: err });
-	}
-	client.release();
-});
 ///
 router.post("/restaurant", async function (req, res) {
 	const client = await pool.connect();
@@ -198,4 +170,38 @@ router.post("/restaurant", async function (req, res) {
 		res.status(400).json({ Message: err });
 	}
 	await client.release();
+});
+
+router.post("/verify", async function (req, res) {
+	const client = await pool.connect();
+	const { password, email } = await req.body;
+	const getPasswordSQL = `SELECT password FROM users WHERE email=$1`;
+	const hash = await client.query(getPasswordSQL, [email]);
+	try {
+		const user_id_query = await client.query(
+			`SELECT id FROM users WHERE email=$1`,
+			[email]
+		);
+		// console.log(user_id_query.rows[0].id);
+		if (hash.rows[0]) {
+			const hashing = hash.rows[0].password;
+			const result = await bcrypt.compare(password, hashing);
+			if (result) {
+				res.json({ status: "loggedIn", id: user_id_query.rows[0].id }, 200);
+			} else {
+				res.json({ status: "Incorrect password. Please try again" }, 400);
+			}
+		} else {
+			res.json(
+				{
+					status:
+						"Email does not exist. Please try again or register an account",
+				},
+				400
+			);
+		}
+	} catch (err) {
+		res.status(400).json({ Message: err });
+	}
+	client.release();
 });
