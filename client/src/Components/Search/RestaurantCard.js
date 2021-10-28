@@ -11,12 +11,12 @@ function RestaurantCard(props) {
       }}
       className="restaurant-card-wrapper text-sm cursor-pointer text-left overflow-hidden flex flex-col justify-center items-center rounded-3xl shadow-xl hover:shadow-2xl transition duration-200"
     >
-      <img src={imgUrl} alt={name} className="rounded-xl" />
+      <img src={imgUrl} alt={name} className="rounded-xl h-full" />
       <div className="p-2 flex flex-col justify-between items-start">
-        <h1>
+        <h1 className="text-2xl">
           {name} - {town}
         </h1>
-        <p>
+        <p className="text-lg">
           {times} - {distance} away
         </p>
       </div>
