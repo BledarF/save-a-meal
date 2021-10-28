@@ -4,25 +4,9 @@ import * as Yup from "yup";
 import { FormikStepper, FormikStep, InputField } from "formik-stepper";
 import passwordValidator from "password-validator";
 
-const schema = new passwordValidator();
-schema
-  .is()
-  .min(6) // Minimum length 6
-  .is()
-  .max(100) // Maximum length 100
-  .has()
-  .uppercase() // Must have uppercase letters
-  .has()
-  .lowercase() // Must have lowercase letters
-  .has()
-  .digits(2) // Must have at least 2 digits
-  .is()
-  .not()
-  .oneOf(["Passw0rd", "Password123"]); // Blacklist these values
-
 const validationSchema = Yup.object().shape({
-  firstName: Yup.string().required("Your first name is required"),
-  lastName: Yup.string().required("A description is required"),
+  businessName: Yup.string().required("Your business name is required"),
+  description: Yup.string().required("A description is required"),
   email: Yup.string()
     .email("The email must be a valid email address.")
     .required("The Email field is required"),
