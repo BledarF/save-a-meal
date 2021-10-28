@@ -4,7 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { FormikStepper, FormikStep, InputField } from "formik-stepper";
 
 const validationSchema = Yup.object().shape({
-  businessName: Yup.string().required("Your business name is required"),
+  name: Yup.string().required("Your business name is required"),
   description: Yup.string().required("A description is required"),
   email: Yup.string()
     .email("The email must be a valid email address.")
@@ -30,17 +30,35 @@ const validationSchema = Yup.object().shape({
     .oneOf([Yup.ref("password"), null], "Passwords must match"),
 });
 
+async function postRegister(values) {
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      Access: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(values),
+  };
+  const response = await fetch(
+    "http://localhost:8080/api/users/restaurant",
+    requestOptions
+  );
+  const json = await response.json();
+  console.log(json.Message);
+}
+
 function BuisnessRegistrationForm() {
+  const [error, setError] = useState("");
+
   const onSubmit = async (values, { setSubmitting }) => {
     console.log(values);
 
     // FETCH POST REQUEST
     setError("Error: not connected to the server");
+    postRegister(values);
 
     setSubmitting(false); //// Important
   };
-
-  const [error, setError] = useState("");
 
   return (
     <div>
@@ -48,7 +66,7 @@ function BuisnessRegistrationForm() {
         /// Accept all Formik props
         onSubmit={onSubmit} /// onSubmit Function
         initialValues={{
-          businessName: "",
+          name: "",
           email: "",
           password: "",
           privacy: false,
@@ -57,16 +75,18 @@ function BuisnessRegistrationForm() {
           postcode: "",
           streetname: "",
           telephone: "",
-          monday: false,
-          tuesday: false,
-          wednesday: false,
-          thursday: false,
-          friday: false,
-          saturday: false,
-          sunday: false,
+          M: false,
+          TU: false,
+          W: false,
+          TH: false,
+          F: false,
+          SA: false,
+          SU: false,
           startTime: "",
           endTime: "",
           passwordConfirmation: "",
+          current_slots: "",
+          username: "",
         }}
         validationSchema={validationSchema}
         labelsColor="secondary" /// The text label color can be root variables or css => #fff
@@ -86,7 +106,7 @@ function BuisnessRegistrationForm() {
           iconColor="white" /// The color can be root variables or css => #fff
           circleColor="#F59E0B" /// The color can be root variables or css => #fff
         >
-          <InputField name="businessName" label="Business Name" />
+          <InputField name="name" label="Business Name" />
           <InputField name="description" label="Description" />
           <div className="flex">
             <InputField
@@ -110,19 +130,20 @@ function BuisnessRegistrationForm() {
           iconColor="white" /// The color can be root variables or css => #fff
           circleColor="#F59E0B" /// The color can be root variables or css => #fff
         >
-          <InputField type="checkbox" name="monday" label="Monday" />
-          <InputField type="checkbox" name="tuesday" label="Tuesday" />
-          <InputField type="checkbox" name="wednesday" label="Wednesday" />
-          <InputField type="checkbox" name="thursday" label="Thursday" />
-          <InputField type="checkbox" name="friday" label="Friday" />
-          <InputField type="checkbox" name="saturday" label="Saturday" />
-          <InputField type="checkbox" name="sunday" label="Sunday" />
+          <InputField type="checkbox" name="M" label="Monday" />
+          <InputField type="checkbox" name="TU" label="Tuesday" />
+          <InputField type="checkbox" name="W" label="Wednesday" />
+          <InputField type="checkbox" name="TH" label="Thursday" />
+          <InputField type="checkbox" name="F" label="Friday" />
+          <InputField type="checkbox" name="SA" label="Saturday" />
+          <InputField type="checkbox" name="SU" label="Sunday" />
           <InputField
             name="startTime"
             type="time"
             label="Collection Start Time"
           />
           <InputField name="endTime" type="time" label="Collection End Time" />
+          <InputField name="current_slots" label="Capacity: " />
         </FormikStep>
 
         {/* Third Step */}
@@ -133,6 +154,7 @@ function BuisnessRegistrationForm() {
           circleColor="#F59E0B"
         >
           <InputField name="email" label="Email" type="email" />
+          <InputField name="username" label="Username" />
           <InputField name="password" label="Password" type="password" />
           <InputField
             name="passwordConfirmation"

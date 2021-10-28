@@ -1,16 +1,33 @@
+const { randomInt } = require("crypto");
 const { Client } = require("pg");
 const client = new Client("postgres://localhost:5432/saveameal");
 
+async function deleteDatabase() {
+	try {
+		await client.query("DROP DATABASE IF EXISTS saveameal WITH (FORCE)");
+	} catch (err) {
+		console.log(err);
+	}
+}
+
+async function createNewDatabase() {
+	try {
+		await client.query("CREATE DATABASE saveameal");
+	} catch (err) {
+		console.log(err);
+	}
+}
+
 async function createDatabase() {
 	await client.connect();
-
 	createAddressesTable();
 	createCustomerTable();
 	createRestaurantsTable();
+	createWeekDayTable();
 	createUsersTable();
 	createSessionsTable();
 	createOrdersTable();
-	// addSeedData();
+	addSeedData();
 
 	return;
 }
@@ -63,11 +80,12 @@ async function addSeedData() {
 	const sql2 = `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES(1122,'152 Waterloo Rd ', 'SE1 7AA', 'Waterloo')`;
 	const sql3 = `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES(1123,'42 Silicon Rd', 'IG11 9UW', 'Barking')`;
 	const sql4 = `INSERT INTO customers(firstname,secondname,address_id )VALUES('Bledar','Ferati',1123)`;
-	const sql5 = `INSERT INTO restaurants(name,address_id,telephone,description,start_time,end_time,available_days,current_slots) VALUES('Pret Waterloo',1122,999,'We are a coffee shop that sells a variety of different pastries,coffee drinks and sandwiches. We sell vegan,halal and gluten-free food' , '17:35:00', '18:00:00', 12345, 10)`;
-	const sql6 = `INSERT INTO restaurants(name,address_id,telephone,description,start_time,end_time,available_days,current_slots) VALUES('Kfc Liverpool Street',1121,911,'We are a fast food restaurant which sells high quality fried chicken.' , '19:40:00',' 20:00:00', 1234567, 8)`;
+	const sql5 = `INSERT INTO restaurants(name,address_id,telephone,description,start_time,end_time,current_slots) VALUES('Pret Waterloo',1122,999,'We are a coffee shop that sells a variety of different pastries,coffee drinks and sandwiches. We sell vegan,halal and gluten-free food' , '17:35:00', '18:00:00', 10)`;
+	const sql6 = `INSERT INTO restaurants(name,address_id,telephone,description,start_time,end_time,current_slots) VALUES('Kfc Liverpool Street',1121,911,'We are a fast food restaurant which sells high quality fried chicken.' , '19:40:00',' 20:00:00', 8)`;
 	const sql7 = `INSERT INTO users(username,email,password,customer_id) VALUES('BledarF','BledarF@hotmail.com','thisismypassword',1)`;
 	const sql8 = `INSERT INTO users(username,email,password,restaurant_id )VALUES('PretBarbican','PretBarbican@hotmail.com','thisismypassword',1)`;
 	const sql9 = `INSERT INTO users(username,email,password,restaurant_id )VALUES('KFCWaterloo','PretWaterloo@hotmail.com','thisismypassword',2)`;
+	const sql10 = `INSERT INTO orders(user_id,restaurant_id)VALUES(1,1)`;
 
 	try {
 		await client.query(sql1);
@@ -79,6 +97,7 @@ async function addSeedData() {
 		await client.query(sql7);
 		await client.query(sql8);
 		await client.query(sql9);
+		await client.query(sql10);
 
 		console.log("Data Seeded");
 		return;
@@ -108,20 +127,31 @@ async function createSessionsTable() {
 	}
 }
 
-// async function addSeedData() {
-//   const sql = `
-//  INSERT INTO users(username, password) VALUES('test', 'test')`;
+async function createWeekDayTable() {
+	const sql = ` 
+  CREATE TABLE available_days( 
+    restaurant_id INTEGER REFERENCES restaurants(id),
+    M BOOLEAN NOT NULL, 
+    TU BOOLEAN NOT NULL, 
+    W BOOLEAN NOT NULL, 
+    TH BOOLEAN NOT NULL, 
+    F BOOLEAN NOT NULL, 
+    SA BOOLEAN NOT NULL, 
+    SU BOOLEAN NOT NULL 
 
-//   try {
-//     const res = await client.query(sql);
-//     console.log("Seed Data added");
-//     return;
-//   } catch (err) {
-//     console.log(err);
-//     console.log("Seed data issue");
-//     return;
-//   }
-// }
+  )
+  
+  `;
+	try {
+		const res = await client.query(sql);
+		console.log("available_days table created");
+		return;
+	} catch (err) {
+		console.log(err);
+		console.log("available_days table issue");
+		return;
+	}
+}
 
 async function createOrdersTable() {
 	const sql = `
@@ -173,7 +203,6 @@ async function createRestaurantsTable() {
     description TEXT NOT NULL,
     start_time TIME NOT NULL, 
     end_time TIME NOT NULL, 
-    available_days TEXT NOT NULL,
     current_slots INTEGER NOT NULL
 
   )
@@ -188,5 +217,7 @@ async function createRestaurantsTable() {
 		return;
 	}
 }
+
+// deleteDatabase();
 
 createDatabase();

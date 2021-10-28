@@ -6,9 +6,6 @@ import bledarPhoto from "./TeamPhotos/Bledar.jpg";
 import gpPhoto from "./TeamPhotos/Gurpratap.jpg";
 import logo from "./images/goodlogo.png";
 import pie from "./images/piechart.png";
-import ladyPot from "./images/ladypot.png";
-import pizzaGuy from "./images/pizzaguy.png";
-import burgerGuy from "./images/burgerguy.png";
 
 function Home() {
   const teamImageComponent = function getTeamImageComponent(
@@ -19,7 +16,7 @@ function Home() {
     return (
       <figure className="relative max-w-xs cursor-pointer my-5">
         <img
-          className="rounded-lg shadow-xl hover:shadow-2xl"
+          className="rounded-lg shadow-xl hover:shadow-2xl transition duration-300"
           src={image}
           alt={title}
         />
