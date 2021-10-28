@@ -17,25 +17,25 @@ const pool = new Pool({
 router.post("/customer", async function (req, res) {
 	const client = await pool.connect();
 	const {
-		username,
 		email,
 		password,
-		firstname,
-		secondname,
+		firstName,
+		lastName,
 		streetname,
 		postcode,
 		town,
+		telephone,
 	} = await req.body;
 	const salt = await bcrypt.genSalt(8);
 	const passwordEncrypted = await bcrypt.hash(password, salt);
-	const duplicateSQL = `SELECT username FROM users WHERE username=$1`;
-	const duplicate = await client.query(duplicateSQL, [username]);
+	const duplicateSQL = `SELECT email FROM users WHERE email=$1`;
+	const duplicate = await client.query(duplicateSQL, [email]);
 	// console.log(duplicate.rows);
 
 	if (duplicate.rows.length !== 0) {
 		res.json(
 			{
-				Message: "This username is taken. Please try a different one or login.",
+				Message: "This email is taken. Please try a different one or login.",
 			},
 			400
 		);
@@ -49,27 +49,23 @@ router.post("/customer", async function (req, res) {
 			postcode,
 			town,
 		]);
-		const addingUserInfoSQL = `INSERT INTO customers (firstname,secondname,address_id) VALUES ($1,$2,$3)`;
+		const addingUserInfoSQL = `INSERT INTO customers (firstname,secondname,address_id,telephone) VALUES ($1,$2,$3,$4)`;
 		await client.query(addingUserInfoSQL, [
-			firstname,
-			secondname,
+			firstName,
+			lastName,
 			addressIDGen,
+			telephone,
 		]);
 		//
 		const getUserId = `SELECT id FROM customers WHERE firstname=$1`;
-		const userIdSQL = await client.query(getUserId, [firstname]);
+		const userIdSQL = await client.query(getUserId, [firstName]);
 
 		// console.log(userIdSQL);
 		//////////////////////////////
 		customer_id = userIdSQL.rows[0].id;
 		// console.log(userIdSQL);
-		const addingUsersSQL = `INSERT INTO users(username,password,email,customer_id) VALUES ($1,$2,$3,$4)`;
-		await client.query(addingUsersSQL, [
-			username,
-			passwordEncrypted,
-			email,
-			customer_id,
-		]);
+		const addingUsersSQL = `INSERT INTO users(password,email,customer_id) VALUES ($1,$2,$3)`;
+		await client.query(addingUsersSQL, [passwordEncrypted, email, customer_id]);
 		res.status(200).json({ Message: "User Created!" }, 200);
 	}
 
@@ -104,7 +100,6 @@ router.post("/verify", async function (req, res) {
 });
 ///
 router.post("/restaurant", async function (req, res) {
-	console.log(await req.body);
 	const client = await pool.connect();
 	const {
 		name,
@@ -116,7 +111,6 @@ router.post("/restaurant", async function (req, res) {
 		startTime,
 		endTime,
 		current_slots,
-		username,
 		password,
 		email,
 		M,
@@ -130,8 +124,8 @@ router.post("/restaurant", async function (req, res) {
 
 	const salt = await bcrypt.genSalt(8);
 	const passwordEncrypted = await bcrypt.hash(password, salt);
-	const duplicateSQL = `SELECT username FROM users WHERE username=$1`;
-	const duplicate = await client.query(duplicateSQL, [username]);
+	const duplicateSQL = `SELECT email FROM users WHERE email=$1`;
+	const duplicate = await client.query(duplicateSQL, [email]);
 	const start_time_format = startTime + ":00";
 	const end_time_format = endTime + ":00";
 
@@ -169,9 +163,8 @@ router.post("/restaurant", async function (req, res) {
 		// console.log(userIdSQL);
 		//////////////////////////////
 		restaurant_id = userIdSQL.rows[0].id;
-		const addingRestaurantSQL = `INSERT INTO users(username,password,email,restaurant_id) VALUES ($1,$2,$3,$4)`;
+		const addingRestaurantSQL = `INSERT INTO users(password,email,restaurant_id) VALUES ($1,$2,$3)`;
 		await client.query(addingRestaurantSQL, [
-			username,
 			passwordEncrypted,
 			email,
 			restaurant_id,
