@@ -2,10 +2,10 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import {
-	Route,
-	BrowserRouter as Router,
-	useHistory,
-	Switch,
+  Route,
+  BrowserRouter as Router,
+  useHistory,
+  Switch,
 } from "react-router-dom";
 import Home from "./Components/Home/Home";
 import Navbar from "./Components/Navbar/Navbar";
@@ -15,32 +15,30 @@ import SearchPage from "./Components/Search/SearchPage";
 import Account from "./Components/Account/Account";
 
 function App() {
-	const [data, setData] = useState(null);
+  const [data, setData] = useState(null);
 
-	React.useEffect(() => {
-		fetch("/api")
-			.then((res) => res.json())
-			.then((data) => setData(data.message));
-	}, []);
+  React.useEffect(() => {
+    fetch("/api")
+      .then((res) => res.json())
+      .then((data) => setData(data.message));
+  }, []);
 
-
-	return (
-		<div className="App">
-			<Navbar />
-			<Router>
-				<main>
-					<Switch>
-						<Route exact path={["/home", "/"]} component={Home} />
-						<Route exact path="/register" component={Register} />
-						<Route exact path="/search" component={Search} />
-						<Route exact path="/account" component={Account} />
-					</Switch>
-				</main>
-			</Router>
-			<Footer />
-		</div>
-	);
-
+  return (
+    <div className="App">
+      <Navbar />
+      <Router>
+        <main>
+          <Switch>
+            <Route exact path={["/home", "/"]} component={Home} />
+            <Route exact path="/register" component={Register} />
+            <Route exact path="/search" component={SearchPage} />
+            <Route exact path="/account" component={Account} />
+          </Switch>
+        </main>
+      </Router>
+      <Footer />
+    </div>
+  );
 }
 
 export default App;

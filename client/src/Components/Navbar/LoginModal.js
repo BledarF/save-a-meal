@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import UserRegisterForm from "./UserRegisterForm";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import LoginForm from "./LoginForm";
 
-function UserModal(props) {
+function LoginModal(props) {
   return (
     <>
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
@@ -11,7 +12,7 @@ function UserModal(props) {
             {/*header*/}
             <div className="flex items-start justify-between border-b border-solid border-blueGray-200 rounded-t">
               <h3 className="text-2xl font-semibold p-2 pl-3 pb-1 m-0">
-                Register as Customer
+                Login
               </h3>
               <button
                 className="p-2 pr-5 pb-1"
@@ -23,9 +24,8 @@ function UserModal(props) {
               </button>
             </div>
             {/*body*/}
-            <div className="relative py-1 px-36 flex-auto">
-              <UserRegisterForm></UserRegisterForm>
-            </div>
+            <LoginForm />
+            <div className="relative py-1 px-36 flex-auto"></div>
             {/*footer*/}
           </div>
         </div>
@@ -35,4 +35,4 @@ function UserModal(props) {
   );
 }
 
-export default UserModal;
+export default LoginModal;
