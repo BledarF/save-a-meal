@@ -1,4 +1,3 @@
-const { text } = require("express");
 const express = require("express");
 require("dotenv").config();
 const path = require("path");
@@ -26,9 +25,9 @@ app.get("/api", (req, res) => {
 	res.json({ message: "Hello from server!" });
 });
 
-app.use("/users", users);
-app.use("/sessions", sessions);
-app.use("/restaurant", restaurant);
+app.use("/api/users", users);
+app.use("/api/sessions", sessions);
+app.use("/api/restaurant", restaurant);
 
 // All other GET requests not handled before will return our React app
 app.get("*", (req, res) => {

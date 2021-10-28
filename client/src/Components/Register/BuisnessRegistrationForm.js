@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import React, { useState } from "react";
 import * as Yup from "yup";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import { FormikStepper, FormikStep, InputField } from "formik-stepper";
-import passwordValidator from "password-validator";
 
 const validationSchema = Yup.object().shape({
-	firstName: Yup.string().required("Your first name is required"),
-	lastName: Yup.string().required("Your last name is required"),
+	name: Yup.string().required("Your business name is required"),
+	description: Yup.string().required("A description is required"),
 	email: Yup.string()
 		.email("The email must be a valid email address.")
 		.required("The Email field is required"),
@@ -30,6 +29,7 @@ const validationSchema = Yup.object().shape({
 		.required("Password confirmation is required")
 		.oneOf([Yup.ref("password"), null], "Passwords must match"),
 });
+
 async function postRegister(values) {
 	const requestOptions = {
 		method: "POST",
@@ -40,20 +40,21 @@ async function postRegister(values) {
 		body: JSON.stringify(values),
 	};
 	const response = await fetch(
-		"http://localhost:8080/api/users/customer",
+		"http://localhost:8080/api/users/restaurant",
 		requestOptions
 	);
 	const json = await response.json();
 	console.log(json.Message);
 }
 
-function UserRegisterForm(props) {
+function BuisnessRegistrationForm() {
 	const [error, setError] = useState("");
 	const [message, setMessage] = useState("");
 
 	const onSubmit = async (values, { setSubmitting }) => {
 		console.log(values);
 
+		// FETCH POST REQUEST
 		try {
 			postRegister(values);
 			setMessage("Success: User Created! Please Login.");
@@ -61,7 +62,6 @@ function UserRegisterForm(props) {
 			setError("Error: not connected to the server");
 		}
 
-		// FETCH POST REQUEST
 		setSubmitting(false); //// Important
 	};
 
@@ -71,8 +71,7 @@ function UserRegisterForm(props) {
 				/// Accept all Formik props
 				onSubmit={onSubmit} /// onSubmit Function
 				initialValues={{
-					firstName: "",
-					lastName: "",
+					name: "",
 					email: "",
 					password: "",
 					privacy: false,
@@ -81,7 +80,17 @@ function UserRegisterForm(props) {
 					postcode: "",
 					streetname: "",
 					telephone: "",
+					M: false,
+					TU: false,
+					W: false,
+					TH: false,
+					F: false,
+					SA: false,
+					SU: false,
+					startTime: "",
+					endTime: "",
 					passwordConfirmation: "",
+					current_slots: "",
 				}}
 				validationSchema={validationSchema}
 				labelsColor="secondary" /// The text label color can be root variables or css => #fff
@@ -95,14 +104,14 @@ function UserRegisterForm(props) {
 			>
 				{/*  First Step */}
 				<FormikStep
-					label="Personal Information" /// The text label of Step
+					label="Buisness Information" /// The text label of Step
 					withIcons="fa fa-user" // to add icon into the circle must add icon as class Name like Fontawesome
 					withNumbers /// If true, it hides the icon and shows the step number
 					iconColor="white" /// The color can be root variables or css => #fff
 					circleColor="#F59E0B" /// The color can be root variables or css => #fff
 				>
-					<InputField name="firstName" label="First Name" />
-					<InputField name="lastName" label="Last Name" />
+					<InputField name="name" label="Business Name" />
+					<InputField name="description" label="Description" />
 					<div className="flex">
 						<InputField
 							className="mx-2"
@@ -116,6 +125,29 @@ function UserRegisterForm(props) {
 						<InputField className="mx-2" name="postcode" label="Postcode" />
 						<InputField className="mx-2" name="telephone" label="Telephone" />
 					</div>
+				</FormikStep>
+				{/* Second Step */}
+				<FormikStep
+					label="Avaliability" /// The text label of Step
+					withIcons="fa fa-user" // to add icon into the circle must add icon as class Name like Fontawesome
+					withNumbers /// If true, it hides the icon and shows the step number
+					iconColor="white" /// The color can be root variables or css => #fff
+					circleColor="#F59E0B" /// The color can be root variables or css => #fff
+				>
+					<InputField type="checkbox" name="M" label="Monday" />
+					<InputField type="checkbox" name="TU" label="Tuesday" />
+					<InputField type="checkbox" name="W" label="Wednesday" />
+					<InputField type="checkbox" name="TH" label="Thursday" />
+					<InputField type="checkbox" name="F" label="Friday" />
+					<InputField type="checkbox" name="SA" label="Saturday" />
+					<InputField type="checkbox" name="SU" label="Sunday" />
+					<InputField
+						name="startTime"
+						type="time"
+						label="Collection Start Time"
+					/>
+					<InputField name="endTime" type="time" label="Collection End Time" />
+					<InputField name="current_slots" label="Capacity: " />
 				</FormikStep>
 
 				{/* Third Step */}
@@ -141,4 +173,4 @@ function UserRegisterForm(props) {
 	);
 }
 
-export default UserRegisterForm;
+export default BuisnessRegistrationForm;
