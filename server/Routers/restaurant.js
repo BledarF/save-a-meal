@@ -16,7 +16,9 @@ const pool = new Pool({
 router.get("/", async function (req, res) {
   const client = await pool.connect();
   try {
-    const allRestaurantData = await client.query("SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid");
+    const allRestaurantData = await client.query(
+      "SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid JOIN available_days ON restaurants.id = available_days.restaurant_id"
+    );
     res.status(200).json({ restaurants: allRestaurantData });
   } catch {
     res.status(400).json({ message: "Failed to fetch all restaurants" });
@@ -28,7 +30,9 @@ router.get("/", async function (req, res) {
 router.get("/addresses", async function (req, res) {
   const client = await pool.connect();
   try {
-    const restaurantAddresses = await client.query("SELECT * FROM addresses");
+    const restaurantAddresses = await client.query(
+      "SELECT streetname,postcode,town FROM addresses JOIN restaurants ON addresses.uuid = restaurants.address_id "
+    );
     res.status(200).json({ addresses: restaurantAddresses });
   } catch {
     res.status(400).json({ message: "Failed to fetch all restaurant addresses" });
@@ -36,14 +40,14 @@ router.get("/addresses", async function (req, res) {
   client.release();
 });
 
-//Get all restaurant details
-router.get("/restaurants", async function (req, res) {
+//Get all  details from all restaurants
+router.get("/details", async function (req, res) {
   const client = await pool.connect();
   try {
-    const restaurantAddresses = await client.query("SELECT * FROM addresses");
-    res.status(200).json({ addresses: restaurantAddresses });
+    const restaurantDetails = await client.query("SELECT * FROM restaurants");
+    res.status(200).json({ restaurantsData: restaurantDetails });
   } catch {
-    res.status(400).json({ message: "Failed to fetch all restaurant addresses" });
+    res.status(400).json({ message: "Failed to fetch all restaurant details" });
   }
   client.release();
 });
@@ -70,7 +74,7 @@ router.get("/:id/orders", async function (req, res) {
   const { id } = req.params;
 
   try {
-    await client.query("SELECT * FROM orders WHERE restaurant_id = $1 ", [id]);
+    await client.query("SELECT * FROM orders JOIN restaurants ON orders.restaurant_id = restaurant.id WHERE restaurant_id = $1 ", [id]);
     res.status(200).json({ message: "Success! Fetched all past orders" });
   } catch {
     res.status(400).json({ message: "Failed to fetch orders for the day." });
@@ -83,18 +87,22 @@ router.get("/:id/orders/today", async function (req, res) {
   const { id } = req.params;
 
   try {
-    await client.query("SELECT * FROM orders WHERE restaurant_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)", [id]);
+    await client.query(
+      "SELECT * FROM orders JOIN restaurants ON orders.restaurant_id = restaurant.id WHERE restaurant_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
+      [id]
+    );
     res.status(200).json({ message: "Success! Fetched all orders for the day." });
   } catch {
     res.status(400).json({ message: "Failed to fetch orders for the day." });
   }
 });
 
-//Update restaurants details
+//Update all restaurants details
 router.put("/:id/address/:uuid", async function (req, res) {
   const client = await pool.connect();
   const { id } = req.params;
-  const { name, telephone, description, start_time, end_time, available_days, current_slots, street_name, postcode, town } = req.body;
+  const { name, telephone, description, start_time, end_time, available_days, current_slots, street_name, postcode, town, M, TU, W, TH, F, SA, SU } =
+    req.body;
 
   try {
     await client.query(
@@ -102,12 +110,95 @@ router.put("/:id/address/:uuid", async function (req, res) {
       [name, telephone, description, start_time, end_time, available_days, current_slots, id]
     );
     await client.query("UPDATE addresses SET streetname = $1, postcode = $2, town = $3 WHERE uuid = $4", [street_name, postcode, town]);
+    await client.query("UPDATE available_days SET m = $1, tu = $2, w = $3, th = $4, f = $5, sa = $6, su = $7 WHERE restaurant_id = $8", [
+      M,
+      TU,
+      W,
+      TH,
+      F,
+      SA,
+      SU,
+      id,
+    ]);
     res.status(200).json({ message: "Your account details have been updated!" });
-  } catch {
+  } catch (err) {
+    console.log(err);
     res.status(400).json({ message: "Failed to update account details." });
   }
 
   client.release();
+});
+
+//Update restaurants' login details
+router.put("/:id/login", async function (req, res) {
+  const client = await pool.connect();
+  const { id } = req.params;
+  const { email, password } = req.body;
+
+  try {
+    await client.query("UPDATE users SET email = $1 , password = $2 WHERE restaurant_id = $3", [email, password, id]);
+    res.status(200).json({ message: "Your login details have been updated!" });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: "Failed to update login details" });
+  }
+});
+
+//Update restaurants' address details
+router.put("/:id/address/:uuid", async function (req, res) {
+  const client = await pool.connect();
+  const { uuid } = req.params;
+  const { streetname, postcode, town } = req.body;
+
+  try {
+    await client.query("UPDATE addresses SET streetname = $1 , postcode = $2, town = $3 WHERE uuid = $4", [streetname, postcode, town, uuid]);
+    res.status(200).json({ message: "Your address details have been updated!" });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: "Failed to update address details" });
+  }
+});
+
+//Update restaurants' personal details
+router.put("/:id/details", async function (req, res) {
+  const client = await pool.connect();
+  const { id } = req.params;
+  const { name, telephone, description, start_time, end_time, current_slots, imageurl } = req.body;
+
+  try {
+    await client.query(
+      "UPDATE restaurants SET name = $1 , telephone = $2, description= $3, start_time = $4, end_time = $5, current_slots = $6, imageurl =  $7 WHERE restaurant_id = $8",
+      [name, telephone, description, start_time, end_time, current_slots, imageurl, id]
+    );
+    res.status(200).json({ message: "Your personal details have been updated!" });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: "Failed to update personal details" });
+  }
+});
+
+//Update restaurants' availability
+router.put("/:id/availability", async function (req, res) {
+  const client = await pool.connect();
+  const { id } = req.params;
+  const { M, TU, W, TH, F, SA, SU } = req.body;
+
+  try {
+    await client.query("UPDATE available_days SET m = $1, tu = $2, w = $3, th = $4, f = $5, sa = $6, su = $7 WHERE restaurant_id = $8", [
+      M,
+      TU,
+      W,
+      TH,
+      F,
+      SA,
+      SU,
+      id,
+    ]);
+    res.status(200).json({ message: "Your availability has been updated!" });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: "Failed to update availability" });
+  }
 });
 
 module.exports = router;
