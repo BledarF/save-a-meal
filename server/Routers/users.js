@@ -100,7 +100,6 @@ router.post("/verify", async function (req, res) {
 });
 ///
 router.post("/restaurant", async function (req, res) {
-	console.log(await req.body);
 	const client = await pool.connect();
 	const {
 		name,
@@ -112,7 +111,6 @@ router.post("/restaurant", async function (req, res) {
 		startTime,
 		endTime,
 		current_slots,
-		username,
 		password,
 		email,
 		M,
@@ -126,8 +124,8 @@ router.post("/restaurant", async function (req, res) {
 
 	const salt = await bcrypt.genSalt(8);
 	const passwordEncrypted = await bcrypt.hash(password, salt);
-	const duplicateSQL = `SELECT username FROM users WHERE username=$1`;
-	const duplicate = await client.query(duplicateSQL, [username]);
+	const duplicateSQL = `SELECT email FROM users WHERE email=$1`;
+	const duplicate = await client.query(duplicateSQL, [email]);
 	const start_time_format = startTime + ":00";
 	const end_time_format = endTime + ":00";
 
@@ -165,9 +163,8 @@ router.post("/restaurant", async function (req, res) {
 		// console.log(userIdSQL);
 		//////////////////////////////
 		restaurant_id = userIdSQL.rows[0].id;
-		const addingRestaurantSQL = `INSERT INTO users(username,password,email,restaurant_id) VALUES ($1,$2,$3,$4)`;
+		const addingRestaurantSQL = `INSERT INTO users(password,email,restaurant_id) VALUES ($1,$2,$3)`;
 		await client.query(addingRestaurantSQL, [
-			username,
 			passwordEncrypted,
 			email,
 			restaurant_id,
