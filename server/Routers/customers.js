@@ -25,23 +25,23 @@ router.post("/:customer_id/restaurant/:restaurant_id/order", async function (req
   }
 });
 
-//Gets customer order for the day (do this by joining customer,restaurant and order table based on id )
+//Gets customer order for the day
 router.get("/:id/orders/today", async function (req, res) {
   const client = await pool.connect();
   const { id } = req.params;
 
   try {
-    await client.query(
+    const customersOrder = await client.query(
       "SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id JOIN restaurants ON orders.restaurant_id = restaurant.id WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
       [id]
     );
-    res.status(200).json({ message: "Success! Fetched all orders for the day." });
+    res.status(200).json({ order: customersOrder.rows, message: "Success! Fetched all orders for the day." });
   } catch {
     res.status(400).json({ message: "Failed to fetch orders for the day." });
   }
 });
 
-//Get all past customer orders (do this by joining customer,restaurant and order table based on id )
+//Get all past customer orders
 
 router.get("/:id/orders", async function (req, res) {
   const client = await pool.connect();
