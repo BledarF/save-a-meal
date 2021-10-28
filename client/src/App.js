@@ -14,8 +14,20 @@ import Register from "./Components/Register/Register";
 import SearchPage from "./Components/Search/SearchPage";
 import Account from "./Components/Account/Account";
 
+// CONTEXT API
+
+export const userContext = React.createContext({
+  // MAYBE GET FROM COOKIES INITIALLY?
+  user: null,
+  setUser: () => {},
+});
+
 function App() {
   const [data, setData] = useState(null);
+
+  // CONTEXT API
+  const [user, setUser] = useState("s");
+  const value = { user, setUser };
 
   React.useEffect(() => {
     fetch("/api")
@@ -24,20 +36,22 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      <Navbar />
-      <Router>
-        <main>
-          <Switch>
-            <Route exact path={["/home", "/"]} component={Home} />
-            <Route exact path="/register" component={Register} />
-            <Route exact path="/search" component={SearchPage} />
-            <Route exact path="/account" component={Account} />
-          </Switch>
-        </main>
-      </Router>
-      <Footer />
-    </div>
+    <userContext.Provider value={value}>
+      <div className="App">
+        <Navbar />
+        <Router>
+          <main>
+            <Switch>
+              <Route exact path={["/home", "/"]} component={Home} />
+              <Route exact path="/register" component={Register} />
+              <Route exact path="/search" component={SearchPage} />
+              <Route exact path="/account" component={Account} />
+            </Switch>
+          </main>
+        </Router>
+        <Footer />
+      </div>
+    </userContext.Provider>
   );
 }
 
