@@ -2,8 +2,10 @@ import { useEffect, useContext, useState } from "react";
 import SearchBar from "./SearchBar";
 import Results from "./Results";
 import "./SearchPage.css";
+import { add } from "date-fns";
 
 function SearchPage() {
+
   // this is a test for git
   const [userPostcodeInput, setUserPostcodeInput] = useState("");
 
@@ -21,6 +23,6 @@ function SearchPage() {
       </div>
     </div>
   );
-}
+
 
 export default SearchPage;
