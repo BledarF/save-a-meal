@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import LoginModal from "./LoginModal";
+import { userContext } from "../../App";
 
 function Navbar() {
+  const { user, setUser } = useContext(userContext);
   const [showModal, setShowModal] = useState(false);
 
   const buttonComponent = function getNavbarButtonComponent(buttonName) {
@@ -16,21 +18,27 @@ function Navbar() {
     );
   };
 
+  function loginButton() {
+    return (
+      <button
+        onClick={() => {
+          setShowModal(true);
+        }}
+        className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full"
+      >
+        Login
+      </button>
+    );
+  }
+
   return (
     <nav className="flex flex-row justify-end p-6 fixed w-full z-10">
       <div className="buttons-wrapper text-xl">
         {buttonComponent("Home")}
         {buttonComponent("Search")}
         {buttonComponent("Register")}
-        {buttonComponent("Account")}
-        <button
-          onClick={() => {
-            setShowModal(true);
-          }}
-          className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full"
-        >
-          Login
-        </button>
+        {user ? buttonComponent("Account") : null}
+        {!user ? loginButton() : null}
       </div>
       {showModal ? <LoginModal setShowModal={setShowModal}></LoginModal> : null}
     </nav>

@@ -24,8 +24,10 @@ function LoginModal(props) {
               </button>
             </div>
             {/*body*/}
-            <LoginForm />
-            <div className="relative py-1 px-36 flex-auto"></div>
+
+            <div className="relative py-1 px-36 flex-auto">
+              <LoginForm />
+            </div>
             {/*footer*/}
           </div>
         </div>
