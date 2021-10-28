@@ -1,12 +1,8 @@
 var express = require("express");
 var router = express.Router();
 var cookieParser = require("cookie-parser");
-const cors = require("cors");
 const { v4: uuidv4 } = require("uuid");
 const { Pool, Client } = require("pg");
-const { application } = require("express");
-const bcrypt = require("bcrypt");
-const crypto = require("crypto");
 
 router.use(cookieParser());
 

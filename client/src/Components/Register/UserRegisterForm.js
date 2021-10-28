@@ -134,6 +134,7 @@ function UserRegisterForm(props) {
 					/>
 				</FormikStep>
 			</FormikStepper>
+			<br />
 			<div className="text-red-500">{error}</div>
 			<div className="text-green-500">{message}</div>
 		</div>
