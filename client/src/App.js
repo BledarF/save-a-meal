@@ -22,7 +22,7 @@ export const userContext = React.createContext({
 	setUser: () => {},
 });
 
-function App() {
+function App(props) {
 	const [data, setData] = useState(null);
 	const [sessionUpdate, setSessionUpdate] = useState(0);
 
@@ -60,7 +60,7 @@ function App() {
 	return (
 		<userContext.Provider value={value}>
 			<div className="App">
-				<Navbar />
+				<Navbar checkSessionExists={checkSessionExists} />
 				<Router>
 					<main>
 						<Switch>
