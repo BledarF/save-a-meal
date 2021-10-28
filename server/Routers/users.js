@@ -104,6 +104,7 @@ router.post("/verify", async function (req, res) {
 });
 ///
 router.post("/restaurant", async function (req, res) {
+	console.log(await req.body);
 	const client = await pool.connect();
 	const {
 		name,
@@ -112,18 +113,27 @@ router.post("/restaurant", async function (req, res) {
 		town,
 		telephone,
 		description,
-		start_time,
-		end_time,
-		available_days,
+		startTime,
+		endTime,
 		current_slots,
 		username,
 		password,
 		email,
+		M,
+		TU,
+		W,
+		TH,
+		F,
+		SA,
+		SU,
 	} = await req.body;
+
 	const salt = await bcrypt.genSalt(8);
 	const passwordEncrypted = await bcrypt.hash(password, salt);
 	const duplicateSQL = `SELECT username FROM users WHERE username=$1`;
 	const duplicate = await client.query(duplicateSQL, [username]);
+	const start_time_format = startTime + ":00";
+	const end_time_format = endTime + ":00";
 
 	if (duplicate.rows.length !== 0) {
 		res.json(
@@ -143,15 +153,14 @@ router.post("/restaurant", async function (req, res) {
 			town,
 		]); ///////
 
-		const addingUserInfoSQL = `INSERT INTO restaurants (name,address_id,telephone,description,start_time,end_time,available_days,current_slots) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`;
+		const addingUserInfoSQL = `INSERT INTO restaurants (name,address_id,telephone,description,start_time,end_time,current_slots) VALUES ($1,$2,$3,$4,$5,$6,$7)`;
 		await client.query(addingUserInfoSQL, [
 			name,
 			addressIDGen,
 			telephone,
 			description,
-			start_time,
-			end_time,
-			available_days,
+			start_time_format,
+			end_time_format,
 			current_slots,
 		]);
 		const getUserId = `SELECT id FROM restaurants WHERE address_id=$1`;
@@ -166,6 +175,18 @@ router.post("/restaurant", async function (req, res) {
 			passwordEncrypted,
 			email,
 			restaurant_id,
+		]);
+
+		const addingAvailDays = `INSERT INTO available_days(restaurant_id,M,TU,W,TH,F,SA,SU) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`;
+		await client.query(addingAvailDays, [
+			restaurant_id,
+			M,
+			TU,
+			W,
+			TH,
+			F,
+			SA,
+			SU,
 		]);
 
 		res.status(200).json({ Message: "User Created!" }, 200);
