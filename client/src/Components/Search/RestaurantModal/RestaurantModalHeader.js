@@ -5,7 +5,7 @@ function RestaurantModalHeader(props) {
   return (
     <div className="flex items-center px-3 py-4 justify-around border-b border-solid border-blueGray-200 rounded-t">
       <img className="w-20" src={logoUrl} alt={`${name} Logo`} />
-      <h3 className="text-3xl font-semibold">
+      <h3 className="text-2xl font-semibold">
         {name} - {town}
       </h3>
       <button className="" onClick={() => setShowModal(false)}>
