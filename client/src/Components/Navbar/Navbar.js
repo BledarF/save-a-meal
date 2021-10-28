@@ -2,6 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import LoginModal from "./LoginModal";
 import { userContext } from "../../App";
 
+
 async function deleteCookie() {
 	const response = await fetch(`http://localhost:8080/api/sessions`, {
 		method: "DELETE",

@@ -16,8 +16,9 @@ router.get("/", async function (req, res) {
     const allRestaurantData = await client.query(
       "SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid JOIN available_days ON restaurants.id = available_days.restaurant_id"
     );
-    res.status(200).json({ restaurants: allRestaurantData });
-  } catch {
+    res.status(200).json({ restaurants: allRestaurantData.rows });
+  } catch (err) {
+    console.log(err);
     res.status(400).json({ message: "Failed to fetch all restaurants" });
   }
   client.release();
@@ -32,8 +33,9 @@ router.get("/addresses", async function (req, res) {
     const restaurantAddresses = await client.query(
       "SELECT streetname,postcode,town FROM addresses JOIN restaurants ON addresses.uuid = restaurants.address_id "
     );
-    res.status(200).json({ addresses: restaurantAddresses });
-  } catch {
+    res.status(200).json({ addresses: restaurantAddresses.rows });
+  } catch (err) {
+    console.log(err);
     res.status(400).json({ message: "Failed to fetch all restaurant addresses" });
   }
   client.release();
@@ -44,8 +46,9 @@ router.get("/details", async function (req, res) {
   const client = await pool.connect();
   try {
     const restaurantDetails = await client.query("SELECT * FROM restaurants");
-    res.status(200).json({ restaurantsData: restaurantDetails });
-  } catch {
+    res.status(200).json({ restaurantsData: restaurantDetails.rows });
+  } catch (err) {
+    console.log(err);
     res.status(400).json({ message: "Failed to fetch all restaurant details" });
   }
   client.release();
@@ -54,18 +57,21 @@ router.get("/details", async function (req, res) {
 
 //Get desired restaurant
 router.get("/:id", async function (req, res) {
-	const client = await pool.connect();
-	const { id } = req.params;
-	try {
-		const restaurantDetails = await client.query(
-			"SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid WHERE restaurants.id = $1",
-			[id]
-		);
-		res.status(200).json({ restaurant: restaurantDetails });
-	} catch {
-		res.status(400).json({ message: "Failed to fetch restaurant" });
-	}
-	client.release();
+
+  const client = await pool.connect();
+  const { id } = req.params;
+  try {
+    const restaurantDetails = await client.query(
+      "SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid JOIN available_days ON available_days.restaurant_id = restaurants.id WHERE restaurants.id = $1",
+      [id]
+    );
+    res.status(200).json({ restaurant: restaurantDetails.rows });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: "Failed to fetch restaurant" });
+  }
+  client.release();
+
 });
 
 //Get all past orders for the restaurant
@@ -75,9 +81,13 @@ router.get("/:id/orders", async function (req, res) {
 
 
   try {
-    await client.query("SELECT * FROM orders JOIN restaurants ON orders.restaurant_id = restaurant.id WHERE restaurant_id = $1 ", [id]);
-    res.status(200).json({ message: "Success! Fetched all past orders" });
-  } catch {
+    const allRestaurantOrders = await client.query(
+      "SELECT * FROM orders JOIN restaurants ON orders.restaurant_id = restaurants.id WHERE restaurants.id = $1 ",
+      [id]
+    );
+    res.status(200).json({ allRestaurantOrders: allRestaurantOrders.rows, message: "Success! Fetched all past orders" });
+  } catch (err) {
+    console.log(err);
     res.status(400).json({ message: "Failed to fetch orders for the day." });
   }
 
@@ -90,32 +100,51 @@ router.get("/:id/orders/today", async function (req, res) {
 
 
   try {
-    await client.query(
-      "SELECT * FROM orders JOIN restaurants ON orders.restaurant_id = restaurant.id WHERE restaurant_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
+    const restaurantOrdersToday = await client.query(
+      "SELECT * FROM orders JOIN restaurants ON orders.restaurant_id = restaurants.id WHERE orders.restaurant_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
       [id]
     );
-    res.status(200).json({ message: "Success! Fetched all orders for the day." });
-  } catch {
+    res.status(200).json({ ordersToday: restaurantOrdersToday.rows, message: "Success! Fetched all orders for the day." });
+  } catch (err) {
+    console.log(err);
     res.status(400).json({ message: "Failed to fetch orders for the day." });
   }
 
 
 });
 
+//Gets all user account details
+
+router.get("/:user_id/account_details", async function (req, res) {
+  const client = await pool.connect();
+  const { user_id } = req.params;
+
+  try {
+    const accountDetails = await client.query(
+      "SELECT * FROM users JOIN restaurants ON users.restaurant_id  = restaurants.id JOIN addresses ON restaurant.address_id = addresses.id WHERE users.id = $1 ",
+      [user_id]
+    );
+    res.status(200).json({ accountDetails: accountDetails });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: "Failed to fetch restau" });
+  }
+});
+
 //Update all restaurants details
-router.put("/:id/address/:uuid", async function (req, res) {
+
+router.put("/:id/all/:uuid", async function (req, res) {
 
   const client = await pool.connect();
-  const { id } = req.params;
-  const { name, telephone, description, start_time, end_time, available_days, current_slots, street_name, postcode, town, M, TU, W, TH, F, SA, SU } =
-    req.body;
+  const { id, uuid } = req.params;
+  const { name, telephone, description, start_time, end_time, current_slots, street_name, postcode, town, M, TU, W, TH, F, SA, SU } = req.body;
 
   try {
     await client.query(
-      "UPDATE restaurants SET name = $1, telephone = $2, description = $3, start_time =$4, end_time = $5, available_days = $6, current_slots = $7 WHERE id = $8",
-      [name, telephone, description, start_time, end_time, available_days, current_slots, id]
+      "UPDATE restaurants SET name = $1, telephone = $2, description = $3, start_time =$4, end_time = $5, current_slots = $6 WHERE id = $7",
+      [name, telephone, description, start_time, end_time, current_slots, id]
     );
-    await client.query("UPDATE addresses SET streetname = $1, postcode = $2, town = $3 WHERE uuid = $4", [street_name, postcode, town]);
+    await client.query("UPDATE addresses SET streetname = $1, postcode = $2, town = $3 WHERE uuid = $4", [street_name, postcode, town, uuid]);
     await client.query("UPDATE available_days SET m = $1, tu = $2, w = $3, th = $4, f = $5, sa = $6, su = $7 WHERE restaurant_id = $8", [
       M,
       TU,
@@ -155,10 +184,10 @@ router.put("/:id/login", async function (req, res) {
 router.put("/:id/address/:uuid", async function (req, res) {
   const client = await pool.connect();
   const { uuid } = req.params;
-  const { streetname, postcode, town } = req.body;
+  const { street_name, postcode, town } = req.body;
 
   try {
-    await client.query("UPDATE addresses SET streetname = $1 , postcode = $2, town = $3 WHERE uuid = $4", [streetname, postcode, town, uuid]);
+    await client.query("UPDATE addresses SET streetname = $1 , postcode = $2, town = $3 WHERE uuid = $4", [street_name, postcode, town, uuid]);
     res.status(200).json({ message: "Your address details have been updated!" });
   } catch (err) {
     console.log(err);
@@ -174,7 +203,7 @@ router.put("/:id/details", async function (req, res) {
 
   try {
     await client.query(
-      "UPDATE restaurants SET name = $1 , telephone = $2, description= $3, start_time = $4, end_time = $5, current_slots = $6, imageurl =  $7 WHERE restaurant_id = $8",
+      "UPDATE restaurants SET name = $1 , telephone = $2, description= $3, start_time = $4, end_time = $5, current_slots = $6, imageurl =  $7 WHERE id = $8",
       [name, telephone, description, start_time, end_time, current_slots, imageurl, id]
     );
     res.status(200).json({ message: "Your personal details have been updated!" });
@@ -207,5 +236,11 @@ router.put("/:id/availability", async function (req, res) {
     res.status(400).json({ message: "Failed to update availability" });
   }
 });
+
+//     "street_name": "St Pauls",
+//     "postcode": "CV5 8LX",
+//     "town": "Barking",
+
+// }
 
 module.exports = router;
