@@ -49,13 +49,19 @@ async function postRegister(values) {
 
 function UserRegisterForm(props) {
 	const [error, setError] = useState("");
+	const [message, setMessage] = useState("");
 
 	const onSubmit = async (values, { setSubmitting }) => {
 		console.log(values);
 
+		try {
+			postRegister(values);
+			setMessage("Success: User Created! Please Login.");
+		} catch {
+			setError("Error: not connected to the server");
+		}
+
 		// FETCH POST REQUEST
-		setError("Error: not connected to the server");
-		postRegister(values);
 		setSubmitting(false); //// Important
 	};
 
@@ -129,6 +135,7 @@ function UserRegisterForm(props) {
 				</FormikStep>
 			</FormikStepper>
 			<div className="text-red-500">{error}</div>
+			<div className="text-green-500">{message}</div>
 		</div>
 	);
 }
