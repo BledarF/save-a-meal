@@ -4,6 +4,7 @@ import Results from "./Results";
 import "./SearchPage.css";
 
 function SearchPage() {
+  // this is a test for git
   const [userPostcodeInput, setUserPostcodeInput] = useState("");
 
   // get seatch input
