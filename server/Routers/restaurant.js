@@ -64,17 +64,31 @@ router.get("/:id", async function (req, res) {
   client.release();
 });
 
-//Gets restaurant orders in the past day
-router.get('/:id/orders', async function (req,res) { 
-	const client = await pool.connect()
-	const {id} = req.params
+//Get all past orders for the restaurant
+router.get("/:id/orders", async function (req, res) {
+  const client = await pool.connect();
+  const { id } = req.params;
 
+  try {
+    await client.query("SELECT * FROM orders WHERE restaurant_id = $1 ", [id]);
+    res.status(200).json({ message: "Success! Fetched all past orders" });
+  } catch {
+    res.status(400).json({ message: "Failed to fetch orders for the day." });
+  }
+});
 
-	try { 
-		await client.query('SELECT * FROM orders WHERE orders.restaurant_id = restaurant.id AND (DATE_PART(`day`, (CURRENT_TIMESTAMP - created_at)) < 1)')
-	}
-				
-})
+//Gets all restaurant orders for the day
+router.get("/:id/orders/today", async function (req, res) {
+  const client = await pool.connect();
+  const { id } = req.params;
+
+  try {
+    await client.query("SELECT * FROM orders WHERE restaurant_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)", [id]);
+    res.status(200).json({ message: "Success! Fetched all orders for the day." });
+  } catch {
+    res.status(400).json({ message: "Failed to fetch orders for the day." });
+  }
+});
 
 //Update restaurants details
 router.put("/:id/address/:uuid", async function (req, res) {
@@ -95,8 +109,6 @@ router.put("/:id/address/:uuid", async function (req, res) {
 
   client.release();
 });
-
-
 
 router.post("/", async function (req, res) {
   const client = await pool.connect();
