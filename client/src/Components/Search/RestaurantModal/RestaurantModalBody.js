@@ -3,23 +3,29 @@ function RestaurantModalHeader(props) {
 
   return (
     <div>
-      <div className="flex">
-        <div>
-          <div className="flex-auto flex flex-row">
-            <label htmlFor="email">Email</label>
-          </div>
-
-          <div className="flex-auto">
-            <label htmlFor="password">Password</label>
+      <div className="flex justify-center flex-col">
+        <div className="upper-body-wrapper flex justify-start items-center flex-col w-full">
+          <img
+            className="image h-full"
+            src={imgUrl}
+            alt="example of restaurant's food"
+          />
+          <div className="upper-body-text flex flex-col items-start justify-between text-base w-full">
+            <div className="rating-title-wrapper w-full flex flex-row justify-between text-xl">
+              <p>{rating}*</p>
+              <p className="">£4.59</p>
+            </div>
+            <p>Today {times}</p>
           </div>
         </div>
-        <div>
-          <div className="flex-auto">
-            <label htmlFor="firstName">First Name</label>
+        <div className="lower-body-wrapper text-left flex justify-start items-start flex-col w-full">
+          <div className="description-wrapper flex flex-col items-start justify-between text-xl w-full">
+            <h3 className="text-xl">Description</h3>
+            <p className="text-base">{description}</p>
           </div>
-
-          <div className="flex-auto">
-            <label htmlFor="lastName">Last Name</label>
+          <div className="slots-wrapper self-center">
+            <h3 className="text-xl">Slots Available</h3>
+            <p className="text-base text-center">{slots}</p>
           </div>
         </div>
       </div>

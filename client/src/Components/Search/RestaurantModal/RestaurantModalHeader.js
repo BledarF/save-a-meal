@@ -3,7 +3,7 @@ function RestaurantModalHeader(props) {
   const { setShowModal } = props;
 
   return (
-    <div className="flex items-center justify-between p-5 border-b border-solid border-blueGray-200 rounded-t">
+    <div className="flex items-center px-3 py-4 justify-around border-b border-solid border-blueGray-200 rounded-t">
       <img className="w-20" src={logoUrl} alt={`${name} Logo`} />
       <h3 className="text-3xl font-semibold">
         {name} - {town}
