@@ -12,10 +12,10 @@ const pool = new Pool({
 
 router.post("/", async function (req, res) {
 	const client = await pool.connect();
-	const { username, password } = await req.body;
+	const { email, password } = await req.body;
 	const sessionID = uuidv4();
-	const userKey = await client.query(`SELECT id FROM users WHERE username=$1`, [
-		username,
+	const userKey = await client.query(`SELECT id FROM users WHERE email=$1`, [
+		email,
 	]);
 
 	await client.query("INSERT INTO sessions (uuid, user_id) VALUES ($1, $2)", [
@@ -29,31 +29,16 @@ router.post("/", async function (req, res) {
 	console.log("released");
 });
 
-router.get("/", async function (req, res) {
+router.get("/check", async function (req, res) {
 	const client = await pool.connect();
 	const activeSession = await req.cookies;
-	const { user_id } = await req.body;
 	const sessionID = await client.query(
-		`SELECT uuid FROM sessions
-              WHERE user_id=$1`,
-		[user_id]
+		`SELECT user_id FROM sessions
+              WHERE uuid=$1`,
+		[activeSession.sessionID]
 	);
-	console.log(sessionID.rows[0]);
-	console.log(activeSession);
-
-	if (sessionID.rows[0]) {
-		if (activeSession.sessionID === sessionID.rows[0].uuid) {
-			res.json({ loggedIn: true });
-			console.log("passes");
-		} else {
-			res.json({ loggedIn: false });
-			console.log("fails 1");
-		}
-	} else {
-		res.json({ loggedIn: false });
-		console.log("fails 2");
-	}
-
+	console.log(sessionID);
+	res.status(200).json({ id: sessionID.rows[0].user_id });
 	client.release();
 });
 
