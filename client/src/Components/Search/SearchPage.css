@@ -2,3 +2,11 @@
   margin: 0 auto;
   width: 900px;
 }
+
+.results-wrapper {
+  align-items: stretch;
+}
+
+.nav-btn:focus {
+  border-bottom: orange 2px solid;
+}

@@ -1,0 +1,20 @@
+function RestaurantModalHeader(props) {
+  const { logoUrl, name, town } = props.headerDetails;
+  const { setShowModal } = props;
+
+  return (
+    <div className="flex items-center justify-between p-5 border-b border-solid border-blueGray-200 rounded-t">
+      <img className="w-20" src={logoUrl} alt={`${name} Logo`} />
+      <h3 className="text-3xl font-semibold">
+        {name} - {town}
+      </h3>
+      <button className="" onClick={() => setShowModal(false)}>
+        <span className="bg-transparent text-black opacity-50 h-6 w-6 text-2xl block outline-none focus:outline-none">
+          X
+        </span>
+      </button>
+    </div>
+  );
+}
+
+export default RestaurantModalHeader;
