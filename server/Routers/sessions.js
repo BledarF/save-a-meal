@@ -37,8 +37,13 @@ router.get("/check", async function (req, res) {
               WHERE uuid=$1`,
 		[activeSession.sessionID]
 	);
-	console.log(sessionID);
-	res.status(200).json({ id: sessionID.rows[0].user_id });
+	console.log(activeSession.sessionID);
+	// console.log(sessionID);
+	try {
+		res.status(200).json({ id: sessionID.rows[0].user_id });
+	} catch (err) {
+		res.status(400).json({ Error: err });
+	}
 	client.release();
 });
 
@@ -46,13 +51,13 @@ router.delete("/", async function (req, res) {
 	const client = await pool.connect();
 	const activeSession = await req.cookies;
 	const cookieUUID = activeSession.sessionID;
-	console.log(cookieUUID);
-	try {
-		await client.query(`DELETE FROM sessions WHERE uuid=$1`, [cookieUUID]);
-		res.status(200).json({ Message: "Cookie Deleted!" }, 200);
-	} catch {
-		res.status(400).json({ Message: "Server Error" }, 400);
-	}
+	// console.log(cookieUUID);
+	res
+		.cookie("sessionID", cookieUUID, {
+			expires: new Date(Date.now() - 900000),
+			httpOnly: true,
+		})
+		.send("cookie updated");
 	client.release();
 });
 
