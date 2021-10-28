@@ -31,6 +31,19 @@ function Navbar() {
     );
   }
 
+  function logoutButton() {
+    return (
+      <button
+        onClick={() => {
+          // LOGOUT CODE HERE
+        }}
+        className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full"
+      >
+        Log out
+      </button>
+    );
+  }
+
   return (
     <nav className="flex flex-row justify-end p-6 fixed w-full z-10">
       <div className="buttons-wrapper text-xl">
@@ -38,6 +51,7 @@ function Navbar() {
         {buttonComponent("Search")}
         {buttonComponent("Register")}
         {user ? buttonComponent("Account") : null}
+        {user ? logoutButton() : null}
         {!user ? loginButton() : null}
       </div>
       {showModal ? <LoginModal setShowModal={setShowModal}></LoginModal> : null}
