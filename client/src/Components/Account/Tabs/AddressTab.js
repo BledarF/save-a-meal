@@ -3,19 +3,19 @@ import React from "react";
 function AddressTab(props) {
   return (
     <div>
-      <div class="table w-full text-left pl-14">
-        <div class="table-row-group">
-          <div class="table-row">
-            <div class="table-cell pb-1">Postcode: </div>
-            <div class="table-cell">{props.postcode}</div>
+      <div className="table w-full text-left pl-14">
+        <div className="table-row-group">
+          <div className="table-row">
+            <div className="table-cell pb-1">Postcode: </div>
+            <div className="table-cell">{props.postcode}</div>
           </div>
-          <div class="table-row">
-            <div class="table-cell pb-1">Street: </div>
-            <div class="table-cell">{props.streetname}</div>
+          <div className="table-row">
+            <div className="table-cell pb-1">Street: </div>
+            <div className="table-cell">{props.streetname}</div>
           </div>
-          <div class="table-row">
-            <div class="table-cell pb-1">Town: </div>
-            <div class="table-cell">{props.town}</div>
+          <div className="table-row">
+            <div className="table-cell pb-1">Town: </div>
+            <div className="table-cell">{props.town}</div>
           </div>
         </div>
       </div>
