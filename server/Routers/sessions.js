@@ -26,7 +26,6 @@ router.post("/", async function (req, res) {
 	res.cookie("sessionID", sessionID).send("cookie sent");
 
 	client.release();
-	console.log("released");
 });
 
 router.get("/check", async function (req, res) {
@@ -37,8 +36,6 @@ router.get("/check", async function (req, res) {
               WHERE uuid=$1`,
 		[activeSession.sessionID]
 	);
-	console.log(activeSession.sessionID);
-	// console.log(sessionID);
 	try {
 		res.status(200).json({ id: sessionID.rows[0].user_id });
 	} catch (err) {
