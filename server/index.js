@@ -9,13 +9,12 @@ const customers = require("./Routers/customers");
 const location = require("./Routers/location");
 
 const PORT = process.env.PORT || 8080;
-const POSTGRES_URL =
-	process.env.POSTGRES || "postgres://localhost:5432/saveameal";
+const POSTGRES_URL = process.env.POSTGRES || "postgres://localhost:5432/saveameal";
 
 const { Pool, Client } = require("pg");
 
 const pool = new Pool({
-	connectionString: POSTGRES_URL,
+  connectionString: POSTGRES_URL,
 });
 
 const app = express();
@@ -24,20 +23,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/api", (req, res) => {
-	res.json({ message: "Hello from server!" });
+  res.json({ message: "Hello from server!" });
 });
 
 app.use("/api/users", users);
 app.use("/api/sessions", sessions);
 app.use("/api/restaurants", restaurants);
 app.use("/api/customers", customers);
-// app.use("/api/location", location);
+app.use("/api/location", location);
 
 // All other GET requests not handled before will return our React app
 app.get("*", (req, res) => {
-	res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
+  res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
 });
 
 app.listen(PORT, () => {
-	console.log(`Server listening on http://localhost:${PORT}`);
+  console.log(`Server listening on http://localhost:${PORT}`);
 });
