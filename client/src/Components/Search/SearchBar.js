@@ -4,6 +4,18 @@ function SearchBar(props) {
   const { setUserPostcodeInput } = props;
   const [userInput, setUserInput] = useState("");
 
+  const handleSearch = async function name(params) {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/details/search/${userInput}`
+      );
+      const json = await response.json();
+      console.log(json);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <section className="p-10 w-2/3 text-2xl">
       <div class="bg-white flex items-center rounded-full shadow-xl">
@@ -17,7 +29,7 @@ function SearchBar(props) {
 
         <div class="p-4">
           <button
-            onClick={() => setUserPostcodeInput(userInput)}
+            onClick={() => handleSearch()}
             class="bg-yellow-500 text-white rounded-full p-2 hover:bg-yellow-900 focus:outline-none w-12 h-12 flex items-center justify-center"
           >
             <i class="material-icons text-xs">search</i>
