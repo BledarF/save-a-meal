@@ -105,7 +105,11 @@ function UserRegisterForm(props) {
         {/*  First Step */}
         <FormikStep
           label="Personal Information" /// The text label of Step
+<<<<<<< HEAD
           withIcons="fa fa-user" // to add icon into the circle must add icon as class Name like Fontawesome
+=======
+          withIcons="fa fa-user" // to add icon into the circle must add icon as className Name like Fontawesome
+>>>>>>> main
           withNumbers /// If true, it hides the icon and shows the step number
           iconColor="white" /// The color can be root variables or css => #fff
           circleColor="#F59E0B" /// The color can be root variables or css => #fff

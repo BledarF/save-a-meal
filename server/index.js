@@ -4,10 +4,9 @@ const path = require("path");
 const cors = require("cors");
 const users = require("./Routers/users");
 const sessions = require("./Routers/sessions");
-const restaurant = require("./Routers/restaurant");
+const restaurants = require("./Routers/restaurants");
 const customers = require("./Routers/customers");
 const location = require("./Routers/location");
-
 
 const PORT = process.env.PORT || 8080;
 const POSTGRES_URL = process.env.POSTGRES || "postgres://localhost:5432/saveameal";
@@ -29,8 +28,7 @@ app.get("/api", (req, res) => {
 
 app.use("/api/users", users);
 app.use("/api/sessions", sessions);
-app.use("/api/restaurant", restaurant);
-
+app.use("/api/restaurants", restaurants);
 app.use("/api/customers", customers);
 app.use("/api/location", location);
 
