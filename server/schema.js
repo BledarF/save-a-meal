@@ -76,7 +76,7 @@ async function addSeedData() {
   const sql7 = `INSERT INTO users(email,password,customer_id) VALUES('BledarF@hotmail.com','thisismypassword',1)`;
   const sql8 = `INSERT INTO users(email,password,restaurant_id )VALUES('PretBarbican@hotmail.com','thisismypassword',1)`;
   const sql9 = `INSERT INTO users(email,password,restaurant_id )VALUES('PretWaterloo@hotmail.com','thisismypassword',2)`;
-  const sql10 = `INSERT INTO orders(customer_id,restaurant_id)VALUES(1,1)`;
+  const sql10 = `INSERT INTO orders(customer_id,restaurant_id,collected)VALUES(1,1,false)`;
 
   try {
     await client.query(sql1);
@@ -150,7 +150,8 @@ async function createOrdersTable() {
     id SERIAL PRIMARY KEY,
     customer_id INTEGER REFERENCES customers(id),
     restaurant_id INTEGER REFERENCES restaurants(id) ,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    collected BOOLEAN NOT NULL
   )
   `;
   try {
