@@ -3,24 +3,24 @@ import React from "react";
 function AddressTab(props) {
   return (
     <div>
-      <div class="table w-full text-left pl-14">
-        <div class="table-row-group">
-          <div class="table-row">
-            <div class="table-cell pb-1">Start Time: </div>
-            <div class="table-cell">{props.startTime}</div>
+      <div className="table w-full text-left pl-14">
+        <div className="table-row-group">
+          <div className="table-row">
+            <div className="table-cell pb-1">Start Time: </div>
+            <div className="table-cell">{props.startTime}</div>
           </div>
-          <div class="table-row">
-            <div class="table-cell pb-1">End Time: </div>
-            <div class="table-cell">{props.endTime}</div>
+          <div className="table-row">
+            <div className="table-cell pb-1">End Time: </div>
+            <div className="table-cell">{props.endTime}</div>
           </div>
-          <div class="table-row">
-            <div class="table-cell pb-1">Capacity: </div>
-            <div class="table-cell">{props.capacity}</div>
+          <div className="table-row">
+            <div className="table-cell pb-1">Capacity: </div>
+            <div className="table-cell">{props.capacity}</div>
           </div>
         </div>
       </div>
       <div className="w-full pb-4">
-        <table class="table-fixed">
+        <table className="table-fixed">
           <thead>
             <tr>
               <th className="w-1/7">Monday</th>

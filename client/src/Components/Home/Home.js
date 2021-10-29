@@ -20,7 +20,7 @@ function Home() {
           src={image}
           alt={title}
         />
-        <figcaption class="absolute text-lg -mt-16 text-white px-4">
+        <figcaption className="absolute text-lg -mt-16 text-white px-4">
           <div>
             <h1>{title}</h1>
           </div>
