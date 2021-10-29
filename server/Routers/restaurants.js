@@ -97,74 +97,38 @@ router.get("/details/search/:postcodeVal", async function (req, res) {
 	}
 
 	let postcodeString = { postcodes: postcode };
+	const proximityTarget = 4;
 
 	///MAKING FETCH REQUEST TO API TO GET LONG LAT OF EACH RESTAURANT////
-	const locationApi = request(
-		{
-			url: "https://api.postcodes.io/postcodes",
-			method: "POST",
-			json: true, // <--Very important!!!
-			body: postcodeString,
-		},
-		async function (error, response, body) {
-			const result = body.result;
-			let addressInfo = [];
-			for (let i = 0; i < result.length; i++) {
-				addressInfo.push({
-					latitude: result[i].result.latitude,
-					longitude: result[i].result.longitude,
-				});
-			}
-			const ownPostcode = addressInfo[0];
-			addressInfo.shift();
-			let distances = [];
-			for (let i = 0; i < addressInfo.length; i++) {
-				distances.push(haversine(ownPostcode, addressInfo[i]).toFixed(2));
-			}
 
-			postcode.shift();
-			let postcodeArrObj = [];
-			// console.log(postcode);
-			for (let i = 0; i < postcode.length; i++) {
-				postcodeArrObj.push({
-					Postcode: postcode[i],
-					Distance: distances[i],
-				});
-			}
-			// console.log(postcodeArrObj[0].Distance);
-			for (let i = 0; i < postcodeArrObj.length; i++) {
-				await client.query(
-					`UPDATE addresses SET distance_from_post=$1 WHERE postcode=$2`,
-					[parseInt(distances[i]), postcodeArrObj[i].Postcode]
-				);
-			}
-		}
-	);
-	// try {
-	// 	const restaurantDetails = await client.query("SELECT * FROM restaurants");
-	// 	const filteredRestaurantDetails = restaurantDetails.rows.map(
-	// 		(restaurant) => {
-	// 			if (
-	// 				currentTime < restaurant.start_time ||
-	// 				currentTime > restaurant.end_time ||
-	// 				restaurant.current_slots === 0
-	// 			) {
-	// 				restaurant.available = false;
-	// 				return restaurant;
-	// 			} else {
-	// 				restaurant.available = true;
-	// 				return restaurant;
-	// 			}
-	// 		}
-	// 	);
+	getlocationAPI(postcodeString, postcode, client);
 
-	// 	res.status(200).json({ restaurantsData: filteredRestaurantDetails });
-	// } catch (err) {
-	// 	console.log(err);
-	// 	res.status(400).json({ message: "Failed to fetch all restaurant details" });
-	// }
-	// console.log(locationApi);
-	res.status(200).json({ Message: "Works" });
+	try {
+		const restaurantDetails = await client.query(
+			"SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid WHERE distance_from_post < $1",
+			[proximityTarget]
+		);
+		const filteredRestaurantDetails = restaurantDetails.rows.map(
+			(restaurant) => {
+				if (
+					currentTime < restaurant.start_time ||
+					currentTime > restaurant.end_time ||
+					restaurant.current_slots === 0
+				) {
+					restaurant.available = false;
+					return restaurant;
+				} else {
+					restaurant.available = true;
+					return restaurant;
+				}
+			}
+		);
+
+		res.status(200).json({ restaurantsData: filteredRestaurantDetails });
+	} catch (err) {
+		console.log(err);
+		res.status(400).json({ message: "Failed to fetch all restaurant details" });
+	}
 
 	client.release();
 });
@@ -442,5 +406,49 @@ router.put("/:restaurant_id/customer/:customer_id", async function (req, res) {
 		});
 	}
 });
+
+function getlocationAPI(postcodeString, postcode, client) {
+	request(
+		{
+			url: "https://api.postcodes.io/postcodes",
+			method: "POST",
+			json: true, // <--Very important!!!
+			body: postcodeString,
+		},
+		async function (error, response, body) {
+			const result = body.result;
+			let addressInfo = [];
+			for (let i = 0; i < result.length; i++) {
+				addressInfo.push({
+					latitude: result[i].result.latitude,
+					longitude: result[i].result.longitude,
+				});
+			}
+			const ownPostcode = addressInfo[0];
+			addressInfo.shift();
+			let distances = [];
+			for (let i = 0; i < addressInfo.length; i++) {
+				distances.push(haversine(ownPostcode, addressInfo[i]).toFixed(2));
+			}
+
+			postcode.shift();
+			let postcodeArrObj = [];
+			// console.log(postcode);
+			for (let i = 0; i < postcode.length; i++) {
+				postcodeArrObj.push({
+					Postcode: postcode[i],
+					Distance: distances[i],
+				});
+			}
+			// console.log(postcodeArrObj[0].Distance);
+			for (let i = 0; i < postcodeArrObj.length; i++) {
+				await client.query(
+					`UPDATE addresses SET distance_from_post=$1 WHERE postcode=$2`,
+					[parseInt(distances[i]), postcodeArrObj[i].Postcode]
+				);
+			}
+		}
+	);
+}
 
 module.exports = router;
