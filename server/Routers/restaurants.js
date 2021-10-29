@@ -2,6 +2,11 @@ var express = require("express");
 var router = express.Router();
 var cookieParser = require("cookie-parser");
 const { Pool, Client } = require("pg");
+
+var request = require("request");
+const haversine = require("haversine");
+const { post } = require("request");
+const { default: add } = require("date-fns/add");
 router.use(cookieParser());
 
 const pool = new Pool({
@@ -41,37 +46,37 @@ router.get("/addresses", async function (req, res) {
 });
 
 //Get all  details from all restaurants (add proximity , restaurants that have available slots )
-router.get("/details/search/:postcode", async function (req, res) {
-	const client = await pool.connect();
-	const today = new Date();
-	const currentTime =
-		today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+// router.get("/details/search/:postcode", async function (req, res) {
+// 	const client = await pool.connect();
+// 	const today = new Date();
+// 	const currentTime =
+// 		today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
-	try {
-		const restaurantDetails = await client.query("SELECT * FROM restaurants");
-		const filteredRestaurantDetails = restaurantDetails.rows.map(
-			(restaurant) => {
-				if (
-					currentTime < restaurant.start_time ||
-					currentTime > restaurant.end_time ||
-					restaurant.current_slots === 0
-				) {
-					restaurant.available = false;
-					return restaurant;
-				} else {
-					restaurant.available = true;
-					return restaurant;
-				}
-			}
-		);
+// 	try {
+// 		const restaurantDetails = await client.query("SELECT * FROM restaurants");
+// 		const filteredRestaurantDetails = restaurantDetails.rows.map(
+// 			(restaurant) => {
+// 				if (
+// 					currentTime < restaurant.start_time ||
+// 					currentTime > restaurant.end_time ||
+// 					restaurant.current_slots === 0
+// 				) {
+// 					restaurant.available = false;
+// 					return restaurant;
+// 				} else {
+// 					restaurant.available = true;
+// 					return restaurant;
+// 				}
+// 			}
+// 		);
 
-		res.status(200).json({ restaurantsData: filteredRestaurantDetails });
-	} catch (err) {
-		console.log(err);
-		res.status(400).json({ message: "Failed to fetch all restaurant details" });
-	}
-	client.release();
-});
+// 		res.status(200).json({ restaurantsData: filteredRestaurantDetails });
+// 	} catch (err) {
+// 		console.log(err);
+// 		res.status(400).json({ message: "Failed to fetch all restaurant details" });
+// 	}
+// 	client.release();
+// });
 
 router.get("/details/search/:postcodeVal", async function (req, res) {
 	const client = await pool.connect();
@@ -80,7 +85,6 @@ router.get("/details/search/:postcodeVal", async function (req, res) {
 	const currentTime =
 		today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
-	// console.log(postcodeVal);
 	///OBTAINING POSTCODE OF RESTAURANTS FROM DATABASE////
 
 	const postcodeObj = await client.query(
@@ -93,10 +97,8 @@ router.get("/details/search/:postcodeVal", async function (req, res) {
 	}
 
 	let postcodeString = { postcodes: postcode };
-	// console.log(postcodeString);
 
 	///MAKING FETCH REQUEST TO API TO GET LONG LAT OF EACH RESTAURANT////
-	// console.log(postcode);
 	const locationApi = request(
 		{
 			url: "https://api.postcodes.io/postcodes",
@@ -105,7 +107,6 @@ router.get("/details/search/:postcodeVal", async function (req, res) {
 			body: postcodeString,
 		},
 		async function (error, response, body) {
-			// console.log(body);
 			const result = body.result;
 			let addressInfo = [];
 			for (let i = 0; i < result.length; i++) {
@@ -114,18 +115,13 @@ router.get("/details/search/:postcodeVal", async function (req, res) {
 					longitude: result[i].result.longitude,
 				});
 			}
-			// console.log(addressInfo);
 			const ownPostcode = addressInfo[0];
 			addressInfo.shift();
-			// console.log(addressInfo);
 			let distances = [];
 			for (let i = 0; i < addressInfo.length; i++) {
 				distances.push(haversine(ownPostcode, addressInfo[i]).toFixed(2));
 			}
 
-			// `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES(1121,'10 Downing Street', 'SW1A 2AA', 'Barbican')`;
-			// console.log(distances);
-			// client.query();
 			postcode.shift();
 			let postcodeArrObj = [];
 			// console.log(postcode);
@@ -135,7 +131,7 @@ router.get("/details/search/:postcodeVal", async function (req, res) {
 					Distance: distances[i],
 				});
 			}
-			console.log(postcodeArrObj[0].Distance);
+			// console.log(postcodeArrObj[0].Distance);
 			for (let i = 0; i < postcodeArrObj.length; i++) {
 				await client.query(
 					`UPDATE addresses SET distance_from_post=$1 WHERE postcode=$2`,
@@ -441,11 +437,9 @@ router.put("/:restaurant_id/customer/:customer_id", async function (req, res) {
 		res.status(200).json({ message: "Order has been successfully collected" });
 	} catch (err) {
 		console.log(err);
-		res
-			.status(400)
-			.json({
-				message: "Order has not be processed. Something has gone wrong!",
-			});
+		res.status(400).json({
+			message: "Order has not be processed. Something has gone wrong!",
+		});
 	}
 });
 
