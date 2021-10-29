@@ -2,6 +2,11 @@ var express = require("express");
 var router = express.Router();
 var cookieParser = require("cookie-parser");
 const { Pool, Client } = require("pg");
+var request = require("request");
+const haversine = require("haversine");
+const { post } = require("request");
+const { default: add } = require("date-fns/add");
+
 router.use(cookieParser());
 
 const pool = new Pool({
@@ -41,33 +46,104 @@ router.get("/addresses", async function (req, res) {
 });
 
 //Get all  details from all restaurants (add proximity , restaurants that have available slots )
-router.get("/details/search/:postcode", async function (req, res) {
+router.get("/details/search/:postcodeVal", async function (req, res) {
+	const client = await pool.connect();
+	const { postcodeVal } = req.params;
+	const today = new Date();
+	const currentTime =
+		today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
-  const client = await pool.connect();
-  const today = new Date();
-  const currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+	// console.log(postcodeVal);
+	///OBTAINING POSTCODE OF RESTAURANTS FROM DATABASE////
 
-  try {
-    const restaurantDetails = await client.query("SELECT * FROM restaurants");
-    const filteredRestaurantDetails = restaurantDetails.rows.map((restaurant) => {
-      if (currentTime < restaurant.start_time || currentTime > restaurant.end_time || restaurant.current_slots === 0) {
-        restaurant.available = false;
-        return restaurant;
-      } else {
-        restaurant.available = true;
-        return restaurant;
-      }
-    });
+	const postcodeObj = await client.query(
+		"SELECT postcode FROM addresses JOIN restaurants ON addresses.uuid = restaurants.address_id"
+	);
+	const postcodeObjRows = postcodeObj.rows;
+	let postcode = [postcodeVal];
+	for (let i = 0; i < postcodeObjRows.length; i++) {
+		postcode.push(postcodeObjRows[i].postcode);
+	}
 
-    res.status(200).json({ restaurantsData: filteredRestaurantDetails });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({ message: "Failed to fetch all restaurant details" });
-  }
-  client.release();
+	let postcodeString = { postcodes: postcode };
+	// console.log(postcodeString);
 
+	///MAKING FETCH REQUEST TO API TO GET LONG LAT OF EACH RESTAURANT////
+	// console.log(postcode);
+	const locationApi = request(
+		{
+			url: "https://api.postcodes.io/postcodes",
+			method: "POST",
+			json: true, // <--Very important!!!
+			body: postcodeString,
+		},
+		async function (error, response, body) {
+			// console.log(body);
+			const result = body.result;
+			let addressInfo = [];
+			for (let i = 0; i < result.length; i++) {
+				addressInfo.push({
+					latitude: result[i].result.latitude,
+					longitude: result[i].result.longitude,
+				});
+			}
+			// console.log(addressInfo);
+			const ownPostcode = addressInfo[0];
+			addressInfo.shift();
+			// console.log(addressInfo);
+			let distances = [];
+			for (let i = 0; i < addressInfo.length; i++) {
+				distances.push(haversine(ownPostcode, addressInfo[i]).toFixed(2));
+			}
 
+			// `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES(1121,'10 Downing Street', 'SW1A 2AA', 'Barbican')`;
+			// console.log(distances);
+			// client.query();
+			postcode.shift();
+			let postcodeArrObj = [];
+			// console.log(postcode);
+			for (let i = 0; i < postcode.length; i++) {
+				postcodeArrObj.push({
+					Postcode: postcode[i],
+					Distance: distances[i],
+				});
+			}
+			console.log(postcodeArrObj[0].Distance);
+			for (let i = 0; i < postcodeArrObj.length; i++) {
+				await client.query(
+					`UPDATE addresses SET distance_from_post=$1 WHERE postcode=$2`,
+					[parseInt(distances[i]), postcodeArrObj[i].Postcode]
+				);
+			}
+		}
+	);
+	// try {
+	// 	const restaurantDetails = await client.query("SELECT * FROM restaurants");
+	// 	const filteredRestaurantDetails = restaurantDetails.rows.map(
+	// 		(restaurant) => {
+	// 			if (
+	// 				currentTime < restaurant.start_time ||
+	// 				currentTime > restaurant.end_time ||
+	// 				restaurant.current_slots === 0
+	// 			) {
+	// 				restaurant.available = false;
+	// 				return restaurant;
+	// 			} else {
+	// 				restaurant.available = true;
+	// 				return restaurant;
+	// 			}
+	// 		}
+	// 	);
 
+	// 	res.status(200).json({ restaurantsData: filteredRestaurantDetails });
+	// } catch (err) {
+	// 	console.log(err);
+	// 	res.status(400).json({ message: "Failed to fetch all restaurant details" });
+	// }
+	// console.log(locationApi);
+	res.status(200).json({ Message: "Works" });
+
+	client.release();
 });
 
 //Get desired restaurant
@@ -97,12 +173,10 @@ router.get("/:id/orders", async function (req, res) {
 			"SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id WHERE orders.restaurant_id = $1 ",
 			[id]
 		);
-		res
-			.status(200)
-			.json({
-				allRestaurantOrders: allRestaurantOrders.rows,
-				message: "Success! Fetched all past orders",
-			});
+		res.status(200).json({
+			allRestaurantOrders: allRestaurantOrders.rows,
+			message: "Success! Fetched all past orders",
+		});
 	} catch (err) {
 		console.log(err);
 		res.status(400).json({ message: "Failed to fetch orders for the day." });
@@ -119,12 +193,10 @@ router.get("/:id/orders/today", async function (req, res) {
 			"SELECT * FROM orders JOIN restaurants ON orders.restaurant_id = restaurants.id WHERE orders.restaurant_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
 			[id]
 		);
-		res
-			.status(200)
-			.json({
-				ordersToday: restaurantOrdersToday.rows,
-				message: "Success! Fetched all orders for the day.",
-			});
+		res.status(200).json({
+			ordersToday: restaurantOrdersToday.rows,
+			message: "Success! Fetched all orders for the day.",
+		});
 	} catch (err) {
 		console.log(err);
 		res.status(400).json({ message: "Failed to fetch orders for the day." });
