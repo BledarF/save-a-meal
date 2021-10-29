@@ -5,6 +5,8 @@ var request = require("request");
 const https = require("https");
 const { Pool, Client } = require("pg");
 var deg2rad = require("deg2rad");
+const haversine = require("haversine");
+const { add } = require("date-fns");
 
 router.use(cookieParser());
 
@@ -14,27 +16,7 @@ const pool = new Pool({
 
 async function run() {
 	const client = await pool.connect();
-
-	function distance(lat1, lon1, lat2, lon2, unit) {
-		var radlat1 = (Math.PI * lat1) / 180;
-		var radlat2 = (Math.PI * lat2) / 180;
-		var theta = lon1 - lon2;
-		var radtheta = (Math.PI * theta) / 180;
-		var dist =
-			Math.sin(radlat1) * Math.sin(radlat2) +
-			Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-		dist = Math.acos(dist);
-		dist = (dist * 180) / Math.PI;
-		dist = dist * 60 * 1.1515;
-		if (unit == "K") {
-			dist = dist * 1.609344;
-		}
-		if (unit == "N") {
-			dist = dist * 0.8684;
-		}
-		return console.log(dist);
-	}
-
+	///OBTAINING POSTCODE OF RESTAURANTS FROM DATABASE////
 	const postcodeObj = await client.query(
 		"SELECT postcode FROM addresses JOIN restaurants ON addresses.uuid = restaurants.address_id"
 	);
@@ -45,6 +27,9 @@ async function run() {
 	}
 
 	let postcodeString = { postcodes: postcode };
+
+	///MAKING FETCH REQUEST TO API TO GET LONG LAT OF EACH RESTAURANT////
+
 	const locationApi = request(
 		{
 			url: "https://api.postcodes.io/postcodes",
@@ -63,16 +48,9 @@ async function run() {
 				]);
 			}
 			console.log(addressInfo);
-
-			distance(
-				addressInfo[0][1],
-				addressInfo[0][0],
-				addressInfo[1][1],
-				addressInfo[1][0],
-				"K"
-			);
 		}
 	);
+	// console.log(postcodeString);
 }
 
 run();
