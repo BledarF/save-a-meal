@@ -11,10 +11,11 @@ const { add } = require("date-fns");
 router.use(cookieParser());
 
 const pool = new Pool({
-	connectionString: "postgres://localhost:5432/saveameal",
+  connectionString: "postgres://localhost:5432/saveameal",
 });
 
 async function run() {
+
 	const client = await pool.connect();
 	///OBTAINING POSTCODE OF RESTAURANTS FROM DATABASE////
 	const postcodeObj = await client.query(
@@ -54,11 +55,12 @@ async function run() {
 	);
 
 	// console.log(postcodeString);
+
 }
 
 run();
 
 router.post("/", async function (req, res) {
-	const client = await pool.connect();
+  const client = await pool.connect();
 });
 module.exports = router;

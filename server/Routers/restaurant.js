@@ -41,32 +41,33 @@ router.get("/addresses", async function (req, res) {
 });
 
 //Get all  details from all restaurants (add proximity , restaurants that have available slots )
-router.get("/details", async function (req, res) {
-	const client = await pool.connect();
-	try {
-		const restaurantDetails = await client.query(
-			"SELECT * FROM restaurants WHERE current_slots > 0"
-		);
-		res.status(200).json({ restaurantsData: restaurantDetails.rows });
-	} catch (err) {
-		console.log(err);
-		res.status(400).json({ message: "Failed to fetch all restaurant details" });
-	}
-	client.release();
-});
-
 router.get("/details/search/:postcode", async function (req, res) {
-	const client = await pool.connect();
-	try {
-		const restaurantDetails = await client.query(
-			"SELECT * FROM restaurants WHERE current_slots > 0"
-		);
-		res.status(200).json({ restaurantsData: restaurantDetails.rows });
-	} catch (err) {
-		console.log(err);
-		res.status(400).json({ message: "Failed to fetch all restaurant details" });
-	}
-	client.release();
+
+  const client = await pool.connect();
+  const today = new Date();
+  const currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
+  try {
+    const restaurantDetails = await client.query("SELECT * FROM restaurants");
+    const filteredRestaurantDetails = restaurantDetails.rows.map((restaurant) => {
+      if (currentTime < restaurant.start_time || currentTime > restaurant.end_time || restaurant.current_slots === 0) {
+        restaurant.available = false;
+        return restaurant;
+      } else {
+        restaurant.available = true;
+        return restaurant;
+      }
+    });
+
+    res.status(200).json({ restaurantsData: filteredRestaurantDetails });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: "Failed to fetch all restaurant details" });
+  }
+  client.release();
+
+
+
 });
 
 //Get desired restaurant
