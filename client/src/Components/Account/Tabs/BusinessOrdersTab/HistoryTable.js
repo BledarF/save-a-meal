@@ -1,7 +1,7 @@
 import React from "react";
-import BusinessOrderEntry from "./BusinessOrderEntry";
+import BusinessOrderEntryHistory from "./BusinessOrderEntryHistory";
 
-function TodayTable(props) {
+function HistoryTable(props) {
   return (
     <div className="flex justify-start m-0">
       <div className="flex flex-col">
@@ -21,7 +21,9 @@ function TodayTable(props) {
               </thead>
               <tbody className="bg-white">
                 {/* Map an Orders State here... */}
-                <BusinessOrderEntry accepted={false}></BusinessOrderEntry>
+                <BusinessOrderEntryHistory
+                  accepted={true}
+                ></BusinessOrderEntryHistory>
               </tbody>
             </table>
           </div>
@@ -31,4 +33,4 @@ function TodayTable(props) {
   );
 }
 
-export default TodayTable;
+export default HistoryTable;

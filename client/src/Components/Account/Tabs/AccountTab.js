@@ -10,7 +10,7 @@ function AccountTab(props) {
             <div class="table-cell">{props.email}</div>
           </div>
           <div class="table-row">
-            <div class="table-cell pb-1">Username: </div>
+            <div class="table-cell pb-1">Telephone: </div>
             <div class="table-cell">{props.username}</div>
           </div>
           <div class="table-row">

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import BusinessOrderEntry from "./BusinessOrderEntry";
+import HistoryTable from "./HistoryTable";
 import TodayTable from "./TodayTable";
 
 function BusinessOrdersTab(props) {
@@ -9,6 +10,10 @@ function BusinessOrdersTab(props) {
 
   function getTodayTable() {
     return <TodayTable></TodayTable>;
+  }
+
+  function getHistoryTable() {
+    return <HistoryTable></HistoryTable>;
   }
 
   return (
@@ -21,6 +26,7 @@ function BusinessOrdersTab(props) {
       <div>
         <h4>History</h4>
         <p>You have had no orders</p>
+        {getHistoryTable()}
       </div>
     </div>
   );

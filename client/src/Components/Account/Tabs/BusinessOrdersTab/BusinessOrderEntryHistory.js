@@ -1,6 +1,6 @@
 import React from "react";
 
-function BusinessOrderEntry(props) {
+function BusinessOrderEntryHistory(props) {
   function acceptBut() {
     return (
       <a href="#" class="px-4 py-1 text-sm text-white bg-yellow-500 rounded">
@@ -33,4 +33,4 @@ function BusinessOrderEntry(props) {
   );
 }
 
-export default BusinessOrderEntry;
+export default BusinessOrderEntryHistory;

@@ -1,4 +1,6 @@
 import React from "react";
+import AccountTab from "./Tabs/AccountTab";
+import AddressTab from "./Tabs/AddressTab";
 
 const Tabs = ({ color }) => {
   const [openTab, setOpenTab] = React.useState(1);
@@ -72,25 +74,10 @@ const Tabs = ({ color }) => {
             <div className="px-4 py-5 flex-auto">
               <div className="tab-content tab-space">
                 <div className={openTab === 1 ? "block" : "hidden"} id="link1">
-                  <p>
-                    Collaboratively administrate empowered markets via
-                    plug-and-play networks. Dynamically procrastinate B2C users
-                    after installed base benefits.
-                    <br />
-                    <br /> Dramatically visualize customer directed convergence
-                    without revolutionary ROI.
-                  </p>
+                  <AccountTab></AccountTab>
                 </div>
                 <div className={openTab === 2 ? "block" : "hidden"} id="link2">
-                  <p>
-                    Completely synergize resource taxing relationships via
-                    premier niche markets. Professionally cultivate one-to-one
-                    customer service with robust ideas.
-                    <br />
-                    <br />
-                    Dynamically innovate resource-leveling customer service for
-                    state of the art customer service.
-                  </p>
+                  <AddressTab></AddressTab>
                 </div>
                 <div className={openTab === 3 ? "block" : "hidden"} id="link3">
                   <p>
