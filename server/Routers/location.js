@@ -42,14 +42,17 @@ async function run() {
 			const result = body.result;
 			let addressInfo = [];
 			for (let i = 0; i < result.length; i++) {
-				addressInfo.push([
-					result[i].result.longitude,
-					result[i].result.latitude,
-				]);
+				addressInfo.push({
+					latitude: result[i].result.latitude,
+					longitude: result[i].result.longitude,
+				});
 			}
 			console.log(addressInfo);
+
+			// console.log(haversine(points[0], points[1], { unit: "mile" }));
 		}
 	);
+
 	// console.log(postcodeString);
 }
 
