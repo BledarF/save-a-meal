@@ -2,6 +2,7 @@ import React from "react";
 import AccountTab from "./Tabs/AccountTab";
 import AddressTab from "./Tabs/AddressTab";
 import AvailabilityTab from "./Tabs/AvailabilityTab";
+import BusinessOrdersTab from "./Tabs/BusinessOrdersTab/BusinessOrdersTab";
 
 const Tabs = ({ color }) => {
   const [openTab, setOpenTab] = React.useState(1);
@@ -107,14 +108,7 @@ const Tabs = ({ color }) => {
                   ></AddressTab>
                 </div>
                 <div className={openTab === 3 ? "block" : "hidden"} id="link3">
-                  <p>
-                    Efficiently unleash cross-media information without
-                    cross-media value. Quickly maximize timely deliverables for
-                    real-time schemas.
-                    <br />
-                    <br /> Dramatically maintain clicks-and-mortar solutions
-                    without functional solutions.
-                  </p>
+                  <BusinessOrdersTab></BusinessOrdersTab>
                 </div>
                 <div className={openTab === 4 ? "block" : "hidden"} id="link4">
                   <AvailabilityTab

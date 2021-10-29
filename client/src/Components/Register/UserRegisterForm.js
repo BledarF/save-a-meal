@@ -30,36 +30,45 @@ const validationSchema = Yup.object().shape({
     .required("Password confirmation is required")
     .oneOf([Yup.ref("password"), null], "Passwords must match"),
 });
-async function postRegister(values) {
-  const requestOptions = {
-    method: "POST",
-    headers: {
-      Access: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(values),
-  };
-  const response = await fetch(
-    "http://localhost:8080/api/users/customer",
-    requestOptions
-  );
-  const json = await response.json();
-  console.log(json.Message);
-}
 
 function UserRegisterForm(props) {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
+  async function postRegister(values) {
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        Access: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+    };
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/users/customer",
+        requestOptions
+      );
+      const json = await response.json();
+      console.log(json.Message);
+      console.log(response.status);
+      if (response.status === 200) {
+        setError("");
+        setMessage("Success: User Created! Please Login.");
+      } else {
+        setError(json.Message);
+        setMessage("");
+      }
+    } catch {
+      setError("Error with server. ");
+      setMessage("");
+    }
+  }
+
   const onSubmit = async (values, { setSubmitting }) => {
     console.log(values);
 
-    try {
-      postRegister(values);
-      setMessage("Success: User Created! Please Login.");
-    } catch {
-      setError("Error: not connected to the server");
-    }
+    postRegister(values);
 
     // FETCH POST REQUEST
     setSubmitting(false); //// Important
@@ -96,7 +105,11 @@ function UserRegisterForm(props) {
         {/*  First Step */}
         <FormikStep
           label="Personal Information" /// The text label of Step
+<<<<<<< HEAD
+          withIcons="fa fa-user" // to add icon into the circle must add icon as class Name like Fontawesome
+=======
           withIcons="fa fa-user" // to add icon into the circle must add icon as className Name like Fontawesome
+>>>>>>> main
           withNumbers /// If true, it hides the icon and shows the step number
           iconColor="white" /// The color can be root variables or css => #fff
           circleColor="#F59E0B" /// The color can be root variables or css => #fff

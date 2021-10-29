@@ -6,7 +6,8 @@ function Account() {
   return (
     <>
       <div className="flex justify-center">
-        <BusinessAccount></BusinessAccount>
+        {/* ADD LOGIC HERE TO DETERMINE IF USER OR BUSINESS IS LOGGED IN */}
+        <UserAccount></UserAccount>
       </div>
     </>
   );
