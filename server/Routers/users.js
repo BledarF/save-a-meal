@@ -13,7 +13,16 @@ const pool = new Pool({
 
 router.post("/customer", async function (req, res) {
   const client = await pool.connect();
-  const { email, password, firstName, lastName, streetname, postcode, town, telephone } = await req.body;
+  const {
+    email,
+    password,
+    firstName,
+    lastName,
+    streetname,
+    postcode,
+    town,
+    telephone,
+  } = await req.body;
   const salt = await bcrypt.genSalt(8);
   const passwordEncrypted = await bcrypt.hash(password, salt);
   const duplicateSQL = `SELECT email FROM users WHERE email=$1`;
@@ -31,9 +40,19 @@ router.post("/customer", async function (req, res) {
       const addressIDGen = crypto.randomInt(0, 1000000);
       // console.log(addressIDGen);
       const addingAddressSQL = `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES ($1,$2,$3,$4)`;
-      await client.query(addingAddressSQL, [addressIDGen, streetname, postcode, town]);
+      await client.query(addingAddressSQL, [
+        addressIDGen,
+        streetname,
+        postcode,
+        town,
+      ]);
       const addingUserInfoSQL = `INSERT INTO customers (firstName,secondname,address_id,telephone) VALUES ($1,$2,$3,$4)`;
-      await client.query(addingUserInfoSQL, [firstName, lastName, addressIDGen, telephone]);
+      await client.query(addingUserInfoSQL, [
+        firstName,
+        lastName,
+        addressIDGen,
+        telephone,
+      ]);
       //
       const getUserId = `SELECT id FROM customers WHERE firstName=$1`;
       const userIdSQL = await client.query(getUserId, [firstName]);
@@ -43,7 +62,11 @@ router.post("/customer", async function (req, res) {
       customer_id = userIdSQL.rows[0].id;
       // console.log(userIdSQL);
       const addingUsersSQL = `INSERT INTO users(password,email,customer_id) VALUES ($1,$2,$3)`;
-      await client.query(addingUsersSQL, [passwordEncrypted, email, customer_id]);
+      await client.query(addingUsersSQL, [
+        passwordEncrypted,
+        email,
+        customer_id,
+      ]);
       res.status(200).json({ Message: "User Created!" }, 200);
     }
   } catch (error) {
@@ -59,8 +82,26 @@ module.exports = router;
 router.post("/restaurant", async function (req, res) {
   console.log(await req.body);
   const client = await pool.connect();
-  const { name, streetname, postcode, town, telephone, description, startTime, endTime, current_slots, password, email, M, TU, W, TH, F, SA, SU } =
-    await req.body;
+  const {
+    name,
+    streetname,
+    postcode,
+    town,
+    telephone,
+    description,
+    startTime,
+    endTime,
+    current_slots,
+    password,
+    email,
+    M,
+    TU,
+    W,
+    TH,
+    F,
+    SA,
+    SU,
+  } = await req.body;
 
   const salt = await bcrypt.genSalt(8);
   const passwordEncrypted = await bcrypt.hash(password, salt);
@@ -80,10 +121,23 @@ router.post("/restaurant", async function (req, res) {
       const addressIDGen = crypto.randomInt(0, 1000000);
       const addingAddressSQL = `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES ($1,$2,$3,$4)`;
 
-      await client.query(addingAddressSQL, [addressIDGen, streetname, postcode, town]); ///////
+      await client.query(addingAddressSQL, [
+        addressIDGen,
+        streetname,
+        postcode,
+        town,
+      ]); ///////
 
       const addingUserInfoSQL = `INSERT INTO restaurants (name,address_id,telephone,description,start_time,end_time,current_slots) VALUES ($1,$2,$3,$4,$5,$6,$7)`;
-      await client.query(addingUserInfoSQL, [name, addressIDGen, telephone, description, start_time_format, end_time_format, current_slots]);
+      await client.query(addingUserInfoSQL, [
+        name,
+        addressIDGen,
+        telephone,
+        description,
+        start_time_format,
+        end_time_format,
+        current_slots,
+      ]);
       const getUserId = `SELECT id FROM restaurants WHERE address_id=$1`;
       const userIdSQL = await client.query(getUserId, [addressIDGen]);
 
@@ -91,10 +145,23 @@ router.post("/restaurant", async function (req, res) {
       //////////////////////////////
       restaurant_id = userIdSQL.rows[0].id;
       const addingRestaurantSQL = `INSERT INTO users(password,email,restaurant_id) VALUES ($1,$2,$3)`;
-      await client.query(addingRestaurantSQL, [passwordEncrypted, email, restaurant_id]);
+      await client.query(addingRestaurantSQL, [
+        passwordEncrypted,
+        email,
+        restaurant_id,
+      ]);
 
       const addingAvailDays = `INSERT INTO available_days(restaurant_id,M,TU,W,TH,F,SA,SU) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`;
-      await client.query(addingAvailDays, [restaurant_id, M, TU, W, TH, F, SA, SU]);
+      await client.query(addingAvailDays, [
+        restaurant_id,
+        M,
+        TU,
+        W,
+        TH,
+        F,
+        SA,
+        SU,
+      ]);
 
       res.status(200).json({ Message: "User Created!" }, 200);
     }
@@ -105,14 +172,19 @@ router.post("/restaurant", async function (req, res) {
 });
 
 //Get account details for either restaurant or customer
-router.get("/:id", async function (req, res) {
+router.get("/", async function (req, res) {
   const client = await pool.connect();
-  const activeSession = await req.cookies.sessionId;
-
-  const { id } = req.params;
+  const activeSession = await req.cookies.sessionID;
+  console.log(activeSession);
 
   try {
-    const checkUser = await client.query("SELECT * FROM users JOIN sessions ON users.id = sessions.user_id WHERE uuid = $1", [activeSession]);
+    const checkUser = await client.query(
+      "SELECT * FROM users JOIN sessions ON users.id = sessions.user_id WHERE uuid = $1",
+      [activeSession]
+    );
+
+    const id = checkUser.rows[0].id;
+    console.log(checkUser);
 
     if (checkUser.rows.length > 0) {
       if (checkUser.rows[0].restaurant_id) {
@@ -120,16 +192,25 @@ router.get("/:id", async function (req, res) {
           "SELECT * FROM users JOIN restaurants ON users.restaurant_id  = restaurants.id JOIN addresses ON restaurants.address_id = addresses.uuid WHERE users.id = $1 ",
           [id]
         );
-        res.status(200).json({ accountDetails: accountDetails.rows, type: "restaurant" });
+        res
+          .status(200)
+          .json({ accountDetails: accountDetails.rows, type: "restaurant" });
       } else {
+        console.log("we made it here");
+        console.log(id);
         const accountDetails = await client.query(
           "SELECT * FROM users JOIN customers ON users.customer_id  = customers.id JOIN addresses ON customers.address_id = addresses.uuid WHERE users.id = $1 ",
           [id]
         );
-        res.status(200).json({ accountDetails: accountDetails.rows, type: "customer" });
+        // console.log(accountDetails);
+        res
+          .status(200)
+          .json({ accountDetails: accountDetails.rows, type: "customer" });
       }
     } else {
-      res.status(400).json({ message: "Request was made from an unauthorised user." });
+      res
+        .status(400)
+        .json({ message: "Request was made from an unauthorised user." });
     }
   } catch (err) {
     console.log(err);
@@ -143,7 +224,10 @@ router.post("/verify", async function (req, res) {
   const getPasswordSQL = `SELECT password FROM users WHERE email=$1`;
   const hash = await client.query(getPasswordSQL, [email]);
   try {
-    const user_id_query = await client.query(`SELECT id FROM users WHERE email=$1`, [email]);
+    const user_id_query = await client.query(
+      `SELECT id FROM users WHERE email=$1`,
+      [email]
+    );
     // console.log(user_id_query.rows[0].id);
     if (hash.rows[0]) {
       const hashing = hash.rows[0].password;
@@ -156,7 +240,8 @@ router.post("/verify", async function (req, res) {
     } else {
       res.json(
         {
-          status: "Email does not exist. Please try again or register an account",
+          status:
+            "Email does not exist. Please try again or register an account",
         },
         400
       );
