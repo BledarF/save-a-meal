@@ -15,12 +15,15 @@ const pool = new Pool({
 
 router.post("/:customer_id/restaurant/:restaurant_id/order", async function (req, res) {
   const client = await pool.connect();
-  const { customer_id, restaurant_id } = server.params;
+  const { customer_id, restaurant_id } = req.params;
+  console.log("dwd");
 
   try {
     await client.query(`INSERT INTO orders(customer_id, restaurant_id) VALUES($1, $2)`, [customer_id, restaurant_id]);
+    await client.query(`UPDATE restaurants SET current_slots = current_slots - 1 WHERE restaurant_id = $1`, [restaurant_id]);
     res.status(200).json({ message: "Order successfully submitted!" });
-  } catch {
+  } catch (err) {
+    console.log(err);
     res.status(400).json({ message: "Order failed to be submitted" });
   }
 });
@@ -32,11 +35,13 @@ router.get("/:id/orders/today", async function (req, res) {
 
   try {
     const customersOrder = await client.query(
-      "SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id JOIN restaurants ON orders.restaurant_id = restaurant.id WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
+      "SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id JOIN restaurants ON orders.restaurant_id = restaurants.id WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
       [id]
     );
+    console.log(customersOrder);
     res.status(200).json({ order: customersOrder.rows, message: "Success! Fetched all orders for the day." });
-  } catch {
+  } catch (err) {
+    console.log(err);
     res.status(400).json({ message: "Failed to fetch orders for the day." });
   }
 });
@@ -48,11 +53,12 @@ router.get("/:id/orders", async function (req, res) {
   const { id } = req.params;
 
   try {
-    await client.query(
-      "SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id JOIN restaurants ON orders.restaurant_id = restaurant.id WHERE customer_id = $1 ",
+    const orderHistory = await client.query(
+      "SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id JOIN restaurants ON orders.restaurant_id = restaurants.id WHERE customer_id = $1 ",
       [id]
     );
-    res.status(200).json({ message: "Success! Fetched all past orders" });
+
+    res.status(200).json({ orderHistory: orderHistory.rows, message: "Success! Fetched all past orders" });
   } catch {
     res.status(400).json({ message: "Failed to fetch orders for the day." });
   }
@@ -115,12 +121,7 @@ router.put("/:id/details", async function (req, res) {
   const { firstname, secondname, telephone } = req.body;
 
   try {
-    await client.query("UPDATE customers SET firstname = $1 , secondname = $2, telephone = $3 WHERE customer_id = $4", [
-      firstname,
-      secondname,
-      telephone,
-      id,
-    ]);
+    await client.query("UPDATE customers SET firstname = $1 , secondname = $2, telephone = $3 WHERE id = $4", [firstname, secondname, telephone, id]);
     res.status(200).json({ message: "Your personal details have been updated!" });
   } catch (err) {
     console.log(err);
@@ -129,3 +130,7 @@ router.put("/:id/details", async function (req, res) {
 });
 
 module.exports = router;
+
+//collected column in orders?
+// current slots reset to 10 once new day hits
+//Available column
