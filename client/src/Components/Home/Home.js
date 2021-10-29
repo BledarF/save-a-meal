@@ -20,13 +20,9 @@ function Home() {
           src={image}
           alt={title}
         />
-        <figcaption className="absolute text-lg -mt-16 text-white px-4">
-          <div>
-            <h1>{title}</h1>
-          </div>
-          <div>
-            <h1>{desc}</h1>
-          </div>
+        <figcaption className="absolute text-left -mt-16 text-white px-3">
+          <h1 className="text-2xl m-0">{title}</h1>
+          <h1 className="text-base m-0">{desc}</h1>
         </figcaption>
       </figure>
     );
