@@ -6,6 +6,7 @@ import { userContext } from "../../App";
 function Account() {
   //const { accountDetails, setAccountDetails } = useState({});
   const [type, setType] = useState("");
+  const [details, setDetails] = useState({});
 
   async function fetchAccount() {
     try {
@@ -23,6 +24,7 @@ function Account() {
       console.log("API CALLED");
       console.log(data);
       setType(data.type);
+      setDetails(data.accountDetails[0]);
     } catch {
       console.log("error");
     }
@@ -36,7 +38,11 @@ function Account() {
     <>
       <div className="flex justify-center">
         {/* ADD LOGIC HERE TO DETERMINE IF USER OR BUSINESS IS LOGGED IN */}
-        {type && type === "customer" ? <UserAccount></UserAccount> : null}
+        {type && type === "customer" ? (
+          <UserAccount accountDetails={details}></UserAccount>
+        ) : (
+          <BusinessAccount accountDetails={details}></BusinessAccount>
+        )}
       </div>
     </>
   );
