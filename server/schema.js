@@ -70,6 +70,7 @@ async function addSeedData() {
 
   const sql1 = `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES(1121,'10 Downing Street', 'SW1A 2AA', 'Barbican')`;
   const sql2 = `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES(1122,'152 Waterloo Rd ', 'SE1 7AA', 'Waterloo')`;
+  const westd = `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES(1120,'West drayton Rd ', 'UB7 7EQ', 'West Drayton')`;
   const sql3 = `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES(1123,'42 Silicon Rd', 'IG11 9UW', 'Barking')`;
 
   const sql4 = `INSERT INTO customers(firstname,secondname,address_id,telephone)VALUES('Bledar','Ferati',1123,07353532525)`;
@@ -79,7 +80,7 @@ async function addSeedData() {
   const kfc = `INSERT INTO restaurants(name,address_id,telephone,description,start_time,end_time,current_slots, imageURL, logoURL)
   			VALUES('Kfc Liverpool Street',1121,911,'We are a fast food restaurant which sells high quality fried chicken.' , '19:40:00',' 20:00:00', 8, 'https://images.squaremeal.co.uk/cloud/article/9982/images/kfc-shortage---2--12082021120105_09092021013501.jpeg?w=1000', 'https://res.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_256,w_256,f_auto,q_auto:eco,dpr_1/v1488265976/k2htrr9z4vsxkjbthskk.png')`;
   const macdees = `INSERT INTO restaurants(name,address_id,telephone,description,start_time,end_time,current_slots, imageURL, logoURL)
-  			VALUES('McDonalds',453,111,'We are a fast food restaurant which sells poor quality food pls buy from us if you want to get fatfat :).' , '03:01:00',' 03:02:00', 100, 'https://images.barrons.com/im-269232?width=1280&size=1.33333333', 'https://cdn.iconscout.com/icon/free/png-256/mcdonalds-3384870-2822951.png')`;
+  			VALUES('McDonalds',1120,111,'We are a fast food restaurant which sells poor quality food pls buy from us if you want to get fatfat :).' , '03:01:00',' 03:02:00', 100, 'https://images.barrons.com/im-269232?width=1280&size=1.33333333', 'https://cdn.iconscout.com/icon/free/png-256/mcdonalds-3384870-2822951.png')`;
 
   const sql7 = `INSERT INTO users(email,password,customer_id) VALUES('BledarF@hotmail.com','thisismypassword',1)`;
   const sql8 = `INSERT INTO users(email,password,restaurant_id )VALUES('PretBarbican@hotmail.com','thisismypassword',1)`;
@@ -99,6 +100,7 @@ async function addSeedData() {
     await client.query(sql8);
     await client.query(sql9);
     await client.query(sql10);
+    await client.query(westd);
 
     console.log("Data Seeded");
     return;
