@@ -1,4 +1,3 @@
-import { tr } from "date-fns/locale";
 import React, { useState } from "react";
 
 function AccountTab(props) {
@@ -11,6 +10,7 @@ function AccountTab(props) {
   const editToggle = () => {
     setEditMode(!editMode);
   };
+
   async function fetchEditUrl(url) {
     const values = {
       email: email,
@@ -43,13 +43,9 @@ function AccountTab(props) {
 
   const handleEdit = () => {
     if (props.restaurantId) {
-      fetchEditUrl(
-        `http://localhost:8080/api/restaurants/${props.restaurantId}/account`
-      );
+      fetchEditUrl(`/api/restaurants/${props.restaurantId}/account`);
     } else if (props.customerId) {
-      fetchEditUrl(
-        `http://localhost:8080/api/customers/${props.customerId}/account`
-      );
+      fetchEditUrl(`/api/customers/${props.customerId}/account`);
     }
   };
 

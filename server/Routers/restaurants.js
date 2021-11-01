@@ -306,26 +306,26 @@ router.put("/:id/account", async function (req, res) {
   client.release();
 });
 
-//Update restaurants' address details
-router.put("/:id/address/:uuid", async function (req, res) {
-  const client = await pool.connect();
-  const { uuid } = req.params;
-  const { street_name, postcode, town } = req.body;
+// //Update restaurants' address details
+// router.put("/:id/address/:uuid", async function (req, res) {
+//   const client = await pool.connect();
+//   const { uuid } = req.params;
+//   const { street_name, postcode, town } = req.body;
 
-  try {
-    await client.query(
-      "UPDATE addresses SET streetname = $1 , postcode = $2, town = $3 WHERE uuid = $4",
-      [street_name, postcode, town, uuid]
-    );
-    res
-      .status(200)
-      .json({ message: "Your address details have been updated!" });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({ message: "Failed to update address details" });
-  }
-  client.release();
-});
+//   try {
+//     await client.query(
+//       "UPDATE addresses SET streetname = $1 , postcode = $2, town = $3 WHERE uuid = $4",
+//       [street_name, postcode, town, uuid]
+//     );
+//     res
+//       .status(200)
+//       .json({ message: "Your address details have been updated!" });
+//   } catch (err) {
+//     console.log(err);
+//     res.status(400).json({ message: "Failed to update address details" });
+//   }
+//   client.release();
+// });
 
 //Update restaurants' personal details
 router.put("/:id/details", async function (req, res) {
