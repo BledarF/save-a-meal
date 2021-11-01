@@ -8,77 +8,123 @@ const crypto = require("crypto");
 router.use(cookieParser());
 
 const pool = new Pool({
-  connectionString: "postgres://localhost:5432/saveameal",
+	connectionString: "postgres://localhost:5432/saveameal",
 });
 
 router.post("/customer", async function (req, res) {
-  const client = await pool.connect();
-  const { email, password, firstName, lastName, streetname, postcode, town, telephone } = await req.body;
-  const salt = await bcrypt.genSalt(8);
-  const passwordEncrypted = await bcrypt.hash(password, salt);
-  const duplicateSQL = `SELECT email FROM users WHERE email=$1`;
-  const duplicate = await client.query(duplicateSQL, [email]);
-  // console.log(duplicate.rows);
-  try {
-    if (duplicate.rows.length !== 0) {
-      res.json(
-        {
-          Message: "This email is taken. Please try a different one or login.",
-        },
-        400
-      );
-    } else {
-      const addressIDGen = crypto.randomInt(0, 1000000);
-      // console.log(addressIDGen);
-      const addingAddressSQL = `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES ($1,$2,$3,$4)`;
-      await client.query(addingAddressSQL, [addressIDGen, streetname, postcode, town]);
-      const addingUserInfoSQL = `INSERT INTO customers (firstName,secondname,address_id,telephone) VALUES ($1,$2,$3,$4)`;
-      await client.query(addingUserInfoSQL, [firstName, lastName, addressIDGen, telephone]);
-      //
-      const getUserId = `SELECT id FROM customers WHERE firstName=$1`;
-      const userIdSQL = await client.query(getUserId, [firstName]);
 
-      // console.log(userIdSQL);
-      //////////////////////////////
-      customer_id = userIdSQL.rows[0].id;
-      // console.log(userIdSQL);
-      const addingUsersSQL = `INSERT INTO users(password,email,customer_id) VALUES ($1,$2,$3)`;
-      await client.query(addingUsersSQL, [passwordEncrypted, email, customer_id]);
-      res.status(200).json({ Message: "User Created!" }, 200);
-    }
-  } catch (error) {
-    res.status(400).json({ Message: error });
-  }
+	const client = await pool.connect();
+	const {
+		email,
+		password,
+		firstName,
+		lastName,
+		streetname,
+		postcode,
+		town,
+		telephone,
+	} = await req.body;
+	const salt = await bcrypt.genSalt(8);
+	const passwordEncrypted = await bcrypt.hash(password, salt);
+	const duplicateSQL = `SELECT email FROM users WHERE email=$1`;
+	const duplicate = await client.query(duplicateSQL, [email]);
+	// console.log(duplicate.rows);
+	try {
+		if (duplicate.rows.length !== 0) {
+			res.json(
+				{
+					Message: "This email is taken. Please try a different one or login.",
+				},
+				400
+			);
+		} else {
+			const addressIDGen = crypto.randomInt(0, 1000000);
+			// console.log(addressIDGen);
+			const addingAddressSQL = `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES ($1,$2,$3,$4)`;
+			await client.query(addingAddressSQL, [
+				addressIDGen,
+				streetname,
+				postcode,
+				town,
+			]);
+			const addingUserInfoSQL = `INSERT INTO customers (firstName,secondname,address_id,telephone) VALUES ($1,$2,$3,$4)`;
+			await client.query(addingUserInfoSQL, [
+				firstName,
+				lastName,
+				addressIDGen,
+				telephone,
+			]);
+			//
+			const getUserId = `SELECT id FROM customers WHERE firstName=$1`;
+			const userIdSQL = await client.query(getUserId, [firstName]);
 
-  await client.release();
+			// console.log(userIdSQL);
+			//////////////////////////////
+			customer_id = userIdSQL.rows[0].id;
+			// console.log(userIdSQL);
+			const addingUsersSQL = `INSERT INTO users(password,email,customer_id) VALUES ($1,$2,$3)`;
+			await client.query(addingUsersSQL, [
+				passwordEncrypted,
+				email,
+				customer_id,
+			]);
+			res.status(200).json({ Message: "User Created!" }, 200);
+		}
+	} catch (error) {
+		res.status(400).json({ Message: error });
+	}
+
+
+	await client.release();
 });
 
 module.exports = router;
 
 ///
 router.post("/restaurant", async function (req, res) {
-  console.log(await req.body);
-  const client = await pool.connect();
-  const { name, streetname, postcode, town, telephone, description, startTime, endTime, current_slots, password, email, M, TU, W, TH, F, SA, SU } =
-    await req.body;
 
-  const salt = await bcrypt.genSalt(8);
-  const passwordEncrypted = await bcrypt.hash(password, salt);
-  const duplicateSQL = `SELECT email FROM users WHERE email=$1`;
-  const duplicate = await client.query(duplicateSQL, [email]);
-  const start_time_format = startTime + ":00";
-  const end_time_format = endTime + ":00";
-  try {
-    if (duplicate.rows.length !== 0) {
-      res.json(
-        {
-          Message: "This email is taken. Please try a different one or login.",
-        },
-        400
-      );
-    } else {
-      const addressIDGen = crypto.randomInt(0, 1000000);
-      const addingAddressSQL = `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES ($1,$2,$3,$4)`;
+	const client = await pool.connect();
+	const {
+		name,
+		streetname,
+		postcode,
+		town,
+		telephone,
+		description,
+		startTime,
+		endTime,
+		current_slots,
+		password,
+		email,
+		M,
+		TU,
+		W,
+		TH,
+		F,
+		SA,
+		SU,
+	} = await req.body;
+
+
+
+	const salt = await bcrypt.genSalt(8);
+	const passwordEncrypted = await bcrypt.hash(password, salt);
+	const duplicateSQL = `SELECT email FROM users WHERE email=$1`;
+	const duplicate = await client.query(duplicateSQL, [email]);
+	const start_time_format = startTime + ":00";
+	const end_time_format = endTime + ":00";
+	try {
+		if (duplicate.rows.length !== 0) {
+			res.json(
+				{
+					Message: "This email is taken. Please try a different one or login.",
+				},
+				400
+			);
+		} else {
+			const addressIDGen = crypto.randomInt(0, 1000000);
+			const addingAddressSQL = `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES ($1,$2,$3,$4)`;
+
 
       await client.query(addingAddressSQL, [addressIDGen, streetname, postcode, town]); ///////
 
@@ -96,27 +142,34 @@ router.post("/restaurant", async function (req, res) {
       const addingAvailDays = `INSERT INTO available_days(restaurant_id,M,TU,W,TH,F,SA,SU) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`;
       await client.query(addingAvailDays, [restaurant_id, M, TU, W, TH, F, SA, SU]);
 
-      res.status(200).json({ Message: "User Created!" }, 200);
-    }
-  } catch (error) {
-    res.status(400).json({ Message: error });
-  }
-  client.release();
+
+			res.status(200).json({ Message: "User Created!" }, 200);
+		}
+	} catch (error) {
+		res.status(400).json({ Message: error });
+	}
+	client.release();
 });
 
 //Get account details for either restaurant or customer
 router.get("/", async function (req, res) {
-  console.log("string");
-  const client = await pool.connect();
+	console.log("string");
+	const client = await pool.connect();
 
-  const activeSession = await req.cookies.sessionID;
-  console.log(activeSession);
+	const activeSession = await req.cookies.sessionID;
+	console.log(activeSession);
 
-  try {
-    const checkUser = await client.query("SELECT * FROM users JOIN sessions ON users.id = sessions.user_id WHERE uuid = $1", [activeSession]);
 
-    const id = checkUser.rows[0].id;
-    console.log("here");
+	try {
+		const checkUser = await client.query(
+			"SELECT * FROM users JOIN sessions ON users.id = sessions.user_id WHERE uuid = $1",
+			[activeSession]
+		);
+
+
+		const id = checkUser.rows[0].id;
+		console.log("here");
+
 
     if (checkUser.rows.length > 0) {
       if (checkUser.rows[0].restaurant_id) {
@@ -173,4 +226,5 @@ router.post("/verify", async function (req, res) {
     res.status(400).json({ Message: err });
   }
   client.release();
+
 });

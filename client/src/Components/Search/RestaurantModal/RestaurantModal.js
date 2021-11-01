@@ -3,12 +3,15 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import RestaurantModalHeader from "./RestaurantModalHeader";
 import RestaurantModalBody from "./RestaurantModalBody";
 import { userContext } from "../../../App";
+import set from "date-fns/set/index";
 
 function RestaurantModal(props) {
 	const { user, setUser } = useContext(userContext);
+	const [bookingId, setBookingId] = useState(null);
 	console.log(user);
 	console.log(user);
 	const {
+		id: restaurantId,
 		logourl: logo,
 		image_url: imgUrl,
 		name,
@@ -50,18 +53,37 @@ function RestaurantModal(props) {
 		);
 	};
 
-	const handleBook = function handleBookRestaurantButton() {
-		let bookingDetails = {
-			id: (Math.random() + 1).toString(36).substring(4).toUpperCase(),
-			streetname,
-			town,
-			postcode,
-			name,
-			startTime: startTime.slice(0, 5),
-			endTime: endTime.slice(0, 5),
-		};
-		setBookingDetails(bookingDetails);
-		setHasBooked(true);
+	const handleBook = async function handleBookRestaurantButton() {
+		try {
+			const requestOptions = {
+				method: "POST",
+				credentials: "include",
+				headers: {
+					Access: "application/json",
+					"Content-Type": "application/json",
+				},
+			};
+
+			const response = await fetch(
+				`http://localhost:8080/api/customers/${user}/restaurant/${restaurantId}/order`,
+				requestOptions
+			);
+			const jsonResponse = await response.json();
+			setBookingId(jsonResponse.booking_id);
+			let bookingDetails = {
+				id: jsonResponse.booking_id,
+				streetname,
+				town,
+				postcode,
+				name,
+				startTime: startTime.slice(0, 5),
+				endTime: endTime.slice(0, 5),
+			};
+			setBookingDetails(bookingDetails);
+			setHasBooked(true);
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	const restaurantModal = function getRestaurantModalComponent() {
