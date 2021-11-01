@@ -4,10 +4,10 @@ import RestaurantModalHeader from "./RestaurantModalHeader";
 import RestaurantModalBody from "./RestaurantModalBody";
 
 function RestaurantModal(props) {
-  const { logoUrl, name, town, imgUrl, rating, times, description, slots } =
+  const { logoUrl, name, address, imgUrl, rating, times, description, slots } =
     props.restaurantDetails;
-  const headerDetails = { logoUrl, name, town };
-  const bodyDetails = { imgUrl, rating, times, description, slots };
+  const headerDetails = { logoUrl, name, address };
+  const bodyDetails = { address, imgUrl, rating, times, description, slots };
   const { setShowModal } = props;
   const [hasBooked, setHasBooked] = useState(false);
   const [bookingDetails, setBookingDetails] = useState(null);
@@ -23,6 +23,21 @@ function RestaurantModal(props) {
       </button>
     );
   };
+
+  const handleBook = function handleBookRestaurantButton() {
+    // use serer to book slot
+    const bookingDetails = {
+      id: (Math.random() + 1).toString(36).substring(4).toUpperCase(),
+      address,
+      name,
+      times,
+    };
+
+    setBookingDetails(bookingDetails);
+    // assuming it has booked
+    setHasBooked(true);
+  };
+
   const restaurantModal = function getRestaurantModalComponent() {
     return (
       <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
@@ -42,19 +57,6 @@ function RestaurantModal(props) {
       </div>
     );
   };
-  const handleBook = function handleBookRestaurantButton() {
-    // use serer to book slot
-    const bookingDetails = {
-      id: (Math.random() + 1).toString(36).substring(4).toUpperCase(),
-      address: town,
-      name,
-      times,
-    };
-
-    setBookingDetails(bookingDetails);
-    // assuming it has booked
-    setHasBooked(true);
-  };
 
   const bookedModal = function getBookedSuccessfullyModalComponent() {
     return (
@@ -65,7 +67,7 @@ function RestaurantModal(props) {
           <h3 className="text-2xl font-semibold mb-0">Successfully Booked!</h3>
           <button className="" onClick={() => setShowModal(false)}>
             <span className="bg-transparent text-black opacity-50 h-6 w-6 text-2xl block outline-none focus:outline-none">
-              X
+              &#10006;
             </span>
           </button>
         </div>
@@ -85,7 +87,7 @@ function RestaurantModal(props) {
                   <div className="border-black border-2 p-3 m-2 w-4/5">
                     <p className="text-base">Name: {bookingDetails.name}</p>
                     <p className="text-base">
-                      Address: {bookingDetails.address}
+                      Address: {bookingDetails.address.streetName}
                     </p>
                     <p className="text-base">Time: {bookingDetails.times}</p>
                   </div>

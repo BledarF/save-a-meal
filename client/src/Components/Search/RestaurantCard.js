@@ -1,7 +1,7 @@
 import { useEffect, useContext, useState } from "react";
 
 function RestaurantCard(props) {
-  const { imgUrl, name, town, times, distance } = props.details;
+  const { imgUrl, name, address, times, distance } = props.details;
   const { setShowModal, setModalDetails } = props;
   return (
     <div
@@ -14,7 +14,7 @@ function RestaurantCard(props) {
       <img src={imgUrl} alt={name} className="rounded-xl h-full" />
       <div className="p-2 flex flex-col justify-between items-start">
         <h1 className="text-2xl">
-          {name} - {town}
+          {name} - {address.town}
         </h1>
         <p className="text-lg">
           {times} - {distance} away
