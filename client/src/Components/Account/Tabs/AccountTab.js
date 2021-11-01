@@ -11,6 +11,7 @@ function AccountTab(props) {
   const editToggle = () => {
     setEditMode(!editMode);
   };
+
   async function fetchEditUrl(values) {
     const url = `http://localhost:8080/api/restaurants/${props.restaurantId}/account`;
 
