@@ -8,8 +8,8 @@ import set from "date-fns/set/index";
 function RestaurantModal(props) {
 	const { user, setUser } = useContext(userContext);
 	const [bookingId, setBookingId] = useState(null);
-	console.log(user);
-	console.log(user);
+	const { bookingStatus, setBookingStatus } = props;
+
 	const {
 		id: restaurantId,
 		logourl: logo,
@@ -37,21 +37,7 @@ function RestaurantModal(props) {
 	const [hasBooked, setHasBooked] = useState(false);
 	const [bookingDetails, setBookingDetails] = useState(null);
 
-	const buttonComponent = function getConfirmOrderButtonComponent(btnText) {
-		return (
-			<div>
-				{user ? (
-					<button
-						className="bg-yellow-500 hover:bg-yellow-900 transition duration-200 text-white font-bold py-2 px-4 rounded"
-						type="button"
-						onClick={() => handleBook()}
-					>
-						{btnText}
-					</button>
-				) : null}
-			</div>
-		);
-	};
+	console.log("Bookstatus:" + bookingStatus);
 
 	const handleBook = async function handleBookRestaurantButton() {
 		try {
@@ -69,7 +55,12 @@ function RestaurantModal(props) {
 				requestOptions
 			);
 			const jsonResponse = await response.json();
-			setBookingId(jsonResponse.booking_id);
+			console.log(jsonResponse);
+			if (jsonResponse.message === "Already Booked!") {
+				console.log("runs");
+				// setBookStatus(false);
+			}
+
 			let bookingDetails = {
 				id: jsonResponse.booking_id,
 				streetname,
@@ -84,6 +75,24 @@ function RestaurantModal(props) {
 		} catch (error) {
 			console.log(error);
 		}
+	};
+
+	const buttonComponent = function getConfirmOrderButtonComponent(btnText) {
+		return (
+			<div>
+				{user && bookingStatus ? (
+					<button
+						className="bg-yellow-500 hover:bg-yellow-900 transition duration-200 text-white font-bold py-2 px-4 rounded"
+						type="button"
+						onClick={() => handleBook()}
+					>
+						{btnText}
+					</button>
+				) : (
+					"You already have a booking for the day, please wait until tomorrow!"
+				)}
+			</div>
+		);
 	};
 
 	const restaurantModal = function getRestaurantModalComponent() {
