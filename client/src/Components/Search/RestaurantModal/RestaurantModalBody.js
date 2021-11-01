@@ -1,5 +1,6 @@
 function RestaurantModalHeader(props) {
-  const { imgUrl, rating, times, description, slots } = props.bodyDetails;
+  const { address, imgUrl, rating, times, description, slots } =
+    props.bodyDetails;
 
   return (
     <div>
@@ -15,6 +16,7 @@ function RestaurantModalHeader(props) {
               <p>{rating}*</p>
               <p className="">£4.59</p>
             </div>
+            <p>Address {address.streetName}</p>
             <p>Today {times}</p>
           </div>
         </div>
