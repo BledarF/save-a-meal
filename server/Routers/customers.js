@@ -10,19 +10,28 @@ const pool = new Pool({
 
 //Make a order
 
-router.post("/:customer_id/restaurant/:restaurant_id/order", async function (req, res) {
-  const client = await pool.connect();
-  const { customer_id, restaurant_id } = req.params;
+router.post(
+  "/:customer_id/restaurant/:restaurant_id/order",
+  async function (req, res) {
+    const client = await pool.connect();
+    const { customer_id, restaurant_id } = req.params;
 
-  try {
-    await client.query(`INSERT INTO orders(customer_id, restaurant_id,collected) VALUES($1, $2, $3)`, [customer_id, restaurant_id, false]);
-    await client.query(`UPDATE restaurants SET current_slots = current_slots - 1 WHERE id = $1`, [restaurant_id]);
-    res.status(200).json({ message: "Order successfully submitted!" });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({ message: "Order failed to be submitted" });
+    try {
+      await client.query(
+        `INSERT INTO orders(customer_id, restaurant_id,collected) VALUES($1, $2, $3)`,
+        [customer_id, restaurant_id, false]
+      );
+      await client.query(
+        `UPDATE restaurants SET current_slots = current_slots - 1 WHERE id = $1`,
+        [restaurant_id]
+      );
+      res.status(200).json({ message: "Order successfully submitted!" });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({ message: "Order failed to be submitted" });
+    }
   }
-});
+);
 
 //Gets customer order for the day
 router.get("/:id/orders/today", async function (req, res) {
@@ -35,7 +44,12 @@ router.get("/:id/orders/today", async function (req, res) {
       [id]
     );
     console.log(customersOrder);
-    res.status(200).json({ order: customersOrder.rows, message: "Success! Fetched all orders for the day." });
+    res
+      .status(200)
+      .json({
+        order: customersOrder.rows,
+        message: "Success! Fetched all orders for the day.",
+      });
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "Failed to fetch orders for the day." });
@@ -54,7 +68,12 @@ router.get("/:id/orders", async function (req, res) {
       [id]
     );
 
-    res.status(200).json({ orderHistory: orderHistory.rows, message: "Success! Fetched all past orders" });
+    res
+      .status(200)
+      .json({
+        orderHistory: orderHistory.rows,
+        message: "Success! Fetched all past orders",
+      });
   } catch {
     res.status(400).json({ message: "Failed to fetch orders for the day." });
   }
@@ -65,11 +84,18 @@ router.get("/:id/orders", async function (req, res) {
 router.put("/:id/all/:uuid", async function (req, res) {
   const client = await pool.connect();
   const { id, uuid } = req.params;
-  const { firstname, secondname, telephone, streetname, postcode, town } = req.body;
+  const { firstname, secondname, telephone, streetname, postcode, town } =
+    req.body;
 
   try {
-    await client.query("UPDATE customers SET firstname = $1, secondname = $2, telephone = $3 WHERE id = $4", [firstname, secondname, telephone, id]);
-    await client.query("UPDATE addresses SET streetname = $1, postcode = $2, town = $3 WHERE uuid = $4", [streetname, postcode, town, uuid]);
+    await client.query(
+      "UPDATE customers SET firstname = $1, secondname = $2, telephone = $3 WHERE id = $4",
+      [firstname, secondname, telephone, id]
+    );
+    await client.query(
+      "UPDATE addresses SET streetname = $1, postcode = $2, town = $3 WHERE uuid = $4",
+      [streetname, postcode, town, uuid]
+    );
 
     res.status(200).json({ message: "All account details have been updated!" });
   } catch (err) {
@@ -87,7 +113,10 @@ router.put("/:id/login", async function (req, res) {
   const { email, password } = req.body;
 
   try {
-    await client.query("UPDATE users SET email = $1 , password = $2 WHERE customer_id = $3", [email, password, id]);
+    await client.query(
+      "UPDATE users SET email = $1 , password = $2 WHERE customer_id = $3",
+      [email, password, id]
+    );
     res.status(200).json({ message: "Your login details have been updated!" });
   } catch (err) {
     console.log(err);
@@ -102,8 +131,13 @@ router.put("/:id/address/:uuid", async function (req, res) {
   const { streetname, postcode, town } = req.body;
 
   try {
-    await client.query("UPDATE addresses SET streetname = $1 , postcode = $2, town = $3 WHERE uuid = $4", [streetname, postcode, town, uuid]);
-    res.status(200).json({ message: "Your address details have been updated!" });
+    await client.query(
+      "UPDATE addresses SET streetname = $1 , postcode = $2, town = $3 WHERE uuid = $4",
+      [streetname, postcode, town, uuid]
+    );
+    res
+      .status(200)
+      .json({ message: "Your address details have been updated!" });
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "Failed to update address details" });
@@ -117,8 +151,13 @@ router.put("/:id/details", async function (req, res) {
   const { firstname, secondname, telephone } = req.body;
 
   try {
-    await client.query("UPDATE customers SET firstname = $1 , secondname = $2, telephone = $3 WHERE id = $4", [firstname, secondname, telephone, id]);
-    res.status(200).json({ message: "Your personal details have been updated!" });
+    await client.query(
+      "UPDATE customers SET firstname = $1 , secondname = $2, telephone = $3 WHERE id = $4",
+      [firstname, secondname, telephone, id]
+    );
+    res
+      .status(200)
+      .json({ message: "Your personal details have been updated!" });
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "Failed to update personal details" });
