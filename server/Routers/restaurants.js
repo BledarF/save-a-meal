@@ -331,33 +331,19 @@ router.put("/:id/account", async function (req, res) {
 router.put("/:id/details", async function (req, res) {
   const client = await pool.connect();
   const { id } = req.params;
-  const {
-    name,
-    description,
-    start_time,
-    end_time,
-    current_slots,
-    imageURL,
-    logoURL,
-  } = req.body;
+
+  const { name, description, imageURL, logoURL } = req.body;
 
   try {
-    await client.query(
-      "UPDATE restaurants SET name = $1 , description= $2, start_time = $3, end_time = $4, current_slots = $5, imageURL =  $6 , logoURL = $7 WHERE id = $8",
-      [
-        name,
-        description,
-        start_time,
-        end_time,
-        current_slots,
-        imageURL,
-        logoURL,
-        id,
-      ]
-    );
-    res
-      .status(200)
-      .json({ message: "Your personal details have been updated!" });
+    await client.query("UPDATE restaurants SET name = $1 , description= $2, imageURL =  $3 , logoURL = $4 WHERE id = $5", [
+      name,
+      description,
+      imageURL,
+      logoURL,
+      id,
+    ]);
+    res.status(200).json({ message: "Your personal details have been updated!" });
+
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "Failed to update personal details" });
@@ -369,13 +355,26 @@ router.put("/:id/details", async function (req, res) {
 router.put("/:id/availability", async function (req, res) {
   const client = await pool.connect();
   const { id } = req.params;
-  const { M, TU, W, TH, F, SA, SU } = req.body;
+  const { M, TU, W, TH, F, SA, SU, start_time, end_time, current_slots } = req.body;
+
+  if (start_time > end_time) {
+    return res.status(400).json({ message: "Your start time cannot be greater than your end time! Please try again." });
+  }
 
   try {
-    await client.query(
-      "UPDATE available_days SET M = $1, TU = $2, W = $3, TH = $4, F = $5, SA = $6, SU = $7 WHERE restaurant_id = $8",
-      [M, TU, W, TH, F, SA, SU, id]
-    );
+
+    await client.query("UPDATE available_days SET M = $1, TU = $2, W = $3, TH = $4, F = $5, SA = $6, SU = $7 WHERE restaurant_id = $8", [
+      M,
+      TU,
+      W,
+      TH,
+      F,
+      SA,
+      SU,
+      id,
+    ]);
+    await client.query("UPDATE restaurants SET start_time = $1, end_time = $2, current_slots = $3", [start_time, end_time, current_slots]);
+
     res.status(200).json({ message: "Your availability has been updated!" });
   } catch (err) {
     console.log(err);
