@@ -97,10 +97,9 @@ router.get("/details/search/:postcodeVal", async function (req, res) {
 	}
 
 	let postcodeString = { postcodes: postcode };
-	const proximityTarget = 4;
 
 	///MAKING FETCH REQUEST TO API TO GET LONG LAT OF EACH RESTAURANT////
-
+	const proximityTarget = 5;
 	getlocationAPI(postcodeString, postcode, client);
 
 	try {
