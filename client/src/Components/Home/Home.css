@@ -1,9 +1,5 @@
 .header {
   height: 100vh;
-  background-image: url(./images/pizzaguy.png), url(./images/ladypot.png);
-  background-position: right center, left center;
-  background-repeat: no-repeat, no-repeat;
-  background-size: 40%, 40%;
 }
 
 .info,
