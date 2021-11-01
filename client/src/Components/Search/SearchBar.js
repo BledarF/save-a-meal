@@ -1,19 +1,31 @@
 import { useEffect, useContext, useState } from "react";
 
 function SearchBar(props) {
-	const { setRestaurants } = props;
+	const { setRestaurants, setBookingStatus } = props;
 	const [userInput, setUserInput] = useState("");
 
 	const handleSearch = async function handleSearch() {
 		try {
+			const requestOptions = {
+				method: "GET",
+				credentials: "include",
+				headers: {
+					Access: "application/json",
+					"Content-Type": "application/json",
+				},
+			};
 			const response = await fetch(
-				`http://localhost:8080/api/restaurants/details/search/${userInput}`
+				`http://localhost:8080/api/restaurants/details/search/${userInput}`,
+				requestOptions
 			);
 			const json = await response.json();
 			console.log(json);
 			const restaurantsList = json.restaurantsData;
 			console.log(restaurantsList);
 			setRestaurants(restaurantsList);
+			if (json.message === "Already Booked!") {
+				setBookingStatus(false);
+			}
 		} catch (error) {
 			console.log(error);
 		}

@@ -22,6 +22,12 @@ export const userContext = React.createContext({
 	setUser: () => {},
 });
 
+export const bookingContext = React.createContext({
+	// MAYBE GET FROM COOKIES INITIALLY?
+	bookingStatus: true,
+	setBookingStatus: () => {},
+});
+
 function App(props) {
 	const [data, setData] = useState(null);
 	const [sessionUpdate, setSessionUpdate] = useState(0);

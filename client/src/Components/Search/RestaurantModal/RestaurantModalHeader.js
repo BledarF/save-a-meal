@@ -1,5 +1,9 @@
+import React, { useEffect, useState, useContext } from "react";
+import { userContext } from "../../../App";
+
 function RestaurantModalHeader(props) {
 	const { logo, name, town } = props.headerDetails;
+	const { user, setUser } = useContext(userContext);
 	const { setShowModal } = props;
 
 	return (
@@ -8,7 +12,12 @@ function RestaurantModalHeader(props) {
 			<h3 className="text-2xl font-semibold">
 				{name} - {town}
 			</h3>
-			<button className="" onClick={() => setShowModal(false)}>
+			<button
+				className=""
+				onClick={() => {
+					setShowModal(false);
+				}}
+			>
 				<span className="bg-transparent text-black opacity-50 h-6 w-6 text-2xl block outline-none focus:outline-none">
 					&#10006;
 				</span>
