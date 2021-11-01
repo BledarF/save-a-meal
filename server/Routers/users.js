@@ -70,7 +70,7 @@ router.post("/customer", async function (req, res) {
       res.status(200).json({ Message: "User Created!" }, 200);
     }
   } catch (error) {
-    res.status(400).json({ Message: error });
+    res.status(400).json({ Message: error.detail });
   }
 
   await client.release();

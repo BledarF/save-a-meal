@@ -59,7 +59,9 @@ function AddressTab(props) {
                 placeholder={props.postcode}
               ></input>
             ) : (
-              <div className="table-cell">{props.postcode}</div>
+              <div className="table-cell">
+                {postcode ? postcode : props.postcode}
+              </div>
             )}
           </div>
           <div className="table-row">
@@ -70,7 +72,9 @@ function AddressTab(props) {
                 placeholder={props.streetname}
               ></input>
             ) : (
-              <div className="table-cell">{props.streetname}</div>
+              <div className="table-cell">
+                {streetname ? streetname : props.streetname}
+              </div>
             )}
           </div>
           <div className="table-row">
@@ -81,7 +85,7 @@ function AddressTab(props) {
                 placeholder={props.town}
               ></input>
             ) : (
-              <div className="table-cell">{props.town}</div>
+              <div className="table-cell">{town ? town : props.town}</div>
             )}
           </div>
         </div>

@@ -83,6 +83,7 @@ const Tabs = ({ color, accountDetails }) => {
                 </div>
                 <div className={openTab === 2 ? "block" : "hidden"} id="link2">
                   <AddressTab
+                    uuid={accountDetails.uuid}
                     postcode={accountDetails.postcode}
                     streetname={accountDetails.streetname}
                     town={accountDetails.town}
