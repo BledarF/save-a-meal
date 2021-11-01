@@ -4,23 +4,18 @@ import AddressTab from "./Tabs/AddressTab";
 import AvailabilityTab from "./Tabs/AvailabilityTab";
 import BusinessOrdersTab from "./Tabs/BusinessOrdersTab/BusinessOrdersTab";
 
-const Tabs = ({ color }) => {
+const Tabs = ({ color, accountDetails }) => {
   const [openTab, setOpenTab] = React.useState(1);
   return (
     <>
       <div className="flex flex-wrap pt-20">
         <div className="w-full">
-          <ul
-            className="flex mb-0 list-none flex-wrap pt-3 pb-4 flex-row"
-            role="tablist"
-          >
+          <ul className="flex mb-0 list-none flex-wrap pt-3 pb-4 flex-row" role="tablist">
             <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
               <a
                 className={
                   "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
-                  (openTab === 1
-                    ? "text-white bg-" + color + "-600"
-                    : "text-" + color + "-600 bg-white")
+                  (openTab === 1 ? "text-white bg-" + color + "-600" : "text-" + color + "-600 bg-white")
                 }
                 onClick={(e) => {
                   e.preventDefault();
@@ -37,9 +32,7 @@ const Tabs = ({ color }) => {
               <a
                 className={
                   "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
-                  (openTab === 2
-                    ? "text-white bg-" + color + "-600"
-                    : "text-" + color + "-600 bg-white")
+                  (openTab === 2 ? "text-white bg-" + color + "-600" : "text-" + color + "-600 bg-white")
                 }
                 onClick={(e) => {
                   e.preventDefault();
@@ -56,9 +49,7 @@ const Tabs = ({ color }) => {
               <a
                 className={
                   "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
-                  (openTab === 3
-                    ? "text-white bg-" + color + "-600"
-                    : "text-" + color + "-600 bg-white")
+                  (openTab === 3 ? "text-white bg-" + color + "-600" : "text-" + color + "-600 bg-white")
                 }
                 onClick={(e) => {
                   e.preventDefault();
@@ -75,9 +66,7 @@ const Tabs = ({ color }) => {
               <a
                 className={
                   "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
-                  (openTab === 4
-                    ? "text-white bg-" + color + "-600"
-                    : "text-" + color + "-600 bg-white")
+                  (openTab === 4 ? "text-white bg-" + color + "-600" : "text-" + color + "-600 bg-white")
                 }
                 onClick={(e) => {
                   e.preventDefault();
@@ -95,27 +84,28 @@ const Tabs = ({ color }) => {
             <div className="px-4 py-5 ">
               <div className="tab-content tab-space">
                 <div className={openTab === 1 ? "block" : "hidden"} id="link1">
-                  <AccountTab
-                    email={"placeholder"}
-                    username={"placeholder"}
-                  ></AccountTab>
+                  <AccountTab email={accountDetails.email} telephone={accountDetails.telephone}></AccountTab>
                 </div>
                 <div className={openTab === 2 ? "block" : "hidden"} id="link2">
-                  <AddressTab
-                    postcode={"SW 18 0DE"}
-                    streetname={"placeholder Road"}
-                    town={"placeholder"}
-                  ></AddressTab>
+                  <AddressTab postcode={accountDetails.postcode} streetname={accountDetails.streetname} town={accountDetails.town}></AddressTab>
                 </div>
                 <div className={openTab === 3 ? "block" : "hidden"} id="link3">
                   <BusinessOrdersTab></BusinessOrdersTab>
                 </div>
                 <div className={openTab === 4 ? "block" : "hidden"} id="link4">
                   <AvailabilityTab
-                    startTime={"12PM"}
-                    endTime={"2PM"}
-                    capacity={"9"}
-                    days={{ monday: true, tuesday: true }}
+                    startTime={accountDetails.start_time}
+                    endTime={accountDetails.end_time}
+                    capacity={accountDetails.current_slots}
+                    days={{
+                      monday: accountDetails.m,
+                      tuesday: accountDetails.tu,
+                      wednesday: accountDetails.w,
+                      thursday: accountDetails.th,
+                      friday: accountDetails.f,
+                      saturday: accountDetails.sa,
+                      sunday: accountDetails.su,
+                    }}
                   ></AvailabilityTab>
                 </div>
               </div>
@@ -127,10 +117,10 @@ const Tabs = ({ color }) => {
   );
 };
 
-export default function TabsRender() {
+export default function TabsRender(props) {
   return (
     <>
-      <Tabs color="yellow" />;
+      <Tabs accountDetails={props.accountDetails} color="yellow" />;
     </>
   );
 }

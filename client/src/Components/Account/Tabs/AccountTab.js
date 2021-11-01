@@ -11,7 +11,7 @@ function AccountTab(props) {
           </div>
           <div class="table-row">
             <div class="table-cell pb-1">Telephone: </div>
-            <div class="table-cell">{props.username}</div>
+            <div class="table-cell">{props.telephone}</div>
           </div>
           <div className="table-row">
             <div className="table-cell pb-1">Password: </div>
@@ -19,9 +19,7 @@ function AccountTab(props) {
           </div>
         </div>
       </div>
-      <button className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full ">
-        Edit
-      </button>
+      <button className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full ">Edit</button>
     </div>
   );
 }
