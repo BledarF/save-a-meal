@@ -7,6 +7,16 @@ function BusinessOrdersTab(props) {
     //FETCH ORDERS DATA
   }, []);
 
+  async function getTodaysOrders() {
+    try {
+      const response = await fetch(`/api/restaurant/${props.restaurantId}/orders/today`);
+
+      const jsonResponse = await response.json();
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   function getTodayTable() {
     return <TodayTable></TodayTable>;
   }

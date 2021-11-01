@@ -17,7 +17,7 @@ function Footer() {
     return (
       <div className="flex flex-col">
         <span className="font-bold text-gray-700 uppercase mb-2">
-          Social Media
+          {colName}
         </span>
         {colItems.map((item) => columnItem(item))}
       </div>
@@ -30,7 +30,7 @@ function Footer() {
         <div className="sm:flex sm:mt-8">
           <div className="mt-8 sm:mt-0 sm:w-full sm:px-8 flex flex-col md:flex-row justify-around">
             {getColumn("Social Media", "Facebook", "Instagram", "Twitter")}
-            {getColumn("Map", "Facebook", "Instagram", "Twitter")}
+            {getColumn("Site Map", "Home", "Search", "Register")}
           </div>
         </div>
       </div>
