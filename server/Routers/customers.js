@@ -25,20 +25,31 @@ router.post(
 				`SELECT customer_id FROM users WHERE id=$1 `,
 				[user_id]
 			);
-			// console.log(customer_id_value);
 			const customer_id = customer_id_value.rows[0].customer_id;
-			await client.query(
-				`INSERT INTO orders(customer_id, restaurant_id,collected,booking_id) VALUES($1, $2, $3,$4)`,
-				[customer_id, restaurant_id, false, booking_id]
+
+			// console.log(customer_id_value);
+			const orderQuery = await client.query(
+				`SELECT * FROM orders WHERE customer_id=$1 AND (CURRENT_TIMESTAMP::date = created_at::date)`,
+				[customer_id]
 			);
-			await client.query(
-				`UPDATE restaurants SET current_slots = current_slots - 1 WHERE id = $1`,
-				[restaurant_id]
-			);
-			res.status(200).json({
-				message: "Order successfully submitted!",
-				booking_id: booking_id,
-			});
+			console.log(orderQuery.rows);
+
+			if (orderQuery.rows.length < 1) {
+				await client.query(
+					`INSERT INTO orders(customer_id, restaurant_id,collected,booking_id) VALUES($1, $2, $3,$4)`,
+					[customer_id, restaurant_id, false, booking_id]
+				);
+				await client.query(
+					`UPDATE restaurants SET current_slots = current_slots - 1 WHERE id = $1`,
+					[restaurant_id]
+				);
+				res.status(200).json({
+					message: "Order successfully submitted!",
+					booking_id: booking_id,
+				});
+			} else {
+				res.status(400).json({ message: "Already Booked!" }, 400);
+			}
 		} catch (err) {
 			console.log(err);
 			res.status(400).json({ message: "Order failed to be submitted" });
