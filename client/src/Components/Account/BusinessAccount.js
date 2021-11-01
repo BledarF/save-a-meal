@@ -84,7 +84,11 @@ const Tabs = ({ color, accountDetails }) => {
             <div className="px-4 py-5 ">
               <div className="tab-content tab-space">
                 <div className={openTab === 1 ? "block" : "hidden"} id="link1">
-                  <AccountTab email={accountDetails.email} telephone={accountDetails.telephone}></AccountTab>
+                  <AccountTab
+                    restaurantId={accountDetails.restaurant_id}
+                    email={accountDetails.email}
+                    telephone={accountDetails.telephone}
+                  ></AccountTab>
                 </div>
                 <div className={openTab === 2 ? "block" : "hidden"} id="link2">
                   <AddressTab postcode={accountDetails.postcode} streetname={accountDetails.streetname} town={accountDetails.town}></AddressTab>

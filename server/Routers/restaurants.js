@@ -1,9 +1,10 @@
-var express = require("express");
-var router = express.Router();
-var cookieParser = require("cookie-parser");
+const express = require("express");
+const router = express.Router();
+const cookieParser = require("cookie-parser");
 const { Pool, Client } = require("pg");
-
-var request = require("request");
+const validator = require("validator");
+const bcrypt = require("bcrypt");
+const request = require("request");
 const haversine = require("haversine");
 const { post } = require("request");
 const { default: add } = require("date-fns/add");
@@ -249,17 +250,28 @@ router.put("/:id/all/:uuid", async function (req, res) {
 });
 
 //Update restaurants' login details
-router.put("/:id/login", async function (req, res) {
+router.put("/:id/account", async function (req, res) {
   const client = await pool.connect();
   const { id } = req.params;
-  const { email, password } = req.body;
+  const { email, telephone, password } = req.body;
 
-  try {
-    await client.query("UPDATE users SET email = $1 , password = $2 WHERE restaurant_id = $3", [email, password, id]);
-    res.status(200).json({ message: "Your login details have been updated!" });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({ message: "Failed to update login details" });
+  console.log(req.body);
+
+  if (!validator.isEmail(email)) {
+    return res.status(400).json({ message: "Email is invalid. Please try again." });
+  } else if (!validator.isStrongPassword(password, { minSymbols: 0 })) {
+    return res.status(400).json({ message: "Password is invalid" });
+  } else {
+    try {
+      const salt = await bcrypt.genSalt(8);
+      const passwordEncrypted = await bcrypt.hash(password, salt);
+      await client.query("UPDATE users SET email = $1 , password = $2 WHERE restaurant_id = $3", [email, passwordEncrypted, id]);
+      await client.query("UPDATE restaurants SET telephone = $1 WHERE restaurants.id = $2", [telephone, id]);
+      res.status(200).json({ message: "Your login details have been updated!" });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({ message: "Failed to update login details" });
+    }
   }
 
   client.release();
@@ -285,12 +297,12 @@ router.put("/:id/address/:uuid", async function (req, res) {
 router.put("/:id/details", async function (req, res) {
   const client = await pool.connect();
   const { id } = req.params;
-  const { name, telephone, description, start_time, end_time, current_slots, imageURL, logoURL } = req.body;
+  const { name, description, start_time, end_time, current_slots, imageURL, logoURL } = req.body;
 
   try {
     await client.query(
-      "UPDATE restaurants SET name = $1 , telephone = $2, description= $3, start_time = $4, end_time = $5, current_slots = $6, imageURL =  $7 , logoURL = $8 WHERE id = $9",
-      [name, telephone, description, start_time, end_time, current_slots, imageURL, logoURL, id]
+      "UPDATE restaurants SET name = $1 , description= $2, start_time = $3, end_time = $4, current_slots = $5, imageURL =  $6 , logoURL = $7 WHERE id = $8",
+      [name, description, start_time, end_time, current_slots, imageURL, logoURL, id]
     );
     res.status(200).json({ message: "Your personal details have been updated!" });
   } catch (err) {
