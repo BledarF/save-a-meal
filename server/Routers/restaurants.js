@@ -78,49 +78,58 @@ router.get("/addresses", async function (req, res) {
 // });
 
 router.get("/details/search/:postcodeVal", async function (req, res) {
-  const client = await pool.connect();
-  const { postcodeVal } = req.params;
-  const today = new Date();
-  const currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+	const client = await pool.connect();
+	const { postcodeVal } = req.params;
+	const today = new Date();
+	const currentTime =
+		today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
-  ///OBTAINING POSTCODE OF RESTAURANTS FROM DATABASE////
+	///OBTAINING POSTCODE OF RESTAURANTS FROM DATABASE////
 
-  const postcodeObj = await client.query("SELECT postcode FROM addresses JOIN restaurants ON addresses.uuid = restaurants.address_id");
-  const postcodeObjRows = postcodeObj.rows;
-  let postcode = [postcodeVal];
-  for (let i = 0; i < postcodeObjRows.length; i++) {
-    postcode.push(postcodeObjRows[i].postcode);
-  }
+	const postcodeObj = await client.query(
+		"SELECT postcode FROM addresses JOIN restaurants ON addresses.uuid = restaurants.address_id"
+	);
+	const postcodeObjRows = postcodeObj.rows;
+	let postcode = [postcodeVal];
+	for (let i = 0; i < postcodeObjRows.length; i++) {
+		postcode.push(postcodeObjRows[i].postcode);
+	}
 
-  let postcodeString = { postcodes: postcode };
-  const proximityTarget = 4;
+	let postcodeString = { postcodes: postcode };
 
-  ///MAKING FETCH REQUEST TO API TO GET LONG LAT OF EACH RESTAURANT////
+	///MAKING FETCH REQUEST TO API TO GET LONG LAT OF EACH RESTAURANT////
+	const proximityTarget = 5;
+	getlocationAPI(postcodeString, postcode, client);
 
-  getlocationAPI(postcodeString, postcode, client);
+	try {
+		const restaurantDetails = await client.query(
+			"SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid WHERE distance_from_post < $1",
+			[proximityTarget]
+		);
+		const filteredRestaurantDetails = restaurantDetails.rows.map(
+			(restaurant) => {
+				if (
+					currentTime < restaurant.start_time ||
+					currentTime > restaurant.end_time ||
+					restaurant.current_slots === 0
+				) {
+					restaurant.available = false;
+					return restaurant;
+				} else {
+					restaurant.available = true;
+					return restaurant;
+				}
+			}
+		);
 
-  try {
-    const restaurantDetails = await client.query(
-      "SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid WHERE distance_from_post < $1",
-      [proximityTarget]
-    );
-    const filteredRestaurantDetails = restaurantDetails.rows.map((restaurant) => {
-      if (currentTime < restaurant.start_time || currentTime > restaurant.end_time || restaurant.current_slots === 0) {
-        restaurant.available = false;
-        return restaurant;
-      } else {
-        restaurant.available = true;
-        return restaurant;
-      }
-    });
+		res.status(200).json({ restaurantsData: filteredRestaurantDetails });
+	} catch (err) {
+		console.log(err);
+		res.status(400).json({ message: "Failed to fetch all restaurant details" });
+	}
 
-    res.status(200).json({ restaurantsData: filteredRestaurantDetails });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({ message: "Failed to fetch all restaurant details" });
-  }
+	client.release();
 
-  client.release();
 });
 
 //Get desired restaurant
