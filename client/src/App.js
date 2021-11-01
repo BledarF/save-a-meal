@@ -48,7 +48,7 @@ function App(props) {
         // body: JSON.stringify(values),
       });
       const jsonResponse = await response.json();
-      console.log(jsonResponse);
+      //console.log(jsonResponse);
       if (jsonResponse.id) {
         setUser(jsonResponse.id);
       }

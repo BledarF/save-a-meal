@@ -168,12 +168,14 @@ router.post("/restaurant", async function (req, res) {
   } catch (error) {
     res.status(400).json({ Message: error });
   }
-  await client.release();
+  client.release();
 });
 
 //Get account details for either restaurant or customer
 router.get("/", async function (req, res) {
+  console.log("string");
   const client = await pool.connect();
+
   const activeSession = await req.cookies.sessionID;
   console.log(activeSession);
 
@@ -184,7 +186,7 @@ router.get("/", async function (req, res) {
     );
 
     const id = checkUser.rows[0].id;
-    console.log(checkUser);
+    console.log("here");
 
     if (checkUser.rows.length > 0) {
       if (checkUser.rows[0].restaurant_id) {
@@ -196,7 +198,7 @@ router.get("/", async function (req, res) {
           .status(200)
           .json({ accountDetails: accountDetails.rows, type: "restaurant" });
       } else {
-        console.log("we made it here");
+        console.log("we made it here now");
         console.log(id);
         const accountDetails = await client.query(
           "SELECT * FROM users JOIN customers ON users.customer_id  = customers.id JOIN addresses ON customers.address_id = addresses.uuid WHERE users.id = $1 ",
@@ -216,6 +218,7 @@ router.get("/", async function (req, res) {
     console.log(err);
     res.status(400).json({ message: "Failed to fetch account details!" });
   }
+  client.release();
 });
 
 router.post("/verify", async function (req, res) {

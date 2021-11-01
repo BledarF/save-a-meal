@@ -4,11 +4,12 @@ import BusinessAccount from "./BusinessAccount";
 import { userContext } from "../../App";
 
 function Account() {
-  const { user, setUser } = useContext(userContext);
+  //const { accountDetails, setAccountDetails } = useState({});
+  const [type, setType] = useState("");
 
   async function fetchAccount() {
-    console.log(user.id);
     try {
+      console.log("Fething");
       const res = await fetch(`http://localhost:8080/api/users/`, {
         method: "GET",
         credentials: "include",
@@ -17,21 +18,25 @@ function Account() {
         },
         // body: JSON.stringify(values),
       });
+      console.log(res);
       const data = await res.json();
+      console.log("API CALLED");
       console.log(data);
+      setType(data.type);
     } catch {
-      //alert("Error");
+      console.log("error");
     }
   }
 
   React.useEffect(() => {
     fetchAccount();
   }, []);
+
   return (
     <>
       <div className="flex justify-center">
         {/* ADD LOGIC HERE TO DETERMINE IF USER OR BUSINESS IS LOGGED IN */}
-        <UserAccount></UserAccount>
+        {type && type === "customer" ? <UserAccount></UserAccount> : null}
       </div>
     </>
   );
