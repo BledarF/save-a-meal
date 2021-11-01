@@ -1,14 +1,32 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import HistoryTable from "./HistoryTable";
 import TodayTable from "./TodayTable";
 
-function BusinessOrdersTab(props) {
+function CustomerOrdersTab(props) {
+  const [todaysOrders, setTodaysOrders] = useState(null);
+
   useEffect(() => {
-    //FETCH ORDERS DATA
+    if (props.customerId) {
+      getTodaysOrders();
+    }
   }, []);
 
-  function getTodayTable() {
-    return <TodayTable></TodayTable>;
+  async function getTodaysOrders() {
+    try {
+      console.log(props.customerId);
+      const response = await fetch(`http://localhost:8080/api/customers/${props.customerId}/orders/today`);
+      const jsonResponse = await response.json();
+      console.log(jsonResponse);
+      setTodaysOrders(jsonResponse);
+
+      return jsonResponse;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  function getTodayTable(data) {
+    return <TodayTable data={data}></TodayTable>;
   }
 
   function getHistoryTable() {
@@ -19,8 +37,7 @@ function BusinessOrdersTab(props) {
     <div className="flex flex-col text-left">
       <div>
         <h4>Today</h4>
-        <p>No order Today</p>
-        {getTodayTable()}
+        {todaysOrders ? getTodayTable(todaysOrders) : <p>No order Today</p>}
       </div>
       <div>
         <h4>History</h4>
@@ -31,4 +48,4 @@ function BusinessOrdersTab(props) {
   );
 }
 
-export default BusinessOrdersTab;
+export default CustomerOrdersTab;

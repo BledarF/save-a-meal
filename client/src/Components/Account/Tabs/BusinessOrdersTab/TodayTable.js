@@ -13,14 +13,13 @@ function TodayTable(props) {
                   <th className="px-6 py-2 text-xs text-gray-500">ID</th>
                   <th className="px-6 py-2 text-xs text-gray-500">Name</th>
                   <th className="px-6 py-2 text-xs text-gray-500">Telephone</th>
-                  <th className="px-6 py-2 text-xs text-gray-500">
-                    Created_at
-                  </th>
+                  <th className="px-6 py-2 text-xs text-gray-500">Created_at</th>
                   <th className="px-6 py-2 text-xs text-gray-500">Status</th>
                 </tr>
               </thead>
               <tbody className="bg-white">
                 {/* Map an Orders State here... */}
+                {console.log}
                 <BusinessOrderEntry accepted={false}></BusinessOrderEntry>
               </tbody>
             </table>
