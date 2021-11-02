@@ -91,6 +91,8 @@ function BuisnessRegistrationForm() {
           endTime: "",
           passwordConfirmation: "",
           current_slots: "",
+          logo_url: "",
+          image_url: "",
         }}
         validationSchema={validationSchema}
         labelsColor="secondary" /// The text label color can be root variables or css => #fff
@@ -110,8 +112,18 @@ function BuisnessRegistrationForm() {
           iconColor="white" /// The color can be root variables or css => #fff
           circleColor="#F59E0B" /// The color can be root variables or css => #fff
         >
-          <InputField name="name" label="Business Name" />
-          <InputField name="description" label="Description" />
+          <div className="flex">
+            <InputField className="mx-2" name="name" label="Business Name" />
+            <InputField className="mx-2" name="logo_url" label="Logo (URL)" />
+          </div>
+
+          <InputField
+            className=""
+            name="description"
+            label="Description"
+            type="textarea"
+          />
+
           <div className="flex">
             <InputField
               className="mx-2"
@@ -128,12 +140,13 @@ function BuisnessRegistrationForm() {
         </FormikStep>
         {/* Second Step */}
         <FormikStep
-          label="Avaliability" /// The text label of Step
+          label="Food Information" /// The text label of Step
           withIcons="fa fa-user" // to add icon into the circle must add icon as className Name like Fontawesome
           withNumbers /// If true, it hides the icon and shows the step number
           iconColor="white" /// The color can be root variables or css => #fff
           circleColor="#F59E0B" /// The color can be root variables or css => #fff
         >
+          <InputField name="image_url" label="Image URL: " />
           <InputField type="checkbox" name="M" label="Monday" />
           <InputField type="checkbox" name="TU" label="Tuesday" />
           <InputField type="checkbox" name="W" label="Wednesday" />
