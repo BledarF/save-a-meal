@@ -214,7 +214,6 @@ async function createRestaurantsTable() {
     current_slots INTEGER NOT NULL,
     imageURL TEXT ,
     logoURL TEXT
-
   )
   `;
   try {
@@ -233,7 +232,8 @@ async function createReviewsTable() {
   CREATE TABLE reviews(
     id SERIAL PRIMARY KEY,
     score SMALLINT NOT NULL,
-    order_id INTEGER REFERENCES orders(id)
+    order_id INTEGER REFERENCES orders(id),
+    restaurant_id INTEGER REFERENCES restaurants(id)
   )
   `;
   try {
