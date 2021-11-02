@@ -35,108 +35,78 @@ router.get("/", async function (req, res) {
 
 //Get all addresses from each restaurant
 router.get("/addresses", async function (req, res) {
-	const client = await pool.connect();
-	try {
-		const restaurantAddresses = await client.query(
-			"SELECT streetname,postcode,town FROM addresses JOIN restaurants ON addresses.uuid = restaurants.address_id "
-		);
-		res.status(200).json({ addresses: restaurantAddresses.rows });
-	} catch (err) {
-		console.log(err);
-		res
-			.status(400)
-			.json({ message: "Failed to fetch all restaurant addresses" });
-	}
-	client.release();
+
+  const client = await pool.connect();
+  try {
+    const restaurantAddresses = await client.query(
+      "SELECT streetname,postcode,town FROM addresses JOIN restaurants ON addresses.uuid = restaurants.address_id "
+    );
+    res.status(200).json({ addresses: restaurantAddresses.rows });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: "Failed to fetch all restaurant addresses" });
+  }
+  client.release();
 });
 
-router.get("/details/search/:postcodeVal", async function (req, res) {
-	const cookie = await req.cookies;
-	const client = await pool.connect();
-	const { postcodeVal } = req.params;
-	const today = new Date();
-	const currentTime =
-		today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+router.get("/details/search/:postcodeVal/proximity/:proximity", async function (req, res) {
+  const cookie = await req.cookies;
+  const client = await pool.connect();
+  const { postcodeVal, proximity } = req.params;
+  const today = new Date();
+  const currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
-	const sqlQuery = await client.query(
-		`SELECT user_id FROM sessions WHERE uuid=$1`,
-		[cookie.sessionID]
-	);
-	const user_id_val = sqlQuery.rows[0].user_id;
-	const customer_id_val = await client.query(
-		"SELECT customer_id FROM users WHERE id=$1",
-		[user_id_val]
-	);
-	const customer_id = customer_id_val.rows[0].customer_id;
+  const sqlQuery = await client.query(`SELECT user_id FROM sessions WHERE uuid=$1`, [cookie.sessionID]);
+  const user_id_val = sqlQuery.rows[0].user_id;
+  const customer_id_val = await client.query("SELECT customer_id FROM users WHERE id=$1", [user_id_val]);
+  const customer_id = customer_id_val.rows[0].customer_id;
 
-	const orderQuery = await client.query(
-		`SELECT * FROM orders WHERE customer_id=$1 AND (CURRENT_TIMESTAMP::date = created_at::date)`,
-		[customer_id]
-	);
+  const orderQuery = await client.query(`SELECT * FROM orders WHERE customer_id=$1 AND (CURRENT_TIMESTAMP::date = created_at::date)`, [customer_id]);
 
-	// console.log(sqlQuery);
+  ///OBTAINING POSTCODE OF RESTAURANTS FROM DATABASE////
 
-	///OBTAINING POST CODE OF RESTAURANTS FROM DATABASE////
+  const postcodeObj = await client.query("SELECT postcode FROM addresses JOIN restaurants ON addresses.uuid = restaurants.address_id");
+  const postcodeObjRows = postcodeObj.rows;
+  let postcode = [postcodeVal];
+  for (let i = 0; i < postcodeObjRows.length; i++) {
+    postcode.push(postcodeObjRows[i].postcode);
+  }
 
-	const postcodeObj = await client.query(
-		"SELECT postcode FROM addresses JOIN restaurants ON addresses.uuid = restaurants.address_id"
-	);
-	const postcodeObjRows = postcodeObj.rows;
-	let postcode = [postcodeVal];
-	for (let i = 0; i < postcodeObjRows.length; i++) {
-		postcode.push(postcodeObjRows[i].postcode);
-	}
+  let postcodeString = { postcodes: postcode };
 
-	let postcodeString = { postcodes: postcode };
+  ///MAKING FETCH REQUEST TO API TO GET LONG LAT OF EACH RESTAURANT////
+  getlocationAPI(postcodeString, postcode, client);
 
-	///MAKING FETCH REQUEST TO API TO GET LONG LAT OF EACH RESTAURANT////
-	const proximityTarget = 5;
+  try {
+    const restaurantDetails = await client.query(
+      "SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid WHERE distance_from_post < $1",
+      [proximity]
+    );
 
-	try {
-		await getlocationAPI(postcodeString, postcode, client);
-	} catch (err) {
-		console.log(err);
-	}
+    const filteredRestaurantDetails = restaurantDetails.rows.map((restaurant) => {
+      if (currentTime < restaurant.start_time || currentTime > restaurant.end_time || restaurant.current_slots === 0) {
+        restaurant.available = false;
+        return restaurant;
+      } else {
+        restaurant.available = true;
+        return restaurant;
+      }
+    });
 
-	try {
-		const restaurantDetails = await client.query(
-			"SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid WHERE distance_from_post < $1",
-			[proximityTarget]
-		);
+    if (orderQuery.rows.length > 0) {
+      res.status(200).json({
+        message: "Already Booked!",
+        restaurantsData: filteredRestaurantDetails,
+      });
+    } else {
+      res.status(200).json({ restaurantsData: filteredRestaurantDetails });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: "Failed to fetch all restaurant details" });
+  }
 
-		const filteredRestaurantDetails = restaurantDetails.rows.map(
-			(restaurant) => {
-				if (
-					currentTime < restaurant.start_time ||
-					currentTime > restaurant.end_time ||
-					restaurant.current_slots === 0
-				) {
-					restaurant.available = false;
-
-					return restaurant;
-				} else {
-					restaurant.available = true;
-
-					return restaurant;
-				}
-			}
-		);
-
-		if (orderQuery.rows.length > 0) {
-			res.json({
-				message: "Already Booked!",
-				restaurantsData: filteredRestaurantDetails,
-			});
-		} else {
-			res.status(200).json({ restaurantsData: filteredRestaurantDetails });
-		}
-	} catch (err) {
-		console.log(err);
-		res.status(400).json({ message: "Failed to fetch all restaurant details" });
-	}
-
-	client.release();
-
+  client.release();
 });
 
 //Get desired restaurant
@@ -217,6 +187,7 @@ router.get("/:user_id/account_details", async function (req, res) {
 //Update all restaurants details
 
 router.put("/:id/all/:uuid", async function (req, res) {
+
 	const client = await pool.connect();
 	const { id, uuid } = req.params;
 	const {
@@ -272,11 +243,11 @@ router.put("/:id/all/:uuid", async function (req, res) {
 	}
 
 	client.release();
-
 });
 
 //Update restaurants' login details
 router.put("/:id/account", async function (req, res) {
+
 	const client = await pool.connect();
 	const { id } = req.params;
 	const { email, telephone, password } = req.body;
@@ -319,6 +290,7 @@ router.put("/:id/address/:uuid", async function (req, res) {
   const { street_name, postcode, town } = req.body;
 
   try {
+
     await client.query(
       "UPDATE addresses SET streetname = $1 , postcode = $2, town = $3 WHERE uuid = $4",
       [street_name, postcode, town, uuid]
@@ -335,45 +307,27 @@ router.put("/:id/address/:uuid", async function (req, res) {
 
 //Update restaurants' personal details
 router.put("/:id/details", async function (req, res) {
-	const client = await pool.connect();
-	const { id } = req.params;
-	const {
-		name,
-		description,
-		start_time,
-		end_time,
-		current_slots,
-		imageURL,
-		logoURL,
-	} = req.body;
+  const client = await pool.connect();
+  const { id } = req.params;
+  const { name, description, start_time, end_time, current_slots, imageURL, logoURL } = req.body;
 
-	try {
-		await client.query(
-			"UPDATE restaurants SET name = $1 , description= $2, start_time = $3, end_time = $4, current_slots = $5, imageURL =  $6 , logoURL = $7 WHERE id = $8",
-			[
-				name,
-				description,
-				start_time,
-				end_time,
-				current_slots,
-				imageURL,
-				logoURL,
-				id,
-			]
-		);
-		res
-			.status(200)
-			.json({ message: "Your personal details have been updated!" });
-	} catch (err) {
-		console.log(err);
-		res.status(400).json({ message: "Failed to update personal details" });
-	}
-	client.release();
-
+  try {
+    await client.query(
+      "UPDATE restaurants SET name = $1 , description= $2, start_time = $3, end_time = $4, current_slots = $5, imageURL =  $6 , logoURL = $7 WHERE id = $8",
+      [name, description, start_time, end_time, current_slots, imageURL, logoURL, id]
+    );
+    res.status(200).json({ message: "Your personal details have been updated!" });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: "Failed to update personal details" });
+  }
+  client.release();
 });
 
 //Update restaurants' availability
 router.put("/:id/availability", async function (req, res) {
+
+
 	const client = await pool.connect();
 	const { id } = req.params;
 	const { M, TU, W, TH, F, SA, SU, start_time, end_time, current_slots } =
@@ -403,11 +357,13 @@ router.put("/:id/availability", async function (req, res) {
 	}
 	client.release();
 
+
 });
 
 //Update all restaurants' current slots to 10 when midnight hits
 
 router.put("/reset", async function (req, res) {
+
 	const client = await pool.connect();
 	const defaultCurrentSlots = 10;
 
@@ -423,11 +379,13 @@ router.put("/reset", async function (req, res) {
 		res.status(400).json({ message: "Failed to reset current slots." });
 	}
 
+
 });
 
 //Mark order as collected once customer has collected it
 
 router.put("/:restaurant_id/customer/:customer_id", async function (req, res) {
+
 	const client = await pool.connect();
 	const { restaurant_id, customer_id } = req.params;
 
@@ -446,7 +404,7 @@ router.put("/:restaurant_id/customer/:customer_id", async function (req, res) {
 });
 
 async function getlocationAPI(postcodeString, postcode, client) {
-	console.log(postcodeString);
+
 
 	const response = await fetch("https://api.postcodes.io/postcodes", {
 		method: "POST",
@@ -491,6 +449,7 @@ async function getlocationAPI(postcodeString, postcode, client) {
 			[parseInt(distances[i]), postcodeArrObj[i].Postcode]
 		);
 	}
+
 
 }
 
