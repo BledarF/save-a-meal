@@ -4,7 +4,7 @@ import adnanPhoto from "./TeamPhotos/Adnan.jpg";
 import sohailPhoto from "./TeamPhotos/Sohail.jpg";
 import bledarPhoto from "./TeamPhotos/Bledar.jpg";
 import gpPhoto from "./TeamPhotos/Gurpratap.jpg";
-import logo from "./images/goodlogo.png";
+import logo from "./images/companylogo.png";
 import pie from "./images/piechart.png";
 
 function Home() {
@@ -30,11 +30,16 @@ function Home() {
 
   const headerSection = function getHeaderComponent() {
     return (
-      <section className="header flex flex-row items-center justify-center">
-        <div className="header-wrapper flex flex-col justify-center items-center">
-          <img src={logo} alt="mainImage" className="mb-10 w-2/5" />
-          <h1 className="w-1/2 text-5xl text-yellow-500 font-extrabold">
-            WE ARE BASICALLY FOOD HEROES BUT WORSE
+      <section className="header flex flex-row items-center justify-start">
+        <div className="header-wrapper flex flex-col justify-center items-end h-full w-2/5">
+          <h1 className="text-9xl font-bold text-yellow-500 w-header-text text-left">
+            Hungry?
+          </h1>
+          <h1 className="text-7xl font-bold text-yellow-500 w-header-text text-left">
+            Save. A. Meal.
+          </h1>
+          <h1 className="text-2xl font-bold text-black w-header-text text-left">
+            Your favourite food collected hot & fresh
           </h1>
         </div>
       </section>
@@ -52,30 +57,21 @@ function Home() {
 
   const infoSection = function getInfoSectionComponent() {
     return (
-      <section className="info-section">
-        <div className="info flex justify-center align-middle">
-          <div className="flex flex-col justify-center align-middle p-2 text-left text-yellow-500">
-            <h1 className="text-6xl font-extrabold mb-7">
-              RESCUE MAGIC BAGS OF SURPLUS, UNSOLD FOOD
+      <section className="info-section flex justify-start items-start">
+        <div className="info flex justify-end items-start">
+          <div className="flex flex-col self-end justify-center align-middle p-2 w-1/2 text-left text-black">
+            <h1 className="text-base font-extrabold mb-7">Our Mission</h1>
+            <h1 className="text-5xl font-extrabold mb-14">
+              Become your local food hero
             </h1>
-            <h3 className="text-4xl font-extrabold mb-7">
-              FROM YOUR FAVOURITE SHOPS AND RESTAURANTS
-            </h3>
-            <p className="info-text">
-              Every day, delicious, fresh food goes to waste at cafes,
-              restaurants, hotels, shops and manufacturers - just because it
-              hasn’t sold in time. The Save A Meal app lets you buy and collect
-              this food - at a great price - so it gets eaten instead of wasted.
-              You won’t know exactly what’s in your order until you pick it up -
-              it’s all part of the surprise. Download the app to get started.
+            <p className="info-text w-2/3 mb-10">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae,
+              quisquam sequi laboriosam veritatis assumenda in cumque
+              dignissimos consequatur modi dolorem unde ex ab quibusdam veniam
+              blanditiis perferendis rem incidunt asperiores minima quas eius
+              necessitatibus id quaerat dolores. Libero, natus expedita.
             </p>
-            <div className="pie-wrapper flex flex-row items-center justify-evenly p-5 my-10">
-              <img src={pie} alt="mainImage" className="w-2/6" />
-              <h1 className="text-5xl font-extrabold mb-7 w-2/5">
-                MORE THAN 1/3 OF FOOD IS WASTED
-              </h1>
-            </div>
-            <ul className="list-none flex flex-row justify-between items-center text-center">
+            <ul className="list-none flex flex-row justify-between items-center text-center w-2/3">
               {getQuickFact(
                 "15,847",
                 "million people finding and saving delicious food"
