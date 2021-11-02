@@ -13,9 +13,9 @@ const validationSchema = Yup.object().shape({
   password: Yup.string()
     .required("The Password field is required")
     .matches(
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*)[A-Za-z\d]{6,}$/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\w\W]{8,}$/,
       `Must Contain 8 Characters, One Uppercase, One Lowercase,
-      One Number and one special case Character [@$!%*#?&-_]`
+      One Number`
     ),
   streetname: Yup.string().required("The street name is required"),
   town: Yup.string().required("The town is required"),
@@ -34,6 +34,12 @@ const validationSchema = Yup.object().shape({
 function UserRegisterForm(props) {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+
+  const closeModal = () => {
+    setTimeout(() => {
+      props.setShowModal(false);
+    }, 1000);
+  };
 
   async function postRegister(values) {
     const requestOptions = {
@@ -55,6 +61,7 @@ function UserRegisterForm(props) {
       if (response.status === 200) {
         setError("");
         setMessage("Success: User Created! Please Login.");
+        closeModal();
       } else {
         setError(json.Message);
         setMessage("");
