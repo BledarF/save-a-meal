@@ -9,6 +9,7 @@ function RestaurantModal(props) {
 	const { user, setUser } = useContext(userContext);
 	const [bookingId, setBookingId] = useState(null);
 	const { bookingStatus, setBookingStatus } = props;
+	const [bookCount, setBookCount] = useState(true);
 
 	const {
 		id: restaurantId,
@@ -37,10 +38,9 @@ function RestaurantModal(props) {
 	const [hasBooked, setHasBooked] = useState(false);
 	const [bookingDetails, setBookingDetails] = useState(null);
 
-	console.log("Bookstatus:" + bookingStatus);
-
 	const handleBook = async function handleBookRestaurantButton() {
 		try {
+			setBookCount(false);
 			const requestOptions = {
 				method: "POST",
 				credentials: "include",
@@ -80,11 +80,13 @@ function RestaurantModal(props) {
 	const buttonComponent = function getConfirmOrderButtonComponent(btnText) {
 		return (
 			<div>
-				{user && bookingStatus ? (
+				{user && bookingStatus && bookCount ? (
 					<button
 						className="bg-yellow-500 hover:bg-yellow-900 transition duration-200 text-white font-bold py-2 px-4 rounded"
 						type="button"
-						onClick={() => handleBook()}
+						onClick={async () => {
+							await handleBook();
+						}}
 					>
 						{btnText}
 					</button>
