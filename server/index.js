@@ -6,7 +6,6 @@ const users = require("./Routers/users");
 const sessions = require("./Routers/sessions");
 const restaurants = require("./Routers/restaurants");
 const customers = require("./Routers/customers");
-const location = require("./Routers/location");
 
 const PORT = process.env.PORT || 8080;
 const POSTGRES_URL =
@@ -31,7 +30,6 @@ app.use("/api/users", users);
 app.use("/api/sessions", sessions);
 app.use("/api/restaurants", restaurants);
 app.use("/api/customers", customers);
-// app.use("/api/location", location);
 
 // All other GET requests not handled before will return our React app
 // app.get("*", (req, res) => {
