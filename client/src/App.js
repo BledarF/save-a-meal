@@ -81,6 +81,7 @@ function App(props) {
 							<Redirect exact from="*" to="/404" />
 						</Switch>
 					</main>
+
 					<Footer />
 				</Router>
 			</div>
