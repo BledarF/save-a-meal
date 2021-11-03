@@ -28,50 +28,49 @@ router.post("/customer", async function (req, res) {
   const duplicateSQL = `SELECT email FROM users WHERE email=$1`;
   const duplicate = await client.query(duplicateSQL, [email]);
   // console.log(duplicate.rows);
-  try {
-    if (duplicate.rows.length !== 0) {
-      res.json(
-        {
-          Message: "This email is taken. Please try a different one or login.",
-        },
-        400
-      );
-    } else {
-      const addressIDGen = crypto.randomInt(0, 1000000);
-      // console.log(addressIDGen);
-      const addingAddressSQL = `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES ($1,$2,$3,$4)`;
-      await client.query(addingAddressSQL, [
-        addressIDGen,
-        streetname,
-        postcode,
-        town,
-      ]);
-      const addingUserInfoSQL = `INSERT INTO customers (firstName,secondname,address_id,telephone) VALUES ($1,$2,$3,$4)`;
-      await client.query(addingUserInfoSQL, [
-        firstName,
-        lastName,
-        addressIDGen,
-        telephone,
-      ]);
-      //
-      const getUserId = `SELECT id FROM customers WHERE firstName=$1`;
-      const userIdSQL = await client.query(getUserId, [firstName]);
 
-      // console.log(userIdSQL);
-      //////////////////////////////
-      customer_id = userIdSQL.rows[0].id;
-      // console.log(userIdSQL);
-      const addingUsersSQL = `INSERT INTO users(password,email,customer_id) VALUES ($1,$2,$3)`;
-      await client.query(addingUsersSQL, [
-        passwordEncrypted,
-        email,
-        customer_id,
-      ]);
-      res.status(200).json({ Message: "User Created!" });
-    }
-  } catch (error) {
-    res.status(400).json({ Message: "Error from server" });
+  if (duplicate.rows.length !== 0) {
+    res.json(
+      {
+        Message: "This email is taken. Please try a different one or login.",
+      },
+      400
+    );
+    return;
   }
+  const addressIDGen = crypto.randomInt(0, 1000000);
+  try {
+    // console.log(addressIDGen);
+    const addingAddressSQL = `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES ($1,$2,$3,$4)`;
+    await client.query(addingAddressSQL, [
+      addressIDGen,
+      streetname,
+      postcode,
+      town,
+    ]);
+  } catch {
+    res.status(400).json({ message: "Error with address. " });
+    return;
+  }
+
+  const customerIDGen = crypto.randomInt(0, 1000000);
+  try {
+    const addingUserInfoSQL = `INSERT INTO customers (id,firstName,secondname,address_id,telephone) VALUES ($1,$2,$3,$4,$5)`;
+    await client.query(addingUserInfoSQL, [
+      customerIDGen,
+      firstName,
+      lastName,
+      addressIDGen,
+      telephone,
+    ]);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: "Error: telephone already exists" });
+    return;
+  }
+  const addingUsersSQL = `INSERT INTO users(password,email,customer_id) VALUES ($1,$2,$3)`;
+  await client.query(addingUsersSQL, [passwordEncrypted, email, customerIDGen]);
+  res.status(200).json({ message: "User Created!" });
 
   await client.release();
 });

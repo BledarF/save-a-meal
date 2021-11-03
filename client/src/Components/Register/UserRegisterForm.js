@@ -56,14 +56,14 @@ function UserRegisterForm(props) {
         requestOptions
       );
       const json = await response.json();
-      console.log(json.Message);
+      console.log(json.message);
       console.log(response.status);
       if (response.status === 200) {
         setError("");
         setMessage("Success: User Created! Please Login.");
         closeModal();
       } else {
-        setError(json.Message);
+        setError(json.message);
         setMessage("");
       }
     } catch {
