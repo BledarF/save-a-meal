@@ -138,12 +138,24 @@ router.get("/:id", async function (req, res) {
         "SELECT * FROM orders  WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
         [customer_id.rows[0].customer_id]
       );
+
+      if (checkUser.rows[0].restaurant_id) {
+        return res.status(200).json({
+          restaurant: restaurantDetails.rows,
+          review: averageRestaurantScore,
+          loggedIn: true,
+          ordered: false,
+          type: "restaurant",
+        });
+      }
+
       if (orderCheck.rows.length > 0) {
         res.status(200).json({
           restaurant: restaurantDetails.rows,
           review: averageRestaurantScore,
           loggedIn: true,
           ordered: true,
+          type: "customer",
         });
       } else {
         res.status(200).json({
@@ -151,6 +163,7 @@ router.get("/:id", async function (req, res) {
           review: averageRestaurantScore,
           loggedIn: true,
           ordered: false,
+          type: "customer",
         });
       }
     } else {

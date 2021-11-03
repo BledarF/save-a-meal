@@ -13,6 +13,7 @@ function RestaurantModal(props) {
   const [modalBodyDetails, setModalBodyDetails] = useState();
   const [loginStatus, setLoginStatus] = useState(false);
   const [orderCheck, setOrderCheck] = useState(false);
+  const [userType, setUserType] = useState("");
 
   useEffect(() => {
     if (restaurantId) {
@@ -39,6 +40,9 @@ function RestaurantModal(props) {
     const restaurantReview = jsonResponse.review;
     const resLoginStatus = jsonResponse.loggedIn;
     const resOrderCheck = jsonResponse.ordered;
+    const user = jsonResponse.type;
+
+    setUserType(user);
     setLoginStatus(resLoginStatus);
     setOrderCheck(resOrderCheck);
 
@@ -120,7 +124,7 @@ function RestaurantModal(props) {
   ) {
     return (
       <div>
-        {loginStatus && !orderCheck ? (
+        {loginStatus && !orderCheck && userType === "customer" ? (
           <button
             className="bg-yellow-500 hover:bg-yellow-900 transition duration-200 text-white font-bold py-2 px-4 rounded"
             type="button"
@@ -132,8 +136,10 @@ function RestaurantModal(props) {
           </button>
         ) : !loginStatus ? (
           "Please login to book an order!"
-        ) : (
+        ) : userType === "customer" ? (
           "You have already ordered for today. Please try again tomorrow."
+        ) : (
+          "You cannot make a order as a restaurant. Please login as a customer."
         )}
       </div>
     );
