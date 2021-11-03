@@ -1,11 +1,12 @@
 import { useEffect, useState, useContext } from "react";
+import { Redirect, useHistory } from "react-router-dom";
 import LoginModal from "./LoginModal";
 import { userContext } from "../../App";
 import "./Navbar.css";
 import { NavLink } from "react-router-dom";
 
 async function deleteCookie() {
-  const response = await fetch(`http://localhost:8080/api/sessions`, {
+  await fetch(`http://localhost:8080/api/sessions`, {
     method: "DELETE",
     credentials: "include",
     headers: {
@@ -51,6 +52,7 @@ function Navbar(props) {
           e.preventDefault();
           deleteCookie();
           setUser(null);
+          window.location.href = "http://localhost:3000/";
         }}
         className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full"
       >

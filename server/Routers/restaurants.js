@@ -15,110 +15,165 @@ router.use(cookieParser());
 const print = (val) => console.log(val);
 
 const pool = new Pool({
-  connectionString: "postgres://localhost:5432/saveameal",
+	connectionString: "postgres://localhost:5432/saveameal",
 });
 
 //Get all data regarding both restaurant details and corresponding addresses
 router.get("/", async function (req, res) {
-  const client = await pool.connect();
-  try {
-    const allRestaurantData = await client.query(
-      "SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid JOIN available_days ON restaurants.id = available_days.restaurant_id"
-    );
-    res.status(200).json({ restaurants: allRestaurantData.rows });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({ message: "Failed to fetch all restaurants" });
-  }
-  client.release();
+	const client = await pool.connect();
+	try {
+		const allRestaurantData = await client.query(
+			"SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid JOIN available_days ON restaurants.id = available_days.restaurant_id"
+		);
+		res.status(200).json({ restaurants: allRestaurantData.rows });
+	} catch (err) {
+		console.log(err);
+		res.status(400).json({ message: "Failed to fetch all restaurants" });
+	}
+	client.release();
 });
 
 //Get all addresses from each restaurant
 router.get("/addresses", async function (req, res) {
-
-  const client = await pool.connect();
-  try {
-    const restaurantAddresses = await client.query(
-      "SELECT streetname,postcode,town FROM addresses JOIN restaurants ON addresses.uuid = restaurants.address_id "
-    );
-    res.status(200).json({ addresses: restaurantAddresses.rows });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({ message: "Failed to fetch all restaurant addresses" });
-  }
-  client.release();
+	const client = await pool.connect();
+	try {
+		const restaurantAddresses = await client.query(
+			"SELECT streetname,postcode,town FROM addresses JOIN restaurants ON addresses.uuid = restaurants.address_id "
+		);
+		res.status(200).json({ addresses: restaurantAddresses.rows });
+	} catch (err) {
+		console.log(err);
+		res
+			.status(400)
+			.json({ message: "Failed to fetch all restaurant addresses" });
+	}
+	client.release();
 });
 
-router.get("/details/search/:postcodeVal/proximity/:proximity", async function (req, res) {
-  const cookie = await req.cookies;
-  const client = await pool.connect();
-  const { postcodeVal, proximity } = req.params;
-  const today = new Date();
-  const currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+router.get(
+	"/details/search/:postcodeVal/proximity/:proximity",
+	async function (req, res) {
+		const client = await pool.connect();
+		const { postcodeVal, proximity } = req.params;
+		// const today = new Date();
+		// const currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
-  const sqlQuery = await client.query(`SELECT user_id FROM sessions WHERE uuid=$1`, [cookie.sessionID]);
-  const user_id_val = sqlQuery.rows[0].user_id;
-  const customer_id_val = await client.query("SELECT customer_id FROM users WHERE id=$1", [user_id_val]);
-  const customer_id = customer_id_val.rows[0].customer_id;
+		///OBTAINING POSTCODE OF RESTAURANTS FROM DATABASE////
 
-  const orderQuery = await client.query(`SELECT * FROM orders WHERE customer_id=$1 AND (CURRENT_TIMESTAMP::date = created_at::date)`, [customer_id]);
+		const postcodeObj = await client.query(
+			"SELECT postcode FROM addresses JOIN restaurants ON addresses.uuid = restaurants.address_id"
+		);
+		const postcodeObjRows = postcodeObj.rows;
+		let postcode = [postcodeVal];
+		for (let i = 0; i < postcodeObjRows.length; i++) {
+			postcode.push(postcodeObjRows[i].postcode);
+		}
 
-  ///OBTAINING POSTCODE OF RESTAURANTS FROM DATABASE////
+		let postcodeString = { postcodes: postcode };
 
-  const postcodeObj = await client.query("SELECT postcode FROM addresses JOIN restaurants ON addresses.uuid = restaurants.address_id");
-  const postcodeObjRows = postcodeObj.rows;
-  let postcode = [postcodeVal];
-  for (let i = 0; i < postcodeObjRows.length; i++) {
-    postcode.push(postcodeObjRows[i].postcode);
-  }
+		///MAKING FETCH REQUEST TO API TO GET LONG LAT OF EACH RESTAURANT////
+		getlocationAPI(postcodeString, postcode, client);
 
-  let postcodeString = { postcodes: postcode };
+		try {
+			const restaurantDetails = await client.query(
+				"SELECT id,name,town,start_time,end_time,distance_from_post,imageurl FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid WHERE distance_from_post < $1",
+				[proximity]
+			);
 
-  ///MAKING FETCH REQUEST TO API TO GET LONG LAT OF EACH RESTAURANT////
-  getlocationAPI(postcodeString, postcode, client);
+			const filteredRestaurantDetails = restaurantDetails.rows.map(
+				(restaurant) => {
+					if (restaurant.current_slots === 0) {
+						restaurant.available = false;
+						return restaurant;
+					} else {
+						restaurant.available = true;
+						return restaurant;
+					}
+				}
+			);
 
-  try {
-    const restaurantDetails = await client.query(
-      "SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid WHERE distance_from_post < $1",
-      [proximity]
-    );
+			res.status(200).json({ restaurantDetails: filteredRestaurantDetails });
+		} catch (err) {
+			console.log(err);
+			res
+				.status(400)
+				.json({ message: "Failed to fetch all restaurant details" });
+		}
 
-    const filteredRestaurantDetails = restaurantDetails.rows.map((restaurant) => {
-      if (currentTime < restaurant.start_time || currentTime > restaurant.end_time || restaurant.current_slots === 0) {
-        restaurant.available = false;
-        return restaurant;
-      } else {
-        restaurant.available = true;
-        return restaurant;
-      }
-    });
-
-    if (orderQuery.rows.length > 0) {
-      res.status(200).json({
-        message: "Already Booked!",
-        restaurantsData: filteredRestaurantDetails,
-      });
-    } else {
-      res.status(200).json({ restaurantsData: filteredRestaurantDetails });
-    }
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({ message: "Failed to fetch all restaurant details" });
-  }
-
-  client.release();
-});
+		client.release();
+	}
+);
 
 //Get desired restaurant
 router.get("/:id", async function (req, res) {
+
   const client = await pool.connect();
   const { id } = req.params;
+  const activeSession = await req.cookies.sessionID;
+
   try {
+    const checkUser = await client.query(
+      "SELECT * FROM users JOIN sessions ON users.id = sessions.user_id WHERE uuid = $1",
+      [activeSession]
+    );
     const restaurantDetails = await client.query(
-      "SELECT *, (AVG(score) AS rating) FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid JOIN available_days ON available_days.restaurant_id = restaurants.id JOIN reviews ON reviews.restaurant_id = restaurants.id WHERE restaurants.id = $1",
+      "SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid JOIN available_days ON available_days.restaurant_id = restaurants.id WHERE restaurants.id = $1",
       [id]
     );
-    res.status(200).json({ restaurant: restaurantDetails.rows });
+
+    const restaurantReviews = await client.query(
+      "SELECT AVG(score) FROM reviews WHERE restaurant_id = $1 GROUP BY restaurant_id",
+      [id]
+    );
+
+    // const averageRestaurantScore = restaurantReviews.rows[0].avg;
+    const averageRestaurantScore = 0;
+
+    if (checkUser.rows.length > 0) {
+      const customer_id = await client.query(
+        "SELECT customer_id FROM users WHERE id = $1",
+        [checkUser.rows[0].user_id]
+      );
+
+      const orderCheck = await client.query(
+        "SELECT * FROM orders  WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
+        [customer_id.rows[0].customer_id]
+      );
+
+      if (checkUser.rows[0].restaurant_id) {
+        return res.status(200).json({
+          restaurant: restaurantDetails.rows,
+          review: averageRestaurantScore,
+          loggedIn: true,
+          ordered: false,
+          type: "restaurant",
+        });
+      }
+
+      if (orderCheck.rows.length > 0) {
+        res.status(200).json({
+          restaurant: restaurantDetails.rows,
+          review: averageRestaurantScore,
+          loggedIn: true,
+          ordered: true,
+          type: "customer",
+        });
+      } else {
+        res.status(200).json({
+          restaurant: restaurantDetails.rows,
+          review: averageRestaurantScore,
+          loggedIn: true,
+          ordered: false,
+          type: "customer",
+        });
+      }
+    } else {
+      res.status(200).json({
+        restaurant: restaurantDetails.rows,
+        review: averageRestaurantScore,
+        loggedIn: false,
+      });
+    }
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "Failed to fetch restaurant" });
@@ -128,66 +183,65 @@ router.get("/:id", async function (req, res) {
 
 //Get all past orders for the restaurant
 router.get("/:id/orders", async function (req, res) {
-  const client = await pool.connect();
-  const { id } = req.params;
+	const client = await pool.connect();
+	const { id } = req.params;
 
-  try {
-    const allRestaurantOrders = await client.query(
-      "SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id WHERE orders.restaurant_id = $1 AND (CURRENT_TIMESTAMP::date != created_at::date)",
-      [id]
-    );
-    res.status(200).json({
-      allRestaurantOrders: allRestaurantOrders.rows,
-      message: "Success! Fetched all past orders",
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({ message: "Failed to fetch orders for the day." });
-  }
+	try {
+		const allRestaurantOrders = await client.query(
+			"SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id WHERE orders.restaurant_id = $1 AND (CURRENT_TIMESTAMP::date != created_at::date)",
+			[id]
+		);
+		res.status(200).json({
+			allRestaurantOrders: allRestaurantOrders.rows,
+			message: "Success! Fetched all past orders",
+		});
+	} catch (err) {
+		console.log(err);
+		res.status(400).json({ message: "Failed to fetch orders for the day." });
+	}
 });
 
 //Gets all restaurant orders for the day
 router.get("/:id/orders/today", async function (req, res) {
-  const client = await pool.connect();
-  const { id } = req.params;
+	const client = await pool.connect();
+	const { id } = req.params;
 
-  try {
-    const restaurantOrdersToday = await client.query(
-      "SELECT * FROM orders JOIN restaurants ON orders.restaurant_id = restaurants.id WHERE orders.restaurant_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
-      [id]
-    );
-    res.status(200).json({
-      ordersToday: restaurantOrdersToday.rows,
-      message: "Success! Fetched all orders for the day.",
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({ message: "Failed to fetch orders for the day." });
-  }
+	try {
+		const restaurantOrdersToday = await client.query(
+			"SELECT * FROM orders JOIN restaurants ON orders.restaurant_id = restaurants.id WHERE orders.restaurant_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
+			[id]
+		);
+		res.status(200).json({
+			ordersToday: restaurantOrdersToday.rows,
+			message: "Success! Fetched all orders for the day.",
+		});
+	} catch (err) {
+		console.log(err);
+		res.status(400).json({ message: "Failed to fetch orders for the day." });
+	}
 });
 
 //Gets all user account details
 
 router.get("/:user_id/account_details", async function (req, res) {
-  const client = await pool.connect();
-  const { user_id } = req.params;
+	const client = await pool.connect();
+	const { user_id } = req.params;
 
-  try {
-    const accountDetails = await client.query(
-      "SELECT * FROM users JOIN restaurants ON users.restaurant_id  = restaurants.id JOIN addresses ON restaurant.address_id = addresses.id WHERE users.id = $1 ",
-      [user_id]
-    );
-    res.status(200).json({ accountDetails: accountDetails });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({ message: "Failed to fetch restau" });
-  }
+	try {
+		const accountDetails = await client.query(
+			"SELECT * FROM users JOIN restaurants ON users.restaurant_id  = restaurants.id JOIN addresses ON restaurant.address_id = addresses.id WHERE users.id = $1 ",
+			[user_id]
+		);
+		res.status(200).json({ accountDetails: accountDetails });
+	} catch (err) {
+		console.log(err);
+		res.status(400).json({ message: "Failed to fetch restau" });
+	}
 });
 
 //Update all restaurants details
 
 router.put("/:id/all/:uuid", async function (req, res) {
-
 	const client = await pool.connect();
 	const { id, uuid } = req.params;
 	const {
@@ -247,7 +301,6 @@ router.put("/:id/all/:uuid", async function (req, res) {
 
 //Update restaurants' login details
 router.put("/:id/account", async function (req, res) {
-
 	const client = await pool.connect();
 	const { id } = req.params;
 	const { email, telephone, password } = req.body;
@@ -280,54 +333,69 @@ router.put("/:id/account", async function (req, res) {
 	}
 
 	client.release();
-
 });
 
 //Update restaurants' address details
 router.put("/:id/address/:uuid", async function (req, res) {
-  const client = await pool.connect();
-  const { uuid } = req.params;
-  const { street_name, postcode, town } = req.body;
+	const client = await pool.connect();
+	const { uuid } = req.params;
+	const { street_name, postcode, town } = req.body;
 
-  try {
-
-    await client.query(
-      "UPDATE addresses SET streetname = $1 , postcode = $2, town = $3 WHERE uuid = $4",
-      [street_name, postcode, town, uuid]
-    );
-    res
-      .status(200)
-      .json({ message: "Your address details have been updated!" });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({ message: "Failed to update address details" });
-  }
-  client.release();
+	try {
+		await client.query(
+			"UPDATE addresses SET streetname = $1 , postcode = $2, town = $3 WHERE uuid = $4",
+			[street_name, postcode, town, uuid]
+		);
+		res
+			.status(200)
+			.json({ message: "Your address details have been updated!" });
+	} catch (err) {
+		console.log(err);
+		res.status(400).json({ message: "Failed to update address details" });
+	}
+	client.release();
 });
 
 //Update restaurants' personal details
 router.put("/:id/details", async function (req, res) {
-  const client = await pool.connect();
-  const { id } = req.params;
-  const { name, description, start_time, end_time, current_slots, imageURL, logoURL } = req.body;
+	const client = await pool.connect();
+	const { id } = req.params;
+	const {
+		name,
+		description,
+		start_time,
+		end_time,
+		current_slots,
+		imageURL,
+		logoURL,
+	} = req.body;
 
-  try {
-    await client.query(
-      "UPDATE restaurants SET name = $1 , description= $2, start_time = $3, end_time = $4, current_slots = $5, imageURL =  $6 , logoURL = $7 WHERE id = $8",
-      [name, description, start_time, end_time, current_slots, imageURL, logoURL, id]
-    );
-    res.status(200).json({ message: "Your personal details have been updated!" });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({ message: "Failed to update personal details" });
-  }
-  client.release();
+	try {
+		await client.query(
+			"UPDATE restaurants SET name = $1 , description= $2, start_time = $3, end_time = $4, current_slots = $5, imageURL =  $6 , logoURL = $7 WHERE id = $8",
+			[
+				name,
+				description,
+				start_time,
+				end_time,
+				current_slots,
+				imageURL,
+				logoURL,
+				id,
+			]
+		);
+		res
+			.status(200)
+			.json({ message: "Your personal details have been updated!" });
+	} catch (err) {
+		console.log(err);
+		res.status(400).json({ message: "Failed to update personal details" });
+	}
+	client.release();
 });
 
 //Update restaurants' availability
 router.put("/:id/availability", async function (req, res) {
-
-
 	const client = await pool.connect();
 	const { id } = req.params;
 	const { M, TU, W, TH, F, SA, SU, start_time, end_time, current_slots } =
@@ -356,14 +424,11 @@ router.put("/:id/availability", async function (req, res) {
 		res.status(400).json({ message: "Failed to update availability" });
 	}
 	client.release();
-
-
 });
 
 //Update all restaurants' current slots to 10 when midnight hits
 
 router.put("/reset", async function (req, res) {
-
 	const client = await pool.connect();
 	const defaultCurrentSlots = 10;
 
@@ -378,14 +443,11 @@ router.put("/reset", async function (req, res) {
 		console.log(err);
 		res.status(400).json({ message: "Failed to reset current slots." });
 	}
-
-
 });
 
 //Mark order as collected once customer has collected it
 
 router.put("/:restaurant_id/customer/:customer_id", async function (req, res) {
-
 	const client = await pool.connect();
 	const { restaurant_id, customer_id } = req.params;
 
@@ -404,8 +466,6 @@ router.put("/:restaurant_id/customer/:customer_id", async function (req, res) {
 });
 
 async function getlocationAPI(postcodeString, postcode, client) {
-
-
 	const response = await fetch("https://api.postcodes.io/postcodes", {
 		method: "POST",
 		headers: {
@@ -449,8 +509,6 @@ async function getlocationAPI(postcodeString, postcode, client) {
 			[parseInt(distances[i]), postcodeArrObj[i].Postcode]
 		);
 	}
-
-
 }
 
 module.exports = router;

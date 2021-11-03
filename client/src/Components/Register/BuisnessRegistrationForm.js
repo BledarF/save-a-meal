@@ -12,7 +12,7 @@ const validationSchema = Yup.object().shape({
   password: Yup.string()
     .required("The Password field is required")
     .matches(
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*)[A-Za-z\d]{6,}$/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\w\W]{8,}$/,
       `Must Contain 8 Characters, One Uppercase, One Lowercase,
       One Number and one special case Character [@$!%*#?&-_]`
     ),
@@ -28,40 +28,55 @@ const validationSchema = Yup.object().shape({
   passwordConfirmation: Yup.string()
     .required("Password confirmation is required")
     .oneOf([Yup.ref("password"), null], "Passwords must match"),
+  current_slots: Yup.number()
+    .typeError("Must be a number")
+    .positive("Must be a positive number"),
+  logo_url: Yup.string().url("Must be a valid URL"),
+  image_url: Yup.string().url("Must be a valid URL"),
 });
 
-async function postRegister(values) {
-  const requestOptions = {
-    method: "POST",
-    headers: {
-      Access: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(values),
-  };
-  const response = await fetch(
-    "http://localhost:8080/api/users/restaurant",
-    requestOptions
-  );
-  const json = await response.json();
-  console.log(json.Message);
-}
-
-function BuisnessRegistrationForm() {
+function BuisnessRegistrationForm(props) {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  const onSubmit = async (values, { setSubmitting }) => {
-    console.log(values);
-
-    // FETCH POST REQUEST
+  async function postRegister(values) {
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        Access: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+    };
     try {
-      postRegister(values);
-      setMessage("Success: User Created! Please Login.");
+      const response = await fetch(
+        "http://localhost:8080/api/users/restaurant",
+        requestOptions
+      );
+      const json = await response.json();
+      console.log(json.Message);
+      if (response.status === 200) {
+        setError("");
+        setMessage("Success: User Created! Please Login.");
+        closeModal();
+      } else {
+        setError(json.message);
+        setMessage("");
+      }
     } catch {
-      setError("Error: not connected to the server");
+      setError("Error with server. ");
+      setMessage("");
     }
+  }
 
+  const closeModal = () => {
+    setTimeout(() => {
+      props.setShowModal(false);
+    }, 1000);
+  };
+
+  const onSubmit = async (values, { setSubmitting }) => {
+    postRegister(values);
     setSubmitting(false); //// Important
   };
 
@@ -167,6 +182,7 @@ function BuisnessRegistrationForm() {
         <FormikStep
           label="Login Info"
           withIcons="fa fa-lock"
+          withNumbers
           iconColor="white"
           circleColor="#F59E0B"
         >

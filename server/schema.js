@@ -84,11 +84,16 @@ async function addSeedData() {
   const macdees = `INSERT INTO restaurants(name,address_id,telephone,description,start_time,end_time,current_slots, imageURL, logoURL)
   			VALUES('McDonalds',1120,111,'We are a fast food restaurant which sells poor quality food pls buy from us if you want to get fatfat :).' , '03:01:00',' 03:02:00', 100, 'https://images.barrons.com/im-269232?width=1280&size=1.33333333', 'https://cdn.iconscout.com/icon/free/png-256/mcdonalds-3384870-2822951.png')`;
 
-  const sql7 = `INSERT INTO users(email,password,customer_id) VALUES('BledarF@hotmail.com','thisismypassword',1)`;
-  const sql8 = `INSERT INTO users(email,password,restaurant_id )VALUES('PretBarbican@hotmail.com','thisismypassword',1)`;
-  const sql9 = `INSERT INTO users(email,password,restaurant_id )VALUES('PretWaterloo@hotmail.com','thisismypassword',2)`;
+  const sql5 = `INSERT INTO available_days(restaurant_id,m,tu,w,th,f,sa,su) VALUES(1,true,true,false,false,false,true,false)`;
 
-  const sql10 = `INSERT INTO orders(customer_id,restaurant_id,collected,booking_id)VALUES(1,1,false,'UX5666')`;
+  const sql6 = `INSERT INTO users(email,password,customer_id) VALUES('BledarF@hotmail.com','thisismypassword',1)`;
+  const sql7 = `INSERT INTO users(email,password,restaurant_id )VALUES('PretBarbican@hotmail.com','thisismypassword',1)`;
+  const sql8 = `INSERT INTO users(email,password,restaurant_id )VALUES('PretWaterloo@hotmail.com','thisismypassword',2)`;
+
+  const sql9 = `INSERT INTO orders(customer_id,restaurant_id,collected,booking_id)VALUES(1,1,false,'UX5666')`;
+
+  const sql10 = `INSERT INTO reviews(score,order_id,restaurant_id) VALUES(3,1,1)`;
+  const sql11 = `INSERT INTO reviews(score,order_id,restaurant_id) VALUES(4,1,1)`;
 
   try {
     await client.query(sql1);
@@ -99,10 +104,13 @@ async function addSeedData() {
     await client.query(pretW);
     await client.query(kfc);
     await client.query(macdees);
+    await client.query(sql5);
+    await client.query(sql6);
     await client.query(sql7);
     await client.query(sql8);
     await client.query(sql9);
     await client.query(sql10);
+    await client.query(sql11);
 
     console.log("Data Seeded");
     return;

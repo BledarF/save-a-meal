@@ -8,6 +8,9 @@ function Results(props) {
   const { restaurants, bookingStatus } = props;
   const { setBookingStatus } = props;
 
+
+  console.log(props);
+
   const getRestaurants = function getRestaurantsListAsComponents() {
     return restaurants.map((restaurant) => (
       <RestaurantCard
@@ -19,17 +22,11 @@ function Results(props) {
   };
 
   return (
-    <main className="results-wrapper grid grid-cols-3 gap-4 p-2">
-      {
-        <RestaurantCard
-        // details={restaurant}
-        // setShowModal={setShowModal}
-        // setModalDetails={setModalDetails}
-        />
-      }
+    <main className="results-wrapper grid grid-cols-4 gap-4 p-2">
+      {getRestaurants()}
       {showModal && (
         <RestaurantModal
-          restaurantDetails={modalDetails}
+          restaurantId={modalDetails.id}
           setShowModal={setShowModal}
           bookingStatus={bookingStatus}
           setBookingStatus={setBookingStatus}
