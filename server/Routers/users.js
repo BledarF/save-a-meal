@@ -27,12 +27,12 @@ router.post("/customer", async function (req, res) {
   const passwordEncrypted = await bcrypt.hash(password, salt);
   const duplicateSQL = `SELECT email FROM users WHERE email=$1`;
   const duplicate = await client.query(duplicateSQL, [email]);
-  // console.log(duplicate.rows);
+  //console.log(duplicate.rows);
 
   if (duplicate.rows.length !== 0) {
     res.json(
       {
-        Message: "This email is taken. Please try a different one or login.",
+        message: "This email is taken. Please try a different one or login.",
       },
       400
     );
@@ -65,12 +65,21 @@ router.post("/customer", async function (req, res) {
     ]);
   } catch (error) {
     console.log(error);
-    res.status(400).json({ message: "Error: telephone already exists" });
+    res.status(400).json({ message: "Error: telephone is already taken" });
     return;
   }
-  const addingUsersSQL = `INSERT INTO users(password,email,customer_id) VALUES ($1,$2,$3)`;
-  await client.query(addingUsersSQL, [passwordEncrypted, email, customerIDGen]);
-  res.status(200).json({ message: "User Created!" });
+
+  try {
+    const addingUsersSQL = `INSERT INTO users(password,email,customer_id) VALUES ($1,$2,$3)`;
+    await client.query(addingUsersSQL, [
+      passwordEncrypted,
+      email,
+      customerIDGen,
+    ]);
+    res.status(200).json({ message: "User Created!" });
+  } catch {
+    res.status(400).json({ message: "Something has gone wrong" });
+  }
 
   await client.release();
 });

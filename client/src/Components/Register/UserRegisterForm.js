@@ -51,13 +51,13 @@ function UserRegisterForm(props) {
       body: JSON.stringify(values),
     };
     try {
+      console.log("FETCHING");
       const response = await fetch(
         "http://localhost:8080/api/users/customer",
         requestOptions
       );
       const json = await response.json();
       console.log(json.message);
-      console.log(response.status);
       if (response.status === 200) {
         setError("");
         setMessage("Success: User Created! Please Login.");
@@ -73,11 +73,7 @@ function UserRegisterForm(props) {
   }
 
   const onSubmit = async (values, { setSubmitting }) => {
-    console.log(values);
-
     postRegister(values);
-
-    // FETCH POST REQUEST
     setSubmitting(false); //// Important
   };
 
@@ -91,8 +87,6 @@ function UserRegisterForm(props) {
           lastName: "",
           email: "",
           password: "",
-          privacy: false,
-          description: "",
           town: "",
           postcode: "",
           streetname: "",
