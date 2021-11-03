@@ -50,19 +50,20 @@ router.get("/check", async function (req, res) {
 });
 
 router.delete("/", async function (req, res) {
-	const client = await pool.connect();
-	const activeSession = await req.cookies;
-	const cookieUUID = activeSession.sessionID;
-	// console.log(cookieUUID)
 
-	res
-		.cookie("sessionID", cookieUUID, {
-			expires: new Date(Date.now() - 900000),
-			httpOnly: true,
-		})
-		.send("cookie updated");
+  const client = await pool.connect();
+  const activeSession = await req.cookies;
+  const cookieUUID = activeSession.sessionID;
 
-	client.release();
+  res
+    .cookie("sessionID", cookieUUID, {
+      expires: new Date(Date.now() - 900000),
+      httpOnly: true,
+    })
+    .send("cookie updated");
+
+  client.release();
+
 });
 
 module.exports = router;
