@@ -20,13 +20,23 @@ function RestaurantModal(props) {
   }, []);
 
   async function getRestaurantDetails(restaurantId) {
+    const requestOptions = {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        Access: "application/json",
+        "Content-Type": "application/json",
+      },
+    };
     const response = await fetch(
-      `http://localhost:8080/api/restaurants/${restaurantId}`
+      `http://localhost:8080/api/restaurants/${restaurantId}`,
+      requestOptions
     );
     const jsonResponse = await response.json();
     const restaurantDetails = jsonResponse.restaurant[0];
     const restaurantReview = jsonResponse.review;
     const loginStatus = jsonResponse.loggedIn;
+
     setLoginStatus(loginStatus);
 
     const {
