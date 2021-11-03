@@ -13,11 +13,13 @@
     "date-fns": "^2.25.0",
     "formik": "^2.2.9",
     "formik-stepper": "^0.0.1",
+    "node-sass": "^6.0.1",
     "password-validator": "^5.1.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^5.3.0",
     "react-scripts": "4.0.3",
+    "sass": "^1.43.4",
     "web-vitals": "^1.0.1",
     "yup": "^0.32.11"
   },
@@ -47,6 +49,9 @@
   },
   "proxy": "http://localhost:8080",
   "devDependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
     "autoprefixer": "^9.8.8",
     "postcss": "^7.0.39",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17"
