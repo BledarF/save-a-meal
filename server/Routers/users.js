@@ -124,6 +124,7 @@ router.post("/restaurant", async function (req, res) {
 
   console.log(duplicate.rows);
   if (duplicate.rows.length !== 0) {
+    console.log("HERE");
     res.status(400).json({
       message: "This email is taken. Please try a different one or login.",
     });
@@ -159,7 +160,8 @@ router.post("/restaurant", async function (req, res) {
       end_time_format,
       current_slots,
     ]);
-  } catch {
+  } catch (error) {
+    console.log(error);
     res.status(400).json({ message: "Error with telephone" });
     client.release();
     return;
@@ -181,7 +183,7 @@ router.post("/restaurant", async function (req, res) {
   try {
     const addingAvailDays = `INSERT INTO available_days(restaurant_id,M,TU,W,TH,F,SA,SU) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`;
     await client.query(addingAvailDays, [
-      restaurant_id,
+      restaurantIDGen,
       M,
       TU,
       W,
@@ -190,7 +192,7 @@ router.post("/restaurant", async function (req, res) {
       SA,
       SU,
     ]);
-    res.status(200).json({ message: "User Created!" }, 200);
+    res.status(200).json({ message: "User Created!" });
   } catch {
     res.status(400).json({ message: "Error with available days" });
   }

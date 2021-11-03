@@ -28,6 +28,9 @@ const validationSchema = Yup.object().shape({
   passwordConfirmation: Yup.string()
     .required("Password confirmation is required")
     .oneOf([Yup.ref("password"), null], "Passwords must match"),
+  current_slots: Yup.number()
+    .typeError("Must be a number")
+    .positive("Must be a positive number"),
 });
 
 function BuisnessRegistrationForm(props) {
@@ -50,6 +53,14 @@ function BuisnessRegistrationForm(props) {
       );
       const json = await response.json();
       console.log(json.Message);
+      if (response.status === 200) {
+        setError("");
+        setMessage("Success: User Created! Please Login.");
+        closeModal();
+      } else {
+        setError(json.message);
+        setMessage("");
+      }
     } catch {
       setError("Error with server. ");
       setMessage("");
@@ -63,12 +74,7 @@ function BuisnessRegistrationForm(props) {
   };
 
   const onSubmit = async (values, { setSubmitting }) => {
-    console.log(values);
-
     postRegister(values);
-    setMessage("Success: User Created! Please Login.");
-    closeModal();
-
     setSubmitting(false); //// Important
   };
 
