@@ -466,6 +466,8 @@ async function getlocationAPI(postcodeString, postcode, client) {
 
   let addressInfo = [];
   for (let i = 0; i < result.length; i++) {
+    console.log("here");
+    console.log(result[i]);
     addressInfo.push({
       latitude: result[i].result.latitude,
       longitude: result[i].result.longitude,

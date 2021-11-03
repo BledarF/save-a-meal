@@ -29,46 +29,52 @@ function RestaurantModal(props) {
         "Content-Type": "application/json",
       },
     };
-    const response = await fetch(
-      `http://localhost:8080/api/restaurants/${restaurantId}`,
-      requestOptions
-    );
-    const jsonResponse = await response.json();
-    console.log(jsonResponse);
-    const restaurantDetails = jsonResponse.restaurant[0];
-    const restaurantReview = jsonResponse.review;
-    const resLoginStatus = jsonResponse.loggedIn;
-    const resOrderCheck = jsonResponse.ordered;
-    setLoginStatus(resLoginStatus);
-    setOrderCheck(resOrderCheck);
 
-    const {
-      name,
-      town,
-      logourl,
-      streetname,
-      postcode,
-      imageurl: imageUrl,
-      start_time: startTime,
-      end_time: endTime,
-      description,
-      current_slots: slots,
-    } = restaurantDetails;
-    setModalHeaderDetails({
-      name: name,
-      town: town,
-      logo: logourl,
-    });
-    setModalBodyDetails({
-      streetname: streetname,
-      postcode: postcode,
-      image_url: imageUrl,
-      startTime: startTime,
-      endTime: endTime,
-      description: description,
-      slots: slots,
-      review: restaurantReview,
-    });
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/restaurants/${restaurantId}`,
+        requestOptions
+      );
+      const jsonResponse = await response.json();
+      console.log(jsonResponse);
+      const restaurantDetails = jsonResponse.restaurant[0];
+      const restaurantReview = jsonResponse.review;
+      const resLoginStatus = jsonResponse.loggedIn;
+      const resOrderCheck = jsonResponse.ordered;
+      setLoginStatus(resLoginStatus);
+      setOrderCheck(resOrderCheck);
+
+      console.log(restaurantDetails);
+      const {
+        name,
+        town,
+        logourl,
+        streetname,
+        postcode,
+        imageurl: imageUrl,
+        start_time: startTime,
+        end_time: endTime,
+        description,
+        current_slots: slots,
+      } = restaurantDetails;
+      setModalHeaderDetails({
+        name: name,
+        town: town,
+        logo: logourl,
+      });
+      setModalBodyDetails({
+        streetname: streetname,
+        postcode: postcode,
+        image_url: imageUrl,
+        startTime: startTime,
+        endTime: endTime,
+        description: description,
+        slots: slots,
+        review: restaurantReview,
+      });
+    } catch {
+      alert("Something has gone wrong with the server.");
+    }
   }
 
   const { setShowModal } = props;
