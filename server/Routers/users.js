@@ -36,6 +36,7 @@ router.post("/customer", async function (req, res) {
       },
       400
     );
+    await client.release();
     return;
   }
   const addressIDGen = crypto.randomInt(0, 1000000);
@@ -49,7 +50,8 @@ router.post("/customer", async function (req, res) {
       town,
     ]);
   } catch {
-    res.status(400).json({ message: "Error with address. " });
+    res.status(400).json({ message: "Error with address." });
+    await client.release();
     return;
   }
 
@@ -66,6 +68,7 @@ router.post("/customer", async function (req, res) {
   } catch (error) {
     console.log(error);
     res.status(400).json({ message: "Error: telephone is already taken" });
+    await client.release();
     return;
   }
 
@@ -108,6 +111,8 @@ router.post("/restaurant", async function (req, res) {
     F,
     SA,
     SU,
+    logo_url,
+    image_url,
   } = await req.body;
 
   const salt = await bcrypt.genSalt(8);
@@ -116,63 +121,80 @@ router.post("/restaurant", async function (req, res) {
   const duplicate = await client.query(duplicateSQL, [email]);
   const start_time_format = startTime + ":00";
   const end_time_format = endTime + ":00";
-  try {
-    if (duplicate.rows.length !== 0) {
-      res.json(
-        {
-          Message: "This email is taken. Please try a different one or login.",
-        },
-        400
-      );
-    } else {
-      const addressIDGen = crypto.randomInt(0, 1000000);
-      const addingAddressSQL = `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES ($1,$2,$3,$4)`;
-      await client.query(addingAddressSQL, [
-        addressIDGen,
-        streetname,
-        postcode,
-        town,
-      ]);
 
-      const addingUserInfoSQL = `INSERT INTO restaurants (name,address_id,telephone,description,start_time,end_time,current_slots) VALUES ($1,$2,$3,$4,$5,$6,$7)`;
-      await client.query(addingUserInfoSQL, [
-        name,
-        addressIDGen,
-        telephone,
-        description,
-        start_time_format,
-        end_time_format,
-        current_slots,
-      ]);
-
-      const getUserId = `SELECT id FROM restaurants WHERE address_id=$1`;
-      const userIdSQL = await client.query(getUserId, [addressIDGen]);
-
-      restaurant_id = userIdSQL.rows[0].id;
-      const addingRestaurantSQL = `INSERT INTO users(password,email,restaurant_id) VALUES ($1,$2,$3)`;
-      await client.query(addingRestaurantSQL, [
-        passwordEncrypted,
-        email,
-        restaurant_id,
-      ]);
-
-      const addingAvailDays = `INSERT INTO available_days(restaurant_id,M,TU,W,TH,F,SA,SU) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`;
-      await client.query(addingAvailDays, [
-        restaurant_id,
-        M,
-        TU,
-        W,
-        TH,
-        F,
-        SA,
-        SU,
-      ]);
-
-      res.status(200).json({ Message: "User Created!" }, 200);
-    }
-  } catch (error) {
-    res.status(400).json({ Message: "Server error" });
+  console.log(duplicate.rows);
+  if (duplicate.rows.length !== 0) {
+    res.status(400).json({
+      message: "This email is taken. Please try a different one or login.",
+    });
+    client.release();
+    return;
   }
+
+  const addressIDGen = crypto.randomInt(0, 1000000);
+  try {
+    const addingAddressSQL = `INSERT INTO addresses(uuid,streetname,postcode,town) VALUES ($1,$2,$3,$4)`;
+    await client.query(addingAddressSQL, [
+      addressIDGen,
+      streetname,
+      postcode,
+      town,
+    ]);
+  } catch {
+    res.status(400).json({ message: "Error with address" });
+    client.release();
+    return;
+  }
+
+  const restaurantIDGen = crypto.randomInt(0, 1000000);
+  try {
+    const addingUserInfoSQL = `INSERT INTO restaurants (id,name,address_id,telephone,description,start_time,end_time,current_slots) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`;
+    await client.query(addingUserInfoSQL, [
+      restaurantIDGen,
+      name,
+      addressIDGen,
+      telephone,
+      description,
+      start_time_format,
+      end_time_format,
+      current_slots,
+    ]);
+  } catch {
+    res.status(400).json({ message: "Error with telephone" });
+    client.release();
+    return;
+  }
+
+  try {
+    const addingRestaurantSQL = `INSERT INTO users(password,email,restaurant_id) VALUES ($1,$2,$3)`;
+    await client.query(addingRestaurantSQL, [
+      passwordEncrypted,
+      email,
+      restaurantIDGen,
+    ]);
+  } catch {
+    res.status(400).json({ message: "Error with adding the user" });
+    client.release();
+    return;
+  }
+
+  try {
+    const addingAvailDays = `INSERT INTO available_days(restaurant_id,M,TU,W,TH,F,SA,SU) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`;
+    await client.query(addingAvailDays, [
+      restaurant_id,
+      M,
+      TU,
+      W,
+      TH,
+      F,
+      SA,
+      SU,
+    ]);
+    res.status(200).json({ message: "User Created!" }, 200);
+  } catch {
+    res.status(400).json({ message: "Error with available days" });
+  }
+
   client.release();
 });
 

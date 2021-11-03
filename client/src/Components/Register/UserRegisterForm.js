@@ -51,7 +51,6 @@ function UserRegisterForm(props) {
       body: JSON.stringify(values),
     };
     try {
-      console.log("FETCHING");
       const response = await fetch(
         "http://localhost:8080/api/users/customer",
         requestOptions

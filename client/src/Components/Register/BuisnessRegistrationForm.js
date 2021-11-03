@@ -30,26 +30,31 @@ const validationSchema = Yup.object().shape({
     .oneOf([Yup.ref("password"), null], "Passwords must match"),
 });
 
-async function postRegister(values) {
-  const requestOptions = {
-    method: "POST",
-    headers: {
-      Access: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(values),
-  };
-  const response = await fetch(
-    "http://localhost:8080/api/users/restaurant",
-    requestOptions
-  );
-  const json = await response.json();
-  console.log(json.Message);
-}
-
 function BuisnessRegistrationForm(props) {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+
+  async function postRegister(values) {
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        Access: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+    };
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/users/restaurant",
+        requestOptions
+      );
+      const json = await response.json();
+      console.log(json.Message);
+    } catch {
+      setError("Error with server. ");
+      setMessage("");
+    }
+  }
 
   const closeModal = () => {
     setTimeout(() => {
@@ -60,14 +65,9 @@ function BuisnessRegistrationForm(props) {
   const onSubmit = async (values, { setSubmitting }) => {
     console.log(values);
 
-    // FETCH POST REQUEST
-    try {
-      postRegister(values);
-      setMessage("Success: User Created! Please Login.");
-      closeModal();
-    } catch {
-      setError("Error: not connected to the server");
-    }
+    postRegister(values);
+    setMessage("Success: User Created! Please Login.");
+    closeModal();
 
     setSubmitting(false); //// Important
   };
