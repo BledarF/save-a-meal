@@ -91,7 +91,7 @@ function LoginForm(props) {
                   className="p-2 rounded-sm border border-solid border-gray-100"
                   id="email"
                   name="email"
-                  placeholder="jane@acme.com"
+                  placeholder="janesmith@gmail.com"
                   type="email"
                 />
 
@@ -107,7 +107,7 @@ function LoginForm(props) {
                 <Field
                   id="password"
                   name="password"
-                  placeholder=""
+                  placeholder="password"
                   className="p-2  rounded-sm border-2 border-solid border-gray-100"
                 />
 

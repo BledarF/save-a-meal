@@ -109,14 +109,12 @@ router.get("/:id", async function (req, res) {
   const client = await pool.connect();
   const { id } = req.params;
   const activeSession = await req.cookies.sessionID;
-  console.log(activeSession);
 
   try {
     const checkUser = await client.query(
       "SELECT * FROM users JOIN sessions ON users.id = sessions.user_id WHERE uuid = $1",
       [activeSession]
     );
-    console.log(checkUser);
     const restaurantDetails = await client.query(
       "SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid JOIN available_days ON available_days.restaurant_id = restaurants.id WHERE restaurants.id = $1",
       [id]
@@ -129,13 +127,32 @@ router.get("/:id", async function (req, res) {
 
     // const averageRestaurantScore = restaurantReviews.rows[0].avg;
     const averageRestaurantScore = 0;
-    console.log(checkUser.rows);
+
     if (checkUser.rows.length > 0) {
-      res.status(200).json({
-        restaurant: restaurantDetails.rows,
-        review: averageRestaurantScore,
-        loggedIn: true,
-      });
+      const customer_id = await client.query(
+        "SELECT customer_id FROM users WHERE id = $1",
+        [checkUser.rows[0].user_id]
+      );
+
+      const orderCheck = await client.query(
+        "SELECT * FROM orders  WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
+        [customer_id.rows[0].customer_id]
+      );
+      if (orderCheck.rows.length > 0) {
+        res.status(200).json({
+          restaurant: restaurantDetails.rows,
+          review: averageRestaurantScore,
+          loggedIn: true,
+          ordered: true,
+        });
+      } else {
+        res.status(200).json({
+          restaurant: restaurantDetails.rows,
+          review: averageRestaurantScore,
+          loggedIn: true,
+          ordered: false,
+        });
+      }
     } else {
       res.status(200).json({
         restaurant: restaurantDetails.rows,

@@ -43,15 +43,16 @@ router.get("/check", async function (req, res) {
   );
   try {
     res.status(200).json({ id: sessionID.rows[0].user_id });
+
   } catch (error) {
-    console.log(error);
+    
     res.status(400).json({ message: "No one logged in" });
   }
+
   client.release();
 });
 
 router.delete("/", async function (req, res) {
-
 
   const client = await pool.connect();
   const activeSession = await req.cookies;
@@ -66,7 +67,6 @@ router.delete("/", async function (req, res) {
 
 
   client.release();
-
 });
 
 module.exports = router;
