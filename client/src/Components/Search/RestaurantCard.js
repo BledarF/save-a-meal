@@ -1,6 +1,8 @@
 import { useEffect, useContext, useState } from "react";
 
 function RestaurantCard(props) {
+
+
   let {
     imageurl: imgUrl,
     name,
@@ -9,6 +11,7 @@ function RestaurantCard(props) {
     end_time: endTime,
     distance_from_post: distance,
   } = props.details;
+
   const { setShowModal, setModalDetails } = props;
   startTime = startTime.slice(0, 5);
   endTime = endTime.slice(0, 5);
