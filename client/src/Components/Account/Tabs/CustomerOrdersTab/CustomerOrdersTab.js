@@ -6,15 +6,18 @@ function CustomerOrdersTab(props) {
   const [todaysOrders, setTodaysOrders] = useState(null);
 
   useEffect(() => {
+    console.log(props.customerId);
     if (props.customerId) {
       getTodaysOrders();
     }
-  }, []);
+  }, [props.customerId]);
 
   async function getTodaysOrders() {
     try {
       console.log(props.customerId);
-      const response = await fetch(`http://localhost:8080/api/customers/${props.customerId}/orders/today`);
+      const response = await fetch(
+        `http://localhost:8080/api/customers/${props.customerId}/orders/today`
+      );
       const jsonResponse = await response.json();
       console.log(jsonResponse);
       setTodaysOrders(jsonResponse);
