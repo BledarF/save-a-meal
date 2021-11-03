@@ -48,16 +48,14 @@ router.delete("/", async function (req, res) {
   const client = await pool.connect();
   const activeSession = await req.cookies;
   const cookieUUID = activeSession.sessionID;
-  // console.log(cookieUUID);
 
-  try {
-    res
-      .cookie("sessionID", cookieUUID, {
-        expires: new Date(Date.now() - 900000),
-        httpOnly: true,
-      })
-      .send("cookie updated");
-  } catch (err) {}
+  res
+    .cookie("sessionID", cookieUUID, {
+      expires: new Date(Date.now() - 900000),
+      httpOnly: true,
+    })
+    .send("cookie updated");
+
   client.release();
 });
 

@@ -111,11 +111,9 @@ router.get("/", async function (req, res) {
   try {
     const checkUser = await client.query("SELECT * FROM users JOIN sessions ON users.id = sessions.user_id WHERE uuid = $1", [activeSession]);
 
-    const id = checkUser.rows[0].id;
-    console.log("here");
-
     if (checkUser.rows.length > 0) {
       if (checkUser.rows[0].restaurant_id) {
+        const id = checkUser.rows[0].id;
         const accountDetails = await client.query(
           "SELECT * FROM users JOIN restaurants ON users.restaurant_id  = restaurants.id JOIN addresses ON restaurants.address_id = addresses.uuid JOIN available_days ON available_days.restaurant_id = restaurants.id WHERE users.id = $1 ",
           [id]
