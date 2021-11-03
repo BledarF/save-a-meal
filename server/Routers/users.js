@@ -4,6 +4,7 @@ var cookieParser = require("cookie-parser");
 const { Pool, Client, Query } = require("pg");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const isImageUrl = require("is-image-url");
 
 router.use(cookieParser());
 
@@ -87,8 +88,27 @@ router.post("/customer", async function (req, res) {
   await client.release();
 });
 
-module.exports = router;
+function getLogoURL(url) {
+  DEFAULT_LOGO_URL =
+    "https://cdn.iconscout.com/icon/premium/png-256-thumb/knife-and-fork-1960309-1655195.png";
 
+  if (!url || !isImageUrl(url)) {
+    return DEFAULT_LOGO_URL;
+  }
+
+  return url;
+}
+
+function getImageURL(url) {
+  DEFAULT_IMAGE_URL =
+    "https://images.unsplash.com/photo-1512152272829-e3139592d56f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1740&q=80";
+
+  if (!url || !isImageUrl(url)) {
+    return DEFAULT_IMAGE_URL;
+  }
+
+  return url;
+}
 //Create restaurant user
 router.post("/restaurant", async function (req, res) {
   const client = await pool.connect();
@@ -122,6 +142,9 @@ router.post("/restaurant", async function (req, res) {
   const start_time_format = startTime + ":00";
   const end_time_format = endTime + ":00";
 
+  const logoUrl = getLogoURL(logo_url);
+  const imageUrl = getImageURL(image_url);
+
   console.log(duplicate.rows);
   if (duplicate.rows.length !== 0) {
     console.log("HERE");
@@ -149,7 +172,7 @@ router.post("/restaurant", async function (req, res) {
 
   const restaurantIDGen = crypto.randomInt(0, 1000000);
   try {
-    const addingUserInfoSQL = `INSERT INTO restaurants (id,name,address_id,telephone,description,start_time,end_time,current_slots) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`;
+    const addingUserInfoSQL = `INSERT INTO restaurants (id,name,address_id,telephone,description,start_time,end_time,current_slots,imageurl,logourl) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`;
     await client.query(addingUserInfoSQL, [
       restaurantIDGen,
       name,
@@ -159,6 +182,8 @@ router.post("/restaurant", async function (req, res) {
       start_time_format,
       end_time_format,
       current_slots,
+      imageUrl,
+      logoUrl,
     ]);
   } catch (error) {
     console.log(error);
@@ -313,3 +338,5 @@ router.put("/address/:uuid", async function (req, res) {
 
   client.release();
 });
+
+module.exports = router;
