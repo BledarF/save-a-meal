@@ -51,57 +51,59 @@ router.get("/addresses", async function (req, res) {
 });
 
 router.get(
-	"/details/search/:postcodeVal/proximity/:proximity",
-	async function (req, res) {
-		const client = await pool.connect();
-		const { postcodeVal, proximity } = req.params;
-		// const today = new Date();
-		// const currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
-		///OBTAINING POSTCODE OF RESTAURANTS FROM DATABASE////
+  "/details/search/:postcodeVal/proximity/:proximity",
+  async function (req, res) {
+    const client = await pool.connect();
+    const { postcodeVal, proximity } = req.params;
+    // const today = new Date();
+    // const currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
-		const postcodeObj = await client.query(
-			"SELECT postcode FROM addresses JOIN restaurants ON addresses.uuid = restaurants.address_id"
-		);
-		const postcodeObjRows = postcodeObj.rows;
-		let postcode = [postcodeVal];
-		for (let i = 0; i < postcodeObjRows.length; i++) {
-			postcode.push(postcodeObjRows[i].postcode);
-		}
+    ///OBTAINING POSTCODE OF RESTAURANTS FROM DATABASE////
 
-		let postcodeString = { postcodes: postcode };
+    const postcodeObj = await client.query(
+      "SELECT postcode FROM addresses JOIN restaurants ON addresses.uuid = restaurants.address_id"
+    );
+    const postcodeObjRows = postcodeObj.rows;
+    let postcode = [postcodeVal];
+    for (let i = 0; i < postcodeObjRows.length; i++) {
+      postcode.push(postcodeObjRows[i].postcode);
+    }
 
-		///MAKING FETCH REQUEST TO API TO GET LONG LAT OF EACH RESTAURANT////
-		getlocationAPI(postcodeString, postcode, client);
+    let postcodeString = { postcodes: postcode };
 
-		try {
-			const restaurantDetails = await client.query(
-				"SELECT id,name,town,start_time,end_time,distance_from_post,imageurl FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid WHERE distance_from_post < $1",
-				[proximity]
-			);
+    ///MAKING FETCH REQUEST TO API TO GET LONG LAT OF EACH RESTAURANT////
+    await getlocationAPI(postcodeString, postcode, client);
 
-			const filteredRestaurantDetails = restaurantDetails.rows.map(
-				(restaurant) => {
-					if (restaurant.current_slots === 0) {
-						restaurant.available = false;
-						return restaurant;
-					} else {
-						restaurant.available = true;
-						return restaurant;
-					}
-				}
-			);
+    try {
+      const restaurantDetails = await client.query(
+        "SELECT id,name,town,start_time,end_time,distance_from_post,imageurl FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid WHERE distance_from_post < $1",
+        [proximity]
+      );
 
-			res.status(200).json({ restaurantDetails: filteredRestaurantDetails });
-		} catch (err) {
-			console.log(err);
-			res
-				.status(400)
-				.json({ message: "Failed to fetch all restaurant details" });
-		}
+      const filteredRestaurantDetails = restaurantDetails.rows.map(
+        (restaurant) => {
+          if (restaurant.current_slots === 0) {
+            restaurant.available = false;
+            return restaurant;
+          } else {
+            restaurant.available = true;
+            return restaurant;
+          }
+        }
+      );
 
-		client.release();
-	}
+      res.status(200).json({ restaurantDetails: filteredRestaurantDetails });
+    } catch (err) {
+      console.log(err);
+      res
+        .status(400)
+        .json({ message: "Failed to fetch all restaurant details" });
+    }
+
+    client.release();
+  }
+
 );
 
 //Get desired restaurant
@@ -110,7 +112,7 @@ router.get("/:id", async function (req, res) {
   const client = await pool.connect();
   const { id } = req.params;
   const activeSession = await req.cookies.sessionID;
-
+  let averageRestaurantScore;
   try {
     const checkUser = await client.query(
       "SELECT * FROM users JOIN sessions ON users.id = sessions.user_id WHERE uuid = $1",
@@ -126,8 +128,13 @@ router.get("/:id", async function (req, res) {
       [id]
     );
 
-    // const averageRestaurantScore = restaurantReviews.rows[0].avg;
-    const averageRestaurantScore = 0;
+    if (restaurantReviews.rows.length > 0) {
+      averageRestaurantScore = restaurantReviews.rows[0].avg;
+    } else {
+      averageRestaurantScore = "No reviews yet";
+    }
+
+    console.log(averageRestaurantScore);
 
     if (checkUser.rows.length > 0) {
       const customer_id = await client.query(
@@ -466,49 +473,57 @@ router.put("/:restaurant_id/customer/:customer_id", async function (req, res) {
 });
 
 async function getlocationAPI(postcodeString, postcode, client) {
-	const response = await fetch("https://api.postcodes.io/postcodes", {
-		method: "POST",
-		headers: {
-			Accept: "application/json",
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(postcodeString),
-	});
 
-	const jsonResponse = await response.json();
-	const result = jsonResponse.result;
+  const response = await fetch("https://api.postcodes.io/postcodes", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(postcodeString),
+  });
 
-	let addressInfo = [];
-	for (let i = 0; i < result.length; i++) {
-		addressInfo.push({
-			latitude: result[i].result.latitude,
-			longitude: result[i].result.longitude,
-		});
-	}
+  const jsonResponse = await response.json();
+  const result = jsonResponse.result;
 
-	const ownPostcode = addressInfo[0];
-	addressInfo.shift();
-	let distances = [];
-	for (let i = 0; i < addressInfo.length; i++) {
-		distances.push(haversine(ownPostcode, addressInfo[i]).toFixed(2));
-	}
+  let addressInfo = [];
+  for (let i = 0; i < result.length; i++) {
+    if (result[i].result === null) {
+      result[i].result = {
+        latitude: 51.524,
+        longitude: -0.082,
+      };
+    }
+    addressInfo.push({
+      latitude: result[i].result.latitude,
+      longitude: result[i].result.longitude,
+    });
+  }
 
-	postcode.shift();
-	let postcodeArrObj = [];
-	// console.log(postcode);
-	for (let i = 0; i < postcode.length; i++) {
-		postcodeArrObj.push({
-			Postcode: postcode[i],
-			Distance: distances[i],
-		});
-	}
-	// console.log(postcodeArrObj[0].Distance);
-	for (let i = 0; i < postcodeArrObj.length; i++) {
-		await client.query(
-			`UPDATE addresses SET distance_from_post=$1 WHERE postcode=$2`,
-			[parseInt(distances[i]), postcodeArrObj[i].Postcode]
-		);
-	}
+  const ownPostcode = addressInfo[0];
+  addressInfo.shift();
+  let distances = [];
+  for (let i = 0; i < addressInfo.length; i++) {
+    distances.push(haversine(ownPostcode, addressInfo[i]).toFixed(2));
+  }
+
+  postcode.shift();
+  let postcodeArrObj = [];
+  // console.log(postcode);
+  for (let i = 0; i < postcode.length; i++) {
+    postcodeArrObj.push({
+      Postcode: postcode[i],
+      Distance: distances[i],
+    });
+  }
+  // console.log(postcodeArrObj[0].Distance);
+  for (let i = 0; i < postcodeArrObj.length; i++) {
+    await client.query(
+      `UPDATE addresses SET distance_from_post=$1 WHERE postcode=$2`,
+      [parseInt(distances[i]), postcodeArrObj[i].Postcode]
+    );
+  }
+
 }
 
 module.exports = router;

@@ -66,7 +66,7 @@ function RestaurantModal(props) {
     setModalBodyDetails({
       streetname: streetname,
       postcode: postcode,
-      image_url: imageUrl,
+      imageUrl: imageUrl,
       startTime: startTime,
       endTime: endTime,
       description: description,
