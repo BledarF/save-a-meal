@@ -3,6 +3,7 @@ import { Redirect, useHistory } from "react-router-dom";
 import LoginModal from "./LoginModal";
 import { userContext } from "../../App";
 import "./Navbar.css";
+import { NavLink } from "react-router-dom";
 
 async function deleteCookie() {
   await fetch(`http://localhost:8080/api/sessions`, {
@@ -19,14 +20,15 @@ function Navbar(props) {
   const [showModal, setShowModal] = useState(false);
 
   const buttonComponent = function getNavbarButtonComponent(buttonName) {
-    const href = `/${buttonName.toLowerCase()}`;
+    const endpoint = `/${buttonName.toLowerCase()}`;
     return (
-      <a
-        href={href}
+      <NavLink
         className="py-4 px-2 text-black font-semibold hover:text-yellow-900 transition duration-300"
+        activeStyle={{ color: "#78350f" }}
+        to={endpoint}
       >
         {buttonName}
-      </a>
+      </NavLink>
     );
   };
 
