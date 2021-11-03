@@ -26,7 +26,9 @@ function BuisnessModal(props) {
             </div>
             {/*body*/}
             <div className="relative py-1 px-36 flex-auto">
-              <BuisnessRegisterForm></BuisnessRegisterForm>
+              <BuisnessRegisterForm
+                setShowModal={props.setShowModal}
+              ></BuisnessRegisterForm>
             </div>
             {/*footer*/}
           </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import LoginModal from "./LoginModal";
 import { userContext } from "../../App";
+import "./Navbar.css";
 
 async function deleteCookie() {
   const response = await fetch(`http://localhost:8080/api/sessions`, {
@@ -21,7 +22,7 @@ function Navbar(props) {
     return (
       <a
         href={href}
-        className="py-4 px-2 text-yellow-500 font-semibold hover:text-yellow-900 transition duration-300"
+        className="py-4 px-2 text-black font-semibold hover:text-yellow-900 transition duration-300"
       >
         {buttonName}
       </a>
@@ -34,7 +35,7 @@ function Navbar(props) {
         onClick={() => {
           setShowModal(true);
         }}
-        className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full"
+        className="bg-white hover:bg-yellow-700 text-black font-bold py-2 px-4 rounded-full"
       >
         Login
       </button>
@@ -57,8 +58,8 @@ function Navbar(props) {
   }
 
   return (
-    <nav className="flex flex-row justify-end p-6 fixed w-full z-10">
-      <div className="buttons-wrapper text-xl">
+    <nav className="flex flex-row justify-end items-start p-6 absolute w-full z-10">
+      <div className="buttons-wrapper text-2xl text-black">
         {buttonComponent("Home")}
         {buttonComponent("Search")}
         {buttonComponent("Register")}
