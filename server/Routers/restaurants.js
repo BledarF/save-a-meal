@@ -72,7 +72,7 @@ router.get(
     let postcodeString = { postcodes: postcode };
 
     ///MAKING FETCH REQUEST TO API TO GET LONG LAT OF EACH RESTAURANT////
-    getlocationAPI(postcodeString, postcode, client);
+    await getlocationAPI(postcodeString, postcode, client);
 
     try {
       const restaurantDetails = await client.query(
@@ -109,7 +109,7 @@ router.get("/:id", async function (req, res) {
   const client = await pool.connect();
   const { id } = req.params;
   const activeSession = await req.cookies.sessionID;
-
+  let averageRestaurantScore;
   try {
     const checkUser = await client.query(
       "SELECT * FROM users JOIN sessions ON users.id = sessions.user_id WHERE uuid = $1",
@@ -125,8 +125,13 @@ router.get("/:id", async function (req, res) {
       [id]
     );
 
-    // const averageRestaurantScore = restaurantReviews.rows[0].avg;
-    const averageRestaurantScore = 0;
+    if (restaurantReviews.rows.length > 0) {
+      averageRestaurantScore = restaurantReviews.rows[0].avg;
+    } else {
+      averageRestaurantScore = "No reviews yet";
+    }
+
+    console.log(averageRestaurantScore);
 
     if (checkUser.rows.length > 0) {
       const customer_id = await client.query(
@@ -479,6 +484,12 @@ async function getlocationAPI(postcodeString, postcode, client) {
 
   let addressInfo = [];
   for (let i = 0; i < result.length; i++) {
+    if (result[i].result === null) {
+      result[i].result = {
+        latitude: 51.524,
+        longitude: -0.082,
+      };
+    }
     addressInfo.push({
       latitude: result[i].result.latitude,
       longitude: result[i].result.longitude,
