@@ -10,3 +10,12 @@
 .nav-btn:focus {
   border-bottom: orange 2px solid;
 }
+
+.restaurant-card-wrapper {
+}
+
+.card-button {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
