@@ -8,6 +8,7 @@ function Results(props) {
   const { restaurants, bookingStatus } = props;
   const { setBookingStatus } = props;
 
+
   console.log(props);
 
   const getRestaurants = function getRestaurantsListAsComponents() {
