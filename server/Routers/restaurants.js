@@ -53,29 +53,10 @@ router.get("/addresses", async function (req, res) {
 router.get(
   "/details/search/:postcodeVal/proximity/:proximity",
   async function (req, res) {
-    const cookie = await req.cookies;
     const client = await pool.connect();
     const { postcodeVal, proximity } = req.params;
-    const today = new Date();
-    const currentTime =
-      today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-
-    const sqlQuery = await client.query(
-      `SELECT user_id FROM sessions WHERE uuid=$1`,
-      [cookie.sessionID]
-    );
-    const user_id_val = sqlQuery.rows[0].user_id;
-
-    const customer_id_val = await client.query(
-      "SELECT customer_id FROM users WHERE id=$1",
-      [user_id_val]
-    );
-    const customer_id = customer_id_val.rows[0].customer_id;
-
-    const orderQuery = await client.query(
-      `SELECT * FROM orders WHERE customer_id=$1 AND (CURRENT_TIMESTAMP::date = created_at::date)`,
-      [customer_id]
-    );
+    // const today = new Date();
+    // const currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
     ///OBTAINING POSTCODE OF RESTAURANTS FROM DATABASE////
 
@@ -95,17 +76,13 @@ router.get(
 
     try {
       const restaurantDetails = await client.query(
-        "SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid WHERE distance_from_post < $1",
+        "SELECT id,name,town,start_time,end_time,distance_from_post,imageurl FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid WHERE distance_from_post < $1",
         [proximity]
       );
 
       const filteredRestaurantDetails = restaurantDetails.rows.map(
         (restaurant) => {
-          if (
-            currentTime < restaurant.start_time ||
-            currentTime > restaurant.end_time ||
-            restaurant.current_slots === 0
-          ) {
+          if (restaurant.current_slots === 0) {
             restaurant.available = false;
             return restaurant;
           } else {
@@ -115,14 +92,7 @@ router.get(
         }
       );
 
-      if (orderQuery.rows.length > 0) {
-        res.status(200).json({
-          message: "Already Booked!",
-          restaurantsData: filteredRestaurantDetails,
-        });
-      } else {
-        res.status(200).json({ restaurantsData: filteredRestaurantDetails });
-      }
+      res.status(200).json({ restaurantDetails: filteredRestaurantDetails });
     } catch (err) {
       console.log(err);
       res
@@ -138,12 +108,41 @@ router.get(
 router.get("/:id", async function (req, res) {
   const client = await pool.connect();
   const { id } = req.params;
+  const activeSession = await req.cookies.sessionID;
+  console.log(activeSession);
+
   try {
+    const checkUser = await client.query(
+      "SELECT * FROM users JOIN sessions ON users.id = sessions.user_id WHERE uuid = $1",
+      [activeSession]
+    );
+    console.log(checkUser);
     const restaurantDetails = await client.query(
-      "SELECT *, (AVG(score) AS rating) FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid JOIN available_days ON available_days.restaurant_id = restaurants.id JOIN reviews ON reviews.restaurant_id = restaurants.id WHERE restaurants.id = $1",
+      "SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid JOIN available_days ON available_days.restaurant_id = restaurants.id WHERE restaurants.id = $1",
       [id]
     );
-    res.status(200).json({ restaurant: restaurantDetails.rows });
+
+    const restaurantReviews = await client.query(
+      "SELECT AVG(score) FROM reviews WHERE restaurant_id = $1 GROUP BY restaurant_id",
+      [id]
+    );
+
+    // const averageRestaurantScore = restaurantReviews.rows[0].avg;
+    const averageRestaurantScore = 0;
+    console.log(checkUser.rows);
+    if (checkUser.rows.length > 0) {
+      res.status(200).json({
+        restaurant: restaurantDetails.rows,
+        review: averageRestaurantScore,
+        loggedIn: true,
+      });
+    } else {
+      res.status(200).json({
+        restaurant: restaurantDetails.rows,
+        review: averageRestaurantScore,
+        loggedIn: false,
+      });
+    }
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "Failed to fetch restaurant" });

@@ -238,11 +238,9 @@ router.get("/", async function (req, res) {
       [activeSession]
     );
 
-    const id = checkUser.rows[0].id;
-    console.log("here");
-
     if (checkUser.rows.length > 0) {
       if (checkUser.rows[0].restaurant_id) {
+        const id = checkUser.rows[0].id;
         const accountDetails = await client.query(
           "SELECT * FROM users JOIN restaurants ON users.restaurant_id  = restaurants.id JOIN addresses ON restaurants.address_id = addresses.uuid JOIN available_days ON available_days.restaurant_id = restaurants.id WHERE users.id = $1 ",
           [id]
@@ -251,6 +249,7 @@ router.get("/", async function (req, res) {
           .status(200)
           .json({ accountDetails: accountDetails.rows, type: "restaurant" });
       } else {
+        const id = checkUser.rows[0].id;
         const accountDetails = await client.query(
           "SELECT * FROM users JOIN customers ON users.customer_id  = customers.id JOIN addresses ON customers.address_id = addresses.uuid WHERE users.id = $1 ",
           [id]

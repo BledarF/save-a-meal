@@ -1,7 +1,7 @@
 import { useEffect, useContext, useState } from "react";
 
 function SearchBar(props) {
-  const { setRestaurants, setBookingStatus } = props;
+  const { setRestaurants, setBookingStatus, restaurants } = props;
   const [userInput, setUserInput] = useState("");
 
   const handleSearch = async function handleSearch() {
@@ -15,12 +15,12 @@ function SearchBar(props) {
         },
       };
       const response = await fetch(
-        `http://localhost:8080/api/restaurants/details/search/${userInput}/proximity/50`,
+        `http://localhost:8080/api/restaurants/details/search/${userInput}/proximity/${10000}`,
         requestOptions
       );
       const json = await response.json();
       console.log(json);
-      const restaurantsList = json.restaurantsData;
+      const restaurantsList = json.restaurantDetails;
       console.log(restaurantsList);
       setRestaurants(restaurantsList);
       if (json.message === "Already Booked!") {

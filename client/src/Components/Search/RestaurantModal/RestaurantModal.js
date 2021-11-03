@@ -7,38 +7,72 @@ import { userContext } from "../../../App";
 
 function RestaurantModal(props) {
   const { user, setUser } = useContext(userContext);
-  const [bookingId, setBookingId] = useState(null);
-  const { bookingStatus, setBookingStatus } = props;
+  const { bookingStatus, setBookingStatus, restaurantId } = props;
   const [bookCount, setBookCount] = useState(true);
+  const [modalHeaderDetails, setModalHeaderDetails] = useState();
+  const [modalBodyDetails, setModalBodyDetails] = useState();
+  const [loginStatus, setLoginStatus] = useState(false);
 
-  const {
-    id: restaurantId,
-    logourl: logo,
-    image_url: imgUrl,
-    name,
-    streetname,
-    postcode,
-    town,
-    start_time: startTime,
-    end_time: endTime,
-    description,
-    current_slots: slots,
-  } = props.restaurantDetails;
-  const headerDetails = { logo, name, town };
-  const bodyDetails = {
-    streetname,
-    postcode,
-    imgUrl,
-    startTime,
-    endTime,
-    description,
-    slots,
-  };
+  useEffect(() => {
+    if (restaurantId) {
+      getRestaurantDetails(restaurantId);
+    }
+  }, []);
+
+  async function getRestaurantDetails(restaurantId) {
+    const requestOptions = {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        Access: "application/json",
+        "Content-Type": "application/json",
+      },
+    };
+    const response = await fetch(
+      `http://localhost:8080/api/restaurants/${restaurantId}`,
+      requestOptions
+    );
+    const jsonResponse = await response.json();
+    const restaurantDetails = jsonResponse.restaurant[0];
+    const restaurantReview = jsonResponse.review;
+    const loginStatus = jsonResponse.loggedIn;
+
+    setLoginStatus(loginStatus);
+
+    const {
+      name,
+      town,
+      logourl,
+      streetname,
+      postcode,
+      imageurl: imageUrl,
+      start_time: startTime,
+      end_time: endTime,
+      description,
+      current_slots: slots,
+    } = restaurantDetails;
+    setModalHeaderDetails({
+      name: name,
+      town: town,
+      logo: logourl,
+    });
+    setModalBodyDetails({
+      streetname: streetname,
+      postcode: postcode,
+      image_url: imageUrl,
+      startTime: startTime,
+      endTime: endTime,
+      description: description,
+      slots: slots,
+      review: restaurantReview,
+    });
+  }
+
   const { setShowModal } = props;
   const [hasBooked, setHasBooked] = useState(false);
   const [bookingDetails, setBookingDetails] = useState(null);
 
-  const handleBook = async function handleBookRestaurantButton() {
+  const handleBook = async function handleBookRestaurantButton(restaurantId) {
     try {
       setBookCount(false);
       const requestOptions = {
@@ -63,12 +97,12 @@ function RestaurantModal(props) {
 
       let bookingDetails = {
         id: jsonResponse.booking_id,
-        streetname,
-        town,
-        postcode,
-        name,
-        startTime: startTime.slice(0, 5),
-        endTime: endTime.slice(0, 5),
+        streetname: modalBodyDetails.streetname,
+        town: modalHeaderDetails.town,
+        postcode: modalBodyDetails.postcode,
+        name: modalHeaderDetails.name,
+        startTime: modalBodyDetails.startTime.slice(0, 5),
+        endTime: modalBodyDetails.endTime.slice(0, 5),
       };
       setBookingDetails(bookingDetails);
       setHasBooked(true);
@@ -77,41 +111,45 @@ function RestaurantModal(props) {
     }
   };
 
-  const buttonComponent = function getConfirmOrderButtonComponent(btnText) {
+  const buttonComponent = function getConfirmOrderButtonComponent(
+    btnText,
+    restaurantId
+  ) {
     return (
       <div>
-        {user && bookingStatus && bookCount ? (
+        {loginStatus ? (
           <button
             className="bg-yellow-500 hover:bg-yellow-900 transition duration-200 text-white font-bold py-2 px-4 rounded"
             type="button"
             onClick={async () => {
-              await handleBook();
+              await handleBook(restaurantId);
             }}
           >
             {btnText}
           </button>
         ) : (
-          "You already have a booking for the day, please wait until tomorrow!"
+          "Please login to book an order!"
         )}
       </div>
     );
   };
 
-  const restaurantModal = function getRestaurantModalComponent() {
+  const restaurantModal = function getRestaurantModalComponent(restaurantId) {
     return (
       <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
         {/*header*/}
+
         <RestaurantModalHeader
           setShowModal={setShowModal}
-          headerDetails={headerDetails}
+          headerDetails={modalHeaderDetails}
         />
         {/*body*/}
         <div className="relative p-6 flex-auto">
-          <RestaurantModalBody bodyDetails={bodyDetails} />
+          <RestaurantModalBody bodyDetails={modalBodyDetails} />
         </div>
         {/*footer*/}
         <div className="flex items-center justify-center p-6 border-t border-solid border-blueGray-200 rounded-b">
-          {buttonComponent("Book")}
+          {buttonComponent("Book", restaurantId)}
         </div>
       </div>
     );
@@ -170,7 +208,11 @@ function RestaurantModal(props) {
         className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
       >
         <div className="relative w-1/3 my-6 mx-auto max-w-6xl">
-          {hasBooked ? bookedModal() : restaurantModal()}
+          {modalBodyDetails
+            ? hasBooked
+              ? bookedModal()
+              : restaurantModal(restaurantId)
+            : ""}
         </div>
       </div>
       <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>

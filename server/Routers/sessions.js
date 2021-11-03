@@ -51,10 +51,11 @@ router.get("/check", async function (req, res) {
 });
 
 router.delete("/", async function (req, res) {
+
+
   const client = await pool.connect();
   const activeSession = await req.cookies;
   const cookieUUID = activeSession.sessionID;
-  // console.log(cookieUUID)
 
   res
     .cookie("sessionID", cookieUUID, {
@@ -63,7 +64,9 @@ router.delete("/", async function (req, res) {
     })
     .send("cookie updated");
 
+
   client.release();
+
 });
 
 module.exports = router;
