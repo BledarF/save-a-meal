@@ -106,65 +106,79 @@ router.get(
 
 //Get desired restaurant
 router.get("/:id", async function (req, res) {
-	const client = await pool.connect();
-	const { id } = req.params;
-	const activeSession = await req.cookies.sessionID;
 
-	try {
-		const checkUser = await client.query(
-			"SELECT * FROM users JOIN sessions ON users.id = sessions.user_id WHERE uuid = $1",
-			[activeSession]
-		);
-		const restaurantDetails = await client.query(
-			"SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid JOIN available_days ON available_days.restaurant_id = restaurants.id WHERE restaurants.id = $1",
-			[id]
-		);
+  const client = await pool.connect();
+  const { id } = req.params;
+  const activeSession = await req.cookies.sessionID;
 
-		const restaurantReviews = await client.query(
-			"SELECT AVG(score) FROM reviews WHERE restaurant_id = $1 GROUP BY restaurant_id",
-			[id]
-		);
+  try {
+    const checkUser = await client.query(
+      "SELECT * FROM users JOIN sessions ON users.id = sessions.user_id WHERE uuid = $1",
+      [activeSession]
+    );
+    const restaurantDetails = await client.query(
+      "SELECT * FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid JOIN available_days ON available_days.restaurant_id = restaurants.id WHERE restaurants.id = $1",
+      [id]
+    );
 
-		// const averageRestaurantScore = restaurantReviews.rows[0].avg;
-		const averageRestaurantScore = 0;
+    const restaurantReviews = await client.query(
+      "SELECT AVG(score) FROM reviews WHERE restaurant_id = $1 GROUP BY restaurant_id",
+      [id]
+    );
 
-		if (checkUser.rows.length > 0) {
-			const customer_id = await client.query(
-				"SELECT customer_id FROM users WHERE id = $1",
-				[checkUser.rows[0].user_id]
-			);
+    // const averageRestaurantScore = restaurantReviews.rows[0].avg;
+    const averageRestaurantScore = 0;
 
-			const orderCheck = await client.query(
-				"SELECT * FROM orders  WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
-				[customer_id.rows[0].customer_id]
-			);
-			if (orderCheck.rows.length > 0) {
-				res.status(200).json({
-					restaurant: restaurantDetails.rows,
-					review: averageRestaurantScore,
-					loggedIn: true,
-					ordered: true,
-				});
-			} else {
-				res.status(200).json({
-					restaurant: restaurantDetails.rows,
-					review: averageRestaurantScore,
-					loggedIn: true,
-					ordered: false,
-				});
-			}
-		} else {
-			res.status(200).json({
-				restaurant: restaurantDetails.rows,
-				review: averageRestaurantScore,
-				loggedIn: false,
-			});
-		}
-	} catch (err) {
-		console.log(err);
-		res.status(400).json({ message: "Failed to fetch restaurant" });
-	}
-	client.release();
+    if (checkUser.rows.length > 0) {
+      const customer_id = await client.query(
+        "SELECT customer_id FROM users WHERE id = $1",
+        [checkUser.rows[0].user_id]
+      );
+
+      const orderCheck = await client.query(
+        "SELECT * FROM orders  WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
+        [customer_id.rows[0].customer_id]
+      );
+
+      if (checkUser.rows[0].restaurant_id) {
+        return res.status(200).json({
+          restaurant: restaurantDetails.rows,
+          review: averageRestaurantScore,
+          loggedIn: true,
+          ordered: false,
+          type: "restaurant",
+        });
+      }
+
+      if (orderCheck.rows.length > 0) {
+        res.status(200).json({
+          restaurant: restaurantDetails.rows,
+          review: averageRestaurantScore,
+          loggedIn: true,
+          ordered: true,
+          type: "customer",
+        });
+      } else {
+        res.status(200).json({
+          restaurant: restaurantDetails.rows,
+          review: averageRestaurantScore,
+          loggedIn: true,
+          ordered: false,
+          type: "customer",
+        });
+      }
+    } else {
+      res.status(200).json({
+        restaurant: restaurantDetails.rows,
+        review: averageRestaurantScore,
+        loggedIn: false,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: "Failed to fetch restaurant" });
+  }
+  client.release();
 });
 
 //Get all past orders for the restaurant
