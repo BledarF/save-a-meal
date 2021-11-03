@@ -33,6 +33,7 @@
     "formik-stepper": "^0.0.1",
     "haversine": "^1.1.1",
     "https": "^1.0.0",
+    "is-image-url": "^1.1.8",
     "node-fetch": "^3.0.0",
     "nodemon": "^2.0.14",
     "pg": "^8.7.1",

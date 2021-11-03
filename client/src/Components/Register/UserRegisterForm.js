@@ -56,14 +56,13 @@ function UserRegisterForm(props) {
         requestOptions
       );
       const json = await response.json();
-      console.log(json.Message);
-      console.log(response.status);
+      console.log(json.message);
       if (response.status === 200) {
         setError("");
         setMessage("Success: User Created! Please Login.");
         closeModal();
       } else {
-        setError(json.Message);
+        setError(json.message);
         setMessage("");
       }
     } catch {
@@ -73,11 +72,7 @@ function UserRegisterForm(props) {
   }
 
   const onSubmit = async (values, { setSubmitting }) => {
-    console.log(values);
-
     postRegister(values);
-
-    // FETCH POST REQUEST
     setSubmitting(false); //// Important
   };
 
@@ -91,8 +86,6 @@ function UserRegisterForm(props) {
           lastName: "",
           email: "",
           password: "",
-          privacy: false,
-          description: "",
           town: "",
           postcode: "",
           streetname: "",
@@ -140,6 +133,7 @@ function UserRegisterForm(props) {
           withIcons="fa fa-lock"
           iconColor="white"
           circleColor="#F59E0B"
+          withNumbers
         >
           <InputField name="email" label="Email" type="email" />
           <InputField name="password" label="Password" type="password" />
