@@ -133,6 +133,7 @@ function UserRegisterForm(props) {
           withIcons="fa fa-lock"
           iconColor="white"
           circleColor="#F59E0B"
+          withNumbers
         >
           <InputField name="email" label="Email" type="email" />
           <InputField name="password" label="Password" type="password" />

@@ -31,6 +31,8 @@ const validationSchema = Yup.object().shape({
   current_slots: Yup.number()
     .typeError("Must be a number")
     .positive("Must be a positive number"),
+  logo_url: Yup.string().url("Must be a valid URL"),
+  image_url: Yup.string().url("Must be a valid URL"),
 });
 
 function BuisnessRegistrationForm(props) {
@@ -180,6 +182,7 @@ function BuisnessRegistrationForm(props) {
         <FormikStep
           label="Login Info"
           withIcons="fa fa-lock"
+          withNumbers
           iconColor="white"
           circleColor="#F59E0B"
         >
