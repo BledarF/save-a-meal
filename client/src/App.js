@@ -85,8 +85,8 @@ function App(props) {
   return (
     <userContext.Provider value={value}>
       <div className="App">
-        <Navbar checkSessionExists={checkSessionExists} />
         <Router>
+          <Navbar checkSessionExists={checkSessionExists} />
           <main>
             <Switch>
               <Route exact path={["/home", "/"]} component={Home} />
