@@ -12,10 +12,11 @@ function BusinessOrdersTab(props) {
       getTodaysOrders();
       getHistoryOrders();
     }
-  }, [props.customerId]);
+  }, [props.restaurantId]);
 
   async function getTodaysOrders() {
     try {
+      console.log("FETCHINGGG");
       const response = await fetch(
         `/api/restaurants/${props.restaurantId}/orders/today`
       );
@@ -30,7 +31,6 @@ function BusinessOrdersTab(props) {
 
   async function getHistoryOrders() {
     try {
-      console.log(props.customerId);
       const response = await fetch(
         `api/restaurants/${props.restaurantId}/orders/`
       );

@@ -12,20 +12,19 @@ function BusinessOrderEntryHistory(props) {
   function acceptedStatus() {
     return (
       <a href="#" class="px-3 py-1 text-sm text-white bg-green-500 rounded">
-        Accepted
+        Collected
       </a>
     );
   }
   return (
     <tr class="whitespace-nowrap">
-      <td class="px-6 py-4 text-sm text-gray-500">1</td>
+      <td class="px-6 py-4 text-sm text-gray-500">{props.id}</td>
       <td class="px-6 py-4">
-        <div class="text-sm text-gray-900">Jon doe</div>
+        <div class="text-sm text-gray-900">{props.name}</div>
       </td>
       <td class="px-6 py-4">
-        <div class="text-sm text-gray-500">jhondoe@example.com</div>
+        <div class="text-sm text-gray-500">{props.date}</div>
       </td>
-      <td class="px-6 py-4 text-sm text-gray-500">2021-1-12</td>
       <td class="px-8 py-4">
         {props.accepted ? acceptedStatus() : acceptBut()}
       </td>
