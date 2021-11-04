@@ -74,7 +74,6 @@ function RestaurantModal(props) {
       slots: slots,
       review: restaurantReview,
     });
-
   }
 
   const { setShowModal } = props;
@@ -149,18 +148,14 @@ function RestaurantModal(props) {
 
   const restaurantModal = function getRestaurantModalComponent(restaurantId) {
     return (
-      <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-        {/*header*/}
-
+      <div className="overflow-hidden border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
         <RestaurantModalHeader
           setShowModal={setShowModal}
           headerDetails={modalHeaderDetails}
         />
-        {/*body*/}
-        <div className="relative p-6 flex-auto">
+        <div className="relative flex-auto">
           <RestaurantModalBody bodyDetails={modalBodyDetails} />
         </div>
-        {/*footer*/}
         <div className="flex items-center justify-center p-6 border-t border-solid border-blueGray-200 rounded-b">
           {buttonComponent("Book", restaurantId)}
         </div>
@@ -218,9 +213,9 @@ function RestaurantModal(props) {
     <>
       <div
         // onClick={() => setShowModal(false)}
-        className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
+        className="max-w-2/3 justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none "
       >
-        <div className="relative w-1/3 my-6 mx-auto max-w-6xl">
+        <div className="h-2/3 relative w-3/5 my-6 mx-auto max-w-6xl">
           {modalBodyDetails
             ? hasBooked
               ? bookedModal()
@@ -228,7 +223,7 @@ function RestaurantModal(props) {
             : ""}
         </div>
       </div>
-      <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+      <div className="opacity-20 fixed inset-0 z-40 bg-black"></div>
     </>
   );
 }
