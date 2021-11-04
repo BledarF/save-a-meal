@@ -10,6 +10,7 @@ function RestaurantCard(props) {
     distance_from_post: distance,
     available,
   } = props.details;
+  available = false;
 
   const { setShowModal, setModalDetails } = props;
   startTime = startTime.slice(0, 5);

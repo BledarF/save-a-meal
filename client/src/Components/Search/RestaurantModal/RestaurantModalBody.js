@@ -14,34 +14,32 @@ function RestaurantModalHeader(props) {
 
   return (
     <div>
-      <div className="flex justify-center flex-col items-center">
-        <div className="upper-body-wrapper flex justify-start items-center flex-col w-4/5">
-          <img
-            className="image w-full"
-            src={imageUrl}
-            alt="example of restaurant's food"
-          />
-          <div className="upper-body-text flex flex-col items-start justify-between text-base w-full">
-            <div className="rating-title-wrapper w-full flex flex-row justify-between text-xl">
-              <p>{Number(review).toFixed(2)}</p>
-            </div>
-            <p>
-              Address {streetname}, {postcode}
-            </p>
-            <p>
-              {startTime} - {endTime}
-            </p>
-          </div>
-        </div>
-        <div className="lower-body-wrapper text-left flex justify-start items-start flex-col w-full">
+      <div className="flex justify-center items-center">
+        <img
+          className="image w-1/2 max-h-80"
+          src={imageUrl}
+          alt="example of restaurant's food"
+        />
+        <div className="body-text-wrapper text-left flex justify-center items-start flex-col w-full h-full p-4">
           <div className="description-wrapper flex flex-col items-start justify-between text-xl w-full">
             <h3 className="text-xl">Description</h3>
             <p className="text-base">{description}</p>
           </div>
-          <div className="slots-wrapper self-center p-0 m-0">
-            <h3 className="text-xl">Slots Available</h3>
-            <p className="text-base text-center">{slots}</p>
+          <div className="upper-body-text flex items-start justify-between text-base w-full">
+            <p className="">
+              <span className="font-bold">Address: </span>
+              {streetname}, {postcode}
+            </p>
+            <p className="ml-1 underline">
+              {startTime} - {endTime}
+            </p>
           </div>
+          <div className="rating-title-wrapper w-full flex flex-row justify-between text-xl">
+            <p>
+              {typeof review === Number ? Number(review).toFixed(2) : review}
+            </p>
+          </div>
+          <h3 className="text-xl mr-3">Slots Available: {slots}</h3>
         </div>
       </div>
     </div>

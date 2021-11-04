@@ -15,17 +15,19 @@ function TodayTable(props) {
                   <th className="px-6 py-2 text-xs text-gray-500">ID</th>
                   <th className="px-6 py-2 text-xs text-gray-500">Location</th>
                   <th className="px-6 py-2 text-xs text-gray-500">Telephone</th>
-                  <th className="px-6 py-2 text-xs text-gray-500">Start time</th>
+                  <th className="px-6 py-2 text-xs text-gray-500">
+                    Start time
+                  </th>
                   <th className="px-6 py-2 text-xs text-gray-500">End time</th>
-                  <th className="px-6 py-2 text-xs text-gray-500">Postcode</th>
+                  <th className="px-6 py-2 text-xs text-gray-500">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white">
-                {console.log(props.data.order[0])}
                 {orders &&
                   orders.map((order) => {
                     return (
                       <CustomerOrderEntry
+                        id={order.booking_id}
                         name={order.name}
                         telephone={order.telephone}
                         startTime={order.start_time}

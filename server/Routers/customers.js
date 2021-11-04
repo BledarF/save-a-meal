@@ -59,7 +59,7 @@ router.get("/:id/orders/today", async function (req, res) {
       "SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id JOIN restaurants ON orders.restaurant_id = restaurants.id  JOIN addresses ON restaurants.address_id = addresses.uuid WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
       [id]
     );
-    console.log(customersOrder);
+
     res.status(200).json({
       order: customersOrder.rows,
       message: "Success! Fetched all orders for the day.",
@@ -68,6 +68,8 @@ router.get("/:id/orders/today", async function (req, res) {
     console.log(err);
     res.status(400).json({ message: "Failed to fetch orders for the day." });
   }
+
+  client.release();
 });
 
 //Get all past customer orders
@@ -78,7 +80,9 @@ router.get("/:id/orders", async function (req, res) {
 
   try {
     const orderHistory = await client.query(
+
       "SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id JOIN restaurants ON orders.restaurant_id = restaurants.id LEFT JOIN reviews ON orders.id = reviews.order_id WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date != created_at::date) ",
+
       [id]
     );
 
@@ -95,13 +99,15 @@ router.get("/:id/orders", async function (req, res) {
     console.log(orderHistory.rows);
 
     res.status(200).json({
-      orderHistory: orderHistory.rows,
+      order: orderHistory.rows,
       message: "Success! Fetched all past orders",
     });
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "Failed to fetch orders for the day." });
   }
+
+  client.release();
 });
 
 //Make a review
@@ -200,6 +206,8 @@ router.put("/:id/account", async function (req, res) {
       res.status(400).json({ message: "Failed to update login details" });
     }
   }
+
+  client.release();
 });
 
 //Update customers' address
@@ -220,6 +228,8 @@ router.put("/:id/address/:uuid", async function (req, res) {
     console.log(err);
     res.status(400).json({ message: "Failed to update address details" });
   }
+
+  client.release();
 });
 
 //Update customers' personal details
@@ -240,6 +250,8 @@ router.put("/:id/details", async function (req, res) {
     console.log(err);
     res.status(400).json({ message: "Failed to update personal details" });
   }
+
+  client.release;
 });
 
 async function checkReviewed(orderHistory, client) {
