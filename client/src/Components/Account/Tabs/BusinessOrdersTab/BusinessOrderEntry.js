@@ -1,19 +1,31 @@
-import React from "react";
+import { tr } from "date-fns/locale";
+import React, { useState } from "react";
+import AcceptOrderModal from "./AcceptOrderModel";
 
 function BusinessOrderEntry(props) {
+  const [showAcceptOrders, setShowAcceptOrders] = useState(false);
+
   function acceptBut() {
     return (
-      <a href="#" class="px-4 py-1 text-sm text-white bg-yellow-500 rounded">
+      <button
+        onClick={() => {
+          setShowAcceptOrders(true);
+        }}
+        class="px-4 py-1 text-sm text-white bg-yellow-500 rounded"
+      >
         Accept
-      </a>
+      </button>
     );
   }
 
   function acceptedStatus() {
     return (
-      <a href="#" class="px-3 py-1 text-sm text-white bg-green-500 rounded">
+      <button
+        href="#"
+        class="px-3 py-1 text-sm text-white bg-green-500 rounded"
+      >
         Accepted
-      </a>
+      </button>
     );
   }
   return (
@@ -29,6 +41,15 @@ function BusinessOrderEntry(props) {
       <td class="px-8 py-4">
         {props.collected ? acceptedStatus() : acceptBut()}
       </td>
+      {showAcceptOrders ? (
+        <AcceptOrderModal
+          setShowModal={setShowAcceptOrders}
+          handleAccept={props.handleAccept}
+          id={props.id}
+          firstName={props.name}
+          secondName={props.secondName}
+        ></AcceptOrderModal>
+      ) : null}
     </tr>
   );
 }

@@ -25,9 +25,11 @@ function TodayTable(props) {
                       <BusinessOrderEntry
                         id={order.booking_id}
                         name={order.firstname}
+                        secondName={order.secondname}
                         telephone={order.telephone}
                         date={order.created_at}
                         collected={order.collected}
+                        handleAccept={props.handleAccept}
                       ></BusinessOrderEntry>
                     ) : null;
                   })}

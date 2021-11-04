@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import AcceptOrderModal from "./AcceptOrderModel";
 import HistoryTable from "./HistoryTable";
 import TodayTable from "./TodayTable";
 
@@ -16,7 +17,6 @@ function BusinessOrdersTab(props) {
 
   async function getTodaysOrders() {
     try {
-      console.log("FETCHINGGG");
       const response = await fetch(
         `/api/restaurants/${props.restaurantId}/orders/today`
       );
@@ -45,8 +45,14 @@ function BusinessOrdersTab(props) {
     }
   }
 
+  function handleAccept(id) {
+    alert("Order Colleted");
+    getTodaysOrders();
+    getHistoryOrders();
+  }
+
   function getTodayTable(data) {
-    return <TodayTable data={data}></TodayTable>;
+    return <TodayTable data={data} handleAccept={handleAccept}></TodayTable>;
   }
 
   function getHistoryTable(data) {

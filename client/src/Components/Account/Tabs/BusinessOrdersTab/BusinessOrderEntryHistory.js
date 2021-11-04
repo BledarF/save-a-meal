@@ -1,19 +1,26 @@
 import React from "react";
 
 function BusinessOrderEntryHistory(props) {
+  function handleAccept() {
+    console.log("accept clicked");
+  }
+
   function acceptBut() {
     return (
-      <a href="#" class="px-4 py-1 text-sm text-white bg-yellow-500 rounded">
-        Accept
-      </a>
+      <button class="px-4 py-1 text-sm text-white bg-red-500 rounded">
+        Not Collected
+      </button>
     );
   }
 
   function acceptedStatus() {
     return (
-      <a href="#" class="px-3 py-1 text-sm text-white bg-green-500 rounded">
+      <button
+        href="#"
+        class="px-3 py-1 text-sm text-white bg-green-500 rounded"
+      >
         Collected
-      </a>
+      </button>
     );
   }
   return (

@@ -457,20 +457,20 @@ router.put("/reset", async function (req, res) {
 
 //Mark order as collected once customer has collected it
 
-router.put("/:restaurant_id/customer/:customer_id", async function (req, res) {
+router.put("/orders/:booking_id", async function (req, res) {
   const client = await pool.connect();
-  const { restaurant_id, customer_id } = req.params;
+  const { booking_id } = req.params;
 
   try {
     await client.query(
-      "UPDATE orders SET collected = $1 WHERE restaurant_id = $2 AND customer_id = $3",
-      [true, restaurant_id, customer_id]
+      "UPDATE orders SET collected = $1 WHERE booking_id = $2",
+      [true, booking_id]
     );
     res.status(200).json({ message: "Order has been successfully collected" });
   } catch (err) {
     console.log(err);
     res.status(400).json({
-      message: "Order has not be processed. Something has gone wrong!",
+      message: "Order cannot be processed. Something has gone wrong!",
     });
   }
 });
