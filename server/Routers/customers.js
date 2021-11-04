@@ -56,7 +56,7 @@ router.get("/:id/orders/today", async function (req, res) {
 
   try {
     const customersOrder = await client.query(
-      "SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id JOIN restaurants ON orders.restaurant_id = restaurants.id WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
+      "SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id JOIN restaurants ON orders.restaurant_id = restaurants.id  JOIN addresses ON restaurants.address_id = addresses.uuid WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
       [id]
     );
 
@@ -80,20 +80,70 @@ router.get("/:id/orders", async function (req, res) {
 
   try {
     const orderHistory = await client.query(
-      "SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id JOIN restaurants ON orders.restaurant_id = restaurants.id WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date != created_at::date)",
+
+      "SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id JOIN restaurants ON orders.restaurant_id = restaurants.id LEFT JOIN reviews ON orders.id = reviews.order_id WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date != created_at::date) ",
+
       [id]
     );
+
+    orderHistory.rows.map((order) => {
+      if (order.id === null) {
+        order.reviewed = false;
+        return order;
+      } else {
+        order.reviewed = true;
+        return order;
+      }
+    });
+
+    console.log(orderHistory.rows);
 
     res.status(200).json({
       order: orderHistory.rows,
       message: "Success! Fetched all past orders",
     });
-  } catch {
+  } catch (err) {
+    console.log(err);
     res.status(400).json({ message: "Failed to fetch orders for the day." });
   }
 
   client.release();
 });
+
+//Make a review
+
+router.post(
+  "/reviews/restaurant/:restaurant_id/order/:order_id/",
+  async function (req, res) {
+    const client = await pool.connect();
+    const { restaurant_id, order_id } = req.params;
+    const { score } = req.body;
+
+    try {
+      const reviewCheck = await client.query(
+        "SELECT * FROM reviews WHERE order_id = $1 ",
+        [order_id]
+      );
+
+      console.log(reviewCheck.rows);
+
+      if (reviewCheck.rows.length === 0) {
+        await client.query(
+          "INSERT INTO reviews(score,order_id,restaurant_id) VALUES($1,$2,$3) ",
+          [score, order_id, restaurant_id]
+        );
+        res.status(200).json({ message: "Review successfully submitted!" });
+      } else {
+        res.status(400).json({
+          message: "Review has already been submitted for this order.",
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({ message: "Failed to insert review" });
+    }
+  }
+);
 
 //Update all customers details
 
@@ -203,5 +253,25 @@ router.put("/:id/details", async function (req, res) {
 
   client.release;
 });
+
+async function checkReviewed(orderHistory, client) {
+  orderHistory.rows.map(async (order) => {
+    const orderId = order.id;
+    const reviewCheck = await client.query(
+      "SELECT * FROM reviews WHERE order_id = $1",
+      [orderId]
+    );
+    console.log("dwd");
+    if (reviewCheck.rows.length === 0) {
+      order.reviewed = false;
+      return order;
+    } else {
+      order.reviewed = true;
+      return order;
+    }
+  });
+
+  return orderHistory;
+}
 
 module.exports = router;

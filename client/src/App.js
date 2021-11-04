@@ -2,12 +2,12 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import {
-	Route,
-	BrowserRouter as Router,
-	useHistory,
-	Switch,
-	Redirect,
-	NavLink,
+  Route,
+  BrowserRouter as Router,
+  useHistory,
+  Switch,
+  Redirect,
+  NavLink,
 } from "react-router-dom";
 import Home from "./Components/Home/Home";
 import Navbar from "./Components/Navbar/Navbar";
@@ -32,18 +32,18 @@ export const bookingContext = React.createContext({
 });
 
 function App(props) {
-
-	const [data, setData] = useState(null);
-	const [sessionUpdate, setSessionUpdate] = useState(0);
-	const history = useHistory;
-	// CONTEXT API
-	const [user, setUser] = useState("");
-	const value = { user, setUser };
+  const [data, setData] = useState(null);
+  const [sessionUpdate, setSessionUpdate] = useState(0);
+  const history = useHistory;
+  // CONTEXT API
+  const [user, setUser] = useState("");
+  const value = { user, setUser };
 
   useEffect(() => {
     if (sessionUpdate == 0) {
       checkSessionExists();
     }
+    updateCurrentSlotsMidnight();
   });
 
   async function checkSessionExists() {
@@ -67,28 +67,39 @@ function App(props) {
     }
   }
 
+  async function updateCurrentSlotsMidnight() {
+    const today = new Date();
+    const currentTime =
+      today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
-	return (
-		<userContext.Provider value={value}>
-			<div className="App">
-				<Router>
-					<Navbar checkSessionExists={checkSessionExists} />
-					<main>
-						<Switch>
-							<Route exact path={["/home", "/"]} component={Home} />
-							<Route exact path="/register" component={Register} />
-							<Route exact path="/search" component={SearchPage} />
-							<Route exact path="/account" component={Account} />
-							<Route path="/404" component={ErrorPage} />
-							<Redirect exact from="*" to="/404" />
-						</Switch>
-					</main>
+    if (currentTime === "00:00:00") {
+      await fetch("http://localhost:8080/api/restaurants/reset", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    }
+  }
 
-					<Footer />
-				</Router>
-			</div>
-		</userContext.Provider>
-	);
+  return (
+    <userContext.Provider value={value}>
+      <div className="App">
+        <Navbar checkSessionExists={checkSessionExists} />
+        <Router>
+          <main>
+            <Switch>
+              <Route exact path={["/home", "/"]} component={Home} />
+              <Route exact path="/register" component={Register} />
+              <Route exact path="/search" component={SearchPage} />
+              <Route exact path="/account" component={Account} />
+            </Switch>
+          </main>
+        </Router>
+        <Footer />
+      </div>
+    </userContext.Provider>
+  );
 }
 
 export default App;
