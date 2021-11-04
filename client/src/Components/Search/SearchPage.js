@@ -6,7 +6,7 @@ import "./SearchPage.css";
 function SearchPage() {
   const [restaurants, setRestaurants] = useState([]);
   const [bookingStatus, setBookingStatus] = useState(true);
-  console.log(restaurants);
+
   return (
     <div className="search-page-wrapper flex flex-col">
       <div className="pt-10 flex items-center justify-center">

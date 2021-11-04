@@ -13,6 +13,7 @@ function RestaurantModal(props) {
   const [modalBodyDetails, setModalBodyDetails] = useState();
   const [loginStatus, setLoginStatus] = useState(false);
   const [orderCheck, setOrderCheck] = useState(false);
+  const [userType, setUserType] = useState("");
 
   useEffect(() => {
     if (restaurantId) {
@@ -30,51 +31,50 @@ function RestaurantModal(props) {
       },
     };
 
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/restaurants/${restaurantId}`,
-        requestOptions
-      );
-      const jsonResponse = await response.json();
-      console.log(jsonResponse);
-      const restaurantDetails = jsonResponse.restaurant[0];
-      const restaurantReview = jsonResponse.review;
-      const resLoginStatus = jsonResponse.loggedIn;
-      const resOrderCheck = jsonResponse.ordered;
-      setLoginStatus(resLoginStatus);
-      setOrderCheck(resOrderCheck);
+    const response = await fetch(
+      `http://localhost:8080/api/restaurants/${restaurantId}`,
+      requestOptions
+    );
+    const jsonResponse = await response.json();
+    console.log(jsonResponse);
+    const restaurantDetails = jsonResponse.restaurant[0];
+    const restaurantReview = jsonResponse.review;
+    const resLoginStatus = jsonResponse.loggedIn;
+    const resOrderCheck = jsonResponse.ordered;
+    const user = jsonResponse.type;
 
-      console.log(restaurantDetails);
-      const {
-        name,
-        town,
-        logourl,
-        streetname,
-        postcode,
-        imageurl: imageUrl,
-        start_time: startTime,
-        end_time: endTime,
-        description,
-        current_slots: slots,
-      } = restaurantDetails;
-      setModalHeaderDetails({
-        name: name,
-        town: town,
-        logo: logourl,
-      });
-      setModalBodyDetails({
-        streetname: streetname,
-        postcode: postcode,
-        image_url: imageUrl,
-        startTime: startTime,
-        endTime: endTime,
-        description: description,
-        slots: slots,
-        review: restaurantReview,
-      });
-    } catch {
-      alert("Something has gone wrong with the server.");
-    }
+    setUserType(user);
+    setLoginStatus(resLoginStatus);
+    setOrderCheck(resOrderCheck);
+
+    const {
+      name,
+      town,
+      logourl,
+      streetname,
+      postcode,
+      imageurl: imageUrl,
+      start_time: startTime,
+      end_time: endTime,
+      description,
+      current_slots: slots,
+    } = restaurantDetails;
+    setModalHeaderDetails({
+      name: name,
+      town: town,
+      logo: logourl,
+    });
+    setModalBodyDetails({
+      streetname: streetname,
+      postcode: postcode,
+      imageUrl: imageUrl,
+      startTime: startTime,
+      endTime: endTime,
+      description: description,
+      slots: slots,
+      review: restaurantReview,
+    });
+
   }
 
   const { setShowModal } = props;
@@ -126,7 +126,7 @@ function RestaurantModal(props) {
   ) {
     return (
       <div>
-        {loginStatus && !orderCheck ? (
+        {loginStatus && !orderCheck && userType === "customer" ? (
           <button
             className="bg-yellow-500 hover:bg-yellow-900 transition duration-200 text-white font-bold py-2 px-4 rounded"
             type="button"
@@ -138,8 +138,10 @@ function RestaurantModal(props) {
           </button>
         ) : !loginStatus ? (
           "Please login to book an order!"
-        ) : (
+        ) : userType === "customer" ? (
           "You have already ordered for today. Please try again tomorrow."
+        ) : (
+          "You cannot make a order as a restaurant. Please login as a customer."
         )}
       </div>
     );

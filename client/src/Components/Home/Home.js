@@ -4,8 +4,6 @@ import adnanPhoto from "./TeamPhotos/Adnan.jpg";
 import sohailPhoto from "./TeamPhotos/Sohail.jpg";
 import bledarPhoto from "./TeamPhotos/Bledar.jpg";
 import gpPhoto from "./TeamPhotos/Gurpratap.jpg";
-import logo from "./images/companylogo.png";
-import pie from "./images/piechart.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHamburger,
@@ -44,7 +42,9 @@ function Home() {
       <section className="info-section flex justify-start items-start">
         <div className="info flex justify-end items-start">
           <div className="flex flex-col self-end justify-center align-middle p-2 w-1/2 text-left text-black">
+
             <h1 className="text-5xl font-extrabold mb-14">Our mission</h1>
+
             <p className="info-text w-2/3 mb-10">
               Every day, thousands of restaurants, cafes, supermarkets and other
               institutions throw away huge amounts of edible food. This is a
@@ -86,7 +86,9 @@ function Home() {
       <section className="instructions-section flex items-center justify-center">
         <div className="instructions-wrapper flex flex-col items-center justify-center w-1/2">
           <img src="" alt="" />
+          <h1 className="text-yellow-500 text-base">Instructions</h1>
           <h1 className="font-weight-bolder text-5xl">How it works</h1>
+
           <h1 className="text-base w-2/3 self-center mt-4">
             We have created an intuitive system for customers to place orders.
             For the fair allocation of food, each customer is limited to one
