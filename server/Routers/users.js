@@ -109,6 +109,7 @@ function getImageURL(url) {
 
   return url;
 }
+
 //Create restaurant user
 router.post("/restaurant", async function (req, res) {
   const client = await pool.connect();
@@ -145,7 +146,6 @@ router.post("/restaurant", async function (req, res) {
   const logoUrl = getLogoURL(logo_url);
   const imageUrl = getImageURL(image_url);
 
-  console.log(duplicate.rows);
   if (duplicate.rows.length !== 0) {
     console.log("HERE");
     res.status(400).json({
@@ -314,6 +314,7 @@ router.put("/address/:uuid", async function (req, res) {
   const client = await pool.connect();
   const { uuid } = req.params;
   const { streetname, postcode, town } = req.body;
+  const activeSession = await req.cookies.sessionID;
 
   console.log(req.body);
   const postcodePattern =
@@ -322,13 +323,24 @@ router.put("/address/:uuid", async function (req, res) {
     res.status(400).json({ message: "Invalid Postcode" });
   } else {
     try {
-      await client.query(
-        "UPDATE addresses SET streetname = $1 , postcode = $2, town = $3 WHERE uuid = $4",
-        [streetname, postcode, town, uuid]
+      const checkUser = await client.query(
+        "SELECT * FROM users JOIN sessions ON users.id = sessions.user_id WHERE uuid = $1",
+        [activeSession]
       );
-      res
-        .status(200)
-        .json({ message: "Your address details have been updated!" });
+
+      if (checkUser.rows.length > 0) {
+        await client.query(
+          "UPDATE addresses SET streetname = $1 , postcode = $2, town = $3 WHERE uuid = $4",
+          [streetname, postcode, town, uuid]
+        );
+        res
+          .status(200)
+          .json({ message: "Your address details have been updated!" });
+      } else {
+        res
+          .status(404)
+          .json({ message: "Request made by unauthorised user. " });
+      }
     } catch (err) {
       console.log(err);
       res.status(400).json({ message: "Failed to update address details" });
