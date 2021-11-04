@@ -22,8 +22,8 @@
 }
 
 .about {
-  height: 700px;
   width: 900px;
+  height: 100vh;
 }
 
 .w-header-text {
