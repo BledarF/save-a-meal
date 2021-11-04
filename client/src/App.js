@@ -82,6 +82,7 @@ function App(props) {
 		}
 	}
 
+
 	return (
 		<userContext.Provider value={value}>
 			<div className="App">
@@ -102,6 +103,7 @@ function App(props) {
 			</div>
 		</userContext.Provider>
 	);
+
 }
 
 export default App;
