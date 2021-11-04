@@ -1,8 +1,6 @@
 import { useEffect, useContext, useState } from "react";
 
 function RestaurantCard(props) {
-
-
   let {
     imageurl: imgUrl,
     name,
@@ -14,21 +12,24 @@ function RestaurantCard(props) {
 
   const { setShowModal, setModalDetails } = props;
 
-     startTime = startTime.slice(0, 5);
-     endTime = endTime.slice(0, 5);
+  startTime = startTime.slice(0, 5);
+  endTime = endTime.slice(0, 5);
   return (
     <div
-         onClick={() => {
-           setShowModal(true);
-           setModalDetails(props.details);
-         }}
-      className="restaurant-card-wrapper relative cursor-pointer h-96 text-left overflow-hidden flex flex-col rounded-bl-3xl rounded-tr-3xl shadow-xl hover:shadow-2xl transition duration-200"
+      onClick={() => {
+        setShowModal(true);
+        setModalDetails(props.details);
+      }}
+      className="h-max restaurant-card-wrapper relative cursor-pointer h-96 text-left overflow-hidden flex flex-col rounded-bl-3xl rounded-tr-3xl shadow-xl hover:shadow-2xl transition duration-200"
     >
       <div className="image-wrapper rounded-bl-3xl h-1/2 overflow-hidden flex justify-center items-center">
-        <img src={imgUrl} alt={name} className="" />
+        <img src={imgUrl} alt={name} className="min-h-full" />
       </div>
       <div className="card-text-wrapper p-2 flex flex-col justify-start items-start h-1/2 text-center ml-3">
-        <h1 className="text-2xl">{name}</h1>
+        <h1 className="text-2xl">
+          {name}
+          <span className="text-base text-yellow-900"> {town}</span>
+        </h1>
         <div className="card-details-wrapper">
           <p className="text-xl">
             {town} - {distance} miles
