@@ -11,6 +11,7 @@ function RestaurantCard(props) {
     available,
   } = props.details;
 
+
   const { setShowModal, setModalDetails } = props;
   startTime = startTime.slice(0, 5);
   endTime = endTime.slice(0, 5);
@@ -53,7 +54,9 @@ function RestaurantCard(props) {
     );
   };
 
-  return available ? card() : card("opacity-20");
+  return available
+    ? card()
+    : card("opacity-20 pointer-events-none cursor-not-allowed");
 }
 
 export default RestaurantCard;

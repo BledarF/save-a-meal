@@ -14,8 +14,9 @@ function AccountTab(props) {
   async function fetchEditUrl(url) {
     const values = {
       email: email ? email : props.email,
-      password: password,
-      telephone: telephone,
+      password: password ? password : props.password,
+      telephone: telephone ? telephone : props.telephone,
+
     };
 
     try {

@@ -320,28 +320,36 @@ router.put("/:id/account", async function (req, res) {
   const client = await pool.connect();
   const { id } = req.params;
   const { email, telephone, password } = req.body;
+  const activeSession = await req.cookies.sessionID;
 
   if (!validator.isEmail(email)) {
     return res
       .status(400)
       .json({ message: "Email is invalid. Please try again." });
-  } else if (!validator.isStrongPassword(password, { minSymbols: 0 })) {
+  } else if (
+    !password ||
+    !validator.isStrongPassword(password, { minSymbols: 0 })
+  ) {
     return res.status(400).json({ message: "Password is invalid" });
   } else {
     try {
-      const salt = await bcrypt.genSalt(8);
-      const passwordEncrypted = await bcrypt.hash(password, salt);
-      await client.query(
-        "UPDATE users SET email = $1 , password = $2 WHERE restaurant_id = $3",
-        [email, passwordEncrypted, id]
-      );
-      await client.query(
-        "UPDATE restaurants SET telephone = $1 WHERE restaurants.id = $2",
-        [telephone, id]
-      );
-      res
-        .status(200)
-        .json({ message: "Your login details have been updated!" });
+      if (checkValidUser(client, activeSession)) {
+        const salt = await bcrypt.genSalt(8);
+        const passwordEncrypted = await bcrypt.hash(password, salt);
+        await client.query(
+          "UPDATE users SET email = $1 , password = $2 WHERE restaurant_id = $3",
+          [email, passwordEncrypted, id]
+        );
+        await client.query(
+          "UPDATE restaurants SET telephone = $1 WHERE restaurants.id = $2",
+          [telephone, id]
+        );
+        res
+          .status(200)
+          .json({ message: "Your login details have been updated!" });
+      } else {
+        res.status(400).json({ message: "Request made by unauthorised user" });
+      }
     } catch (err) {
       console.log(err);
       res.status(400).json({ message: "Failed to update login details" });
@@ -385,24 +393,29 @@ router.put("/:id/details", async function (req, res) {
     imageURL,
     logoURL,
   } = req.body;
+  const activeSession = await req.cookies.sessionID;
 
   try {
-    await client.query(
-      "UPDATE restaurants SET name = $1 , description= $2, start_time = $3, end_time = $4, current_slots = $5, imageURL =  $6 , logoURL = $7 WHERE id = $8",
-      [
-        name,
-        description,
-        start_time,
-        end_time,
-        current_slots,
-        imageURL,
-        logoURL,
-        id,
-      ]
-    );
-    res
-      .status(200)
-      .json({ message: "Your personal details have been updated!" });
+    if (checkValidUser(client, activeSession)) {
+      await client.query(
+        "UPDATE restaurants SET name = $1 , description= $2, start_time = $3, end_time = $4, current_slots = $5, imageURL =  $6 , logoURL = $7 WHERE id = $8",
+        [
+          name,
+          description,
+          start_time,
+          end_time,
+          current_slots,
+          imageURL,
+          logoURL,
+          id,
+        ]
+      );
+      res
+        .status(200)
+        .json({ message: "Your personal details have been updated!" });
+    } else {
+      res.status(404).json({ message: "Request made by unauthorised user." });
+    }
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "Failed to update personal details" });
@@ -414,6 +427,7 @@ router.put("/:id/details", async function (req, res) {
 router.put("/:id/availability", async function (req, res) {
   const client = await pool.connect();
   const { id } = req.params;
+  const activeSession = await req.cookies.sessionID;
   const { M, TU, W, TH, F, SA, SU, start_time, end_time, current_slots } =
     req.body;
 
@@ -425,16 +439,20 @@ router.put("/:id/availability", async function (req, res) {
   }
 
   try {
-    await client.query(
-      "UPDATE available_days SET M = $1, TU = $2, W = $3, TH = $4, F = $5, SA = $6, SU = $7 WHERE restaurant_id = $8",
-      [M, TU, W, TH, F, SA, SU, id]
-    );
-    await client.query(
-      "UPDATE restaurants SET start_time = $1, end_time = $2, current_slots = $3 WHERE id = $4",
-      [start_time, end_time, current_slots, id]
-    );
+    if (checkValidUser(client, activeSession)) {
+      await client.query(
+        "UPDATE available_days SET M = $1, TU = $2, W = $3, TH = $4, F = $5, SA = $6, SU = $7 WHERE restaurant_id = $8",
+        [M, TU, W, TH, F, SA, SU, id]
+      );
+      await client.query(
+        "UPDATE restaurants SET start_time = $1, end_time = $2, current_slots = $3 WHERE id = $4",
+        [start_time, end_time, current_slots, id]
+      );
 
-    res.status(200).json({ message: "Your availability has been updated!" });
+      res.status(200).json({ message: "Your availability has been updated!" });
+    } else {
+      res.status(404).json({ message: "Request made by unauthorised user" });
+    }
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "Failed to update availability" });
@@ -525,12 +543,26 @@ async function getlocationAPI(postcodeString, postcode, client) {
       Distance: distances[i],
     });
   }
+
   // console.log(postcodeArrObj[0].Distance);
   for (let i = 0; i < postcodeArrObj.length; i++) {
     await client.query(
       `UPDATE addresses SET distance_from_post=$1 WHERE postcode=$2`,
       [parseInt(distances[i]), postcodeArrObj[i].Postcode]
     );
+  }
+}
+
+async function checkValidUser(client, activeSession) {
+  const checkUser = await client.query(
+    "SELECT * FROM users JOIN sessions ON users.id = sessions.user_id WHERE uuid = $1",
+    [activeSession]
+  );
+
+  if (checkUser.rows.length > 0) {
+    return true;
+  } else {
+    return false;
   }
 }
 
