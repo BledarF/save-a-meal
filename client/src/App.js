@@ -55,7 +55,6 @@ function App(props) {
         headers: {
           "Content-Type": "application/json",
         },
-        // body: JSON.stringify(values),
       });
       const jsonResponse = await response.json();
       //console.log(jsonResponse);

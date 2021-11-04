@@ -80,7 +80,6 @@ router.get("/:id/orders", async function (req, res) {
 
   try {
     const orderHistory = await client.query(
-
       "SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id JOIN restaurants ON orders.restaurant_id = restaurants.id LEFT JOIN reviews ON orders.id = reviews.order_id WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date != created_at::date) ",
 
       [id]
@@ -152,18 +151,25 @@ router.put("/:id/all/:uuid", async function (req, res) {
   const { id, uuid } = req.params;
   const { firstname, secondname, telephone, streetname, postcode, town } =
     req.body;
+  const activeSession = await req.cookies.sessionID;
 
   try {
-    await client.query(
-      "UPDATE customers SET firstname = $1, secondname = $2, telephone = $3 WHERE id = $4",
-      [firstname, secondname, telephone, id]
-    );
-    await client.query(
-      "UPDATE addresses SET streetname = $1, postcode = $2, town = $3 WHERE uuid = $4",
-      [streetname, postcode, town, uuid]
-    );
+    if (checkValidUser(client, activeSession)) {
+      await client.query(
+        "UPDATE customers SET firstname = $1, secondname = $2, telephone = $3 WHERE id = $4",
+        [firstname, secondname, telephone, id]
+      );
+      await client.query(
+        "UPDATE addresses SET streetname = $1, postcode = $2, town = $3 WHERE uuid = $4",
+        [streetname, postcode, town, uuid]
+      );
 
-    res.status(200).json({ message: "All account details have been updated!" });
+      res
+        .status(200)
+        .json({ message: "All account details have been updated!" });
+    } else {
+      res.status(400).json({ message: "Request made by unauthorised user" });
+    }
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "Failed to update account details." });
@@ -254,24 +260,17 @@ router.put("/:id/details", async function (req, res) {
   client.release;
 });
 
-async function checkReviewed(orderHistory, client) {
-  orderHistory.rows.map(async (order) => {
-    const orderId = order.id;
-    const reviewCheck = await client.query(
-      "SELECT * FROM reviews WHERE order_id = $1",
-      [orderId]
-    );
-    console.log("dwd");
-    if (reviewCheck.rows.length === 0) {
-      order.reviewed = false;
-      return order;
-    } else {
-      order.reviewed = true;
-      return order;
-    }
-  });
+async function checkValidUser(client, activeSession) {
+  const checkUser = await client.query(
+    "SELECT * FROM users JOIN sessions ON users.id = sessions.user_id WHERE uuid = $1",
+    [activeSession]
+  );
 
-  return orderHistory;
+  if (checkUser.rows.length > 0) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 module.exports = router;

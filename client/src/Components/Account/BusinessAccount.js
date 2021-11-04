@@ -110,7 +110,9 @@ const Tabs = ({ color, accountDetails }) => {
                   ></AddressTab>
                 </div>
                 <div className={openTab === 3 ? "block" : "hidden"} id="link3">
-                  <BusinessOrdersTab restaurantId={accountDetails.restaurant_id}></BusinessOrdersTab>
+                  <BusinessOrdersTab
+                    restaurantId={accountDetails.restaurant_id}
+                  ></BusinessOrdersTab>
                 </div>
                 <div className={openTab === 4 ? "block" : "hidden"} id="link4">
                   <AvailabilityTab

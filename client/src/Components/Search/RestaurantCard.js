@@ -53,7 +53,9 @@ function RestaurantCard(props) {
     );
   };
 
-  return available ? card() : card("opacity-20");
+  return available
+    ? card()
+    : card("opacity-20 pointer-events-none cursor-not-allowed");
 }
 
 export default RestaurantCard;

@@ -15,9 +15,9 @@ function AddressTab(props) {
 
   async function fetchEditUrl(url) {
     const values = {
-      postcode: postcode,
-      streetname: streetname,
-      town: town,
+      postcode: postcode ? postcode : props.postcode,
+      streetname: streetname ? streetname : props.streetname,
+      town: town ? town : props.town,
     };
 
     try {
