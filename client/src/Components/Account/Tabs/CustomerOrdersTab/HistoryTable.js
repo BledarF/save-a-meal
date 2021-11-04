@@ -31,6 +31,10 @@ function HistoryTable(props) {
                         createdAt={order.created_at}
                         endTime={order.end_time}
                         collected={order.collected}
+                        reviewed={order.reviewed}
+                        restaurantId={order.id}
+                        orderId={order.orderid}
+                        handleAccept={props.handleAccept}
                       ></CustomerOrderEntryHistory>
                     );
                   })}

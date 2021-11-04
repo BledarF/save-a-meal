@@ -1,11 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
+import ReviewModal from "./ReviewModal";
 
 function CustomerOrderEntryHistory(props) {
+  const [showReview, setShowReview] = useState(false);
   function acceptBut() {
     return (
       <a href="#" class="px-4 py-1 text-sm text-white bg-yellow-500 rounded">
         Review
       </a>
+    );
+  }
+
+  function reviewBut() {
+    return (
+      <button
+        onClick={() => setShowReview(true)}
+        class="px-4 py-1 text-sm text-white bg-yellow-500 rounded"
+      >
+        Review
+      </button>
     );
   }
 
@@ -27,8 +40,16 @@ function CustomerOrderEntryHistory(props) {
       </td>
       <td class="px-6 py-4 text-sm text-gray-500">{props.createdAt}</td>
       <td class="px-8 py-4">
-        {props.collected ? acceptedStatus() : acceptBut()}
+        {props.reviewed ? acceptedStatus() : reviewBut()}
       </td>
+      {showReview ? (
+        <ReviewModal
+          restaurantId={props.restaurantId}
+          orderId={props.orderId}
+          setShowModal={setShowReview}
+          handleAccept={props.handleAccept}
+        ></ReviewModal>
+      ) : null}
     </tr>
   );
 }

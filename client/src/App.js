@@ -21,18 +21,19 @@ import About from "./Components/About/About";
 // CONTEXT API
 
 export const userContext = React.createContext({
-	// MAYBE GET FROM COOKIES INITIALLY?
-	user: null,
-	setUser: () => {},
+  // MAYBE GET FROM COOKIES INITIALLY?
+  user: null,
+  setUser: () => {},
 });
 
 export const bookingContext = React.createContext({
-	// MAYBE GET FROM COOKIES INITIALLY?
-	bookingStatus: true,
-	setBookingStatus: () => {},
+  // MAYBE GET FROM COOKIES INITIALLY?
+  bookingStatus: true,
+  setBookingStatus: () => {},
 });
 
 function App(props) {
+
 
 	const [data, setData] = useState(null);
 	const [sessionUpdate, setSessionUpdate] = useState(0);
@@ -41,12 +42,12 @@ function App(props) {
 	const [user, setUser] = useState("");
 	const value = { user, setUser };
 
-	useEffect(() => {
-		if (sessionUpdate == 0) {
-			checkSessionExists();
-		}
-		updateCurrentSlotsMidnight();
-	});
+  useEffect(() => {
+    if (sessionUpdate == 0) {
+      checkSessionExists();
+    }
+    updateCurrentSlotsMidnight();
+  });
 
 
 	async function checkSessionExists() {
@@ -108,6 +109,5 @@ function App(props) {
     </userContext.Provider>
   );
 
-}
 
 export default App;

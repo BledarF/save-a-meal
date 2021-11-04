@@ -56,9 +56,19 @@ router.get("/:id/orders/today", async function (req, res) {
 
   try {
     const customersOrder = await client.query(
-      "SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id JOIN restaurants ON orders.restaurant_id = restaurants.id  JOIN addresses ON restaurants.address_id = addresses.uuid WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
+      "SELECT orders.collected, orders.id AS orderid, orders.booking_id, reviews.id AS reviewsid, restaurants.*, addresses.* FROM orders JOIN customers ON orders.customer_id = customers.id JOIN restaurants ON orders.restaurant_id = restaurants.id  JOIN addresses ON restaurants.address_id = addresses.uuid FULL JOIN reviews ON orders.id = reviews.order_id WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date = created_at::date)",
       [id]
     );
+
+    customersOrder.rows.map((order) => {
+      if (order.reviewsid === null) {
+        order.reviewed = false;
+        return order;
+      } else {
+        order.reviewed = true;
+        return order;
+      }
+    });
 
     res.status(200).json({
       order: customersOrder.rows,
@@ -80,13 +90,14 @@ router.get("/:id/orders", async function (req, res) {
 
   try {
     const orderHistory = await client.query(
-      "SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id JOIN restaurants ON orders.restaurant_id = restaurants.id LEFT JOIN reviews ON orders.id = reviews.order_id WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date != created_at::date) ",
+
+      "SELECT orders.created_at, orders.collected, orders.id AS orderid, orders.booking_id, reviews.id AS reviewsid, restaurants.* FROM orders JOIN customers ON orders.customer_id = customers.id JOIN restaurants ON orders.restaurant_id = restaurants.id LEFT JOIN reviews ON orders.id = reviews.order_id WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date != created_at::date) ",
 
       [id]
     );
 
     orderHistory.rows.map((order) => {
-      if (order.id === null) {
+      if (order.reviewsid === null) {
         order.reviewed = false;
         return order;
       } else {
@@ -116,7 +127,9 @@ router.post(
   async function (req, res) {
     const client = await pool.connect();
     const { restaurant_id, order_id } = req.params;
-    const { score } = req.body;
+    const { values } = req.body;
+
+    const score = values.score;
 
     try {
       const reviewCheck = await client.query(

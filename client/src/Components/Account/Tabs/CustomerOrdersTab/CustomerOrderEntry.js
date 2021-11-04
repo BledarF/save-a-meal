@@ -1,18 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
+import CollectOrderModal from "./CollectOrderModal";
+import ReviewModal from "./ReviewModal";
 
 function CustomerOrderEntry(props) {
+  const [showCollect, setShowCollect] = useState(false);
+  const [showReview, setShowReview] = useState(false);
+
   function acceptBut() {
     return (
-      <a href="#" class="px-4 py-1 text-sm text-white bg-yellow-500 rounded">
+      <button
+        onClick={() => {
+          setShowCollect(true);
+        }}
+        class="px-4 py-1 text-sm text-white bg-yellow-500 rounded"
+      >
         Collect
-      </a>
+      </button>
+    );
+  }
+
+  function reviewBut() {
+    return (
+      <button
+        onClick={() => {
+          setShowReview(true);
+        }}
+        class="px-4 py-1 text-sm text-white bg-yellow-500 rounded"
+      >
+        Review
+      </button>
     );
   }
 
   function acceptedStatus() {
     return (
       <a href="#" class="px-3 py-1 text-sm text-white bg-green-500 rounded">
-        Accepted
+        Reviewed
       </a>
     );
   }
@@ -28,8 +51,31 @@ function CustomerOrderEntry(props) {
       <td class="px-6 py-4 text-sm text-gray-500">{props.startTime}</td>
       <td class="px-6 py-4 text-sm text-gray-500">{props.endTime}</td>
       <td class="px-8 py-4">
-        {props.collected ? acceptedStatus() : acceptBut()}
+        {props.collected
+          ? props.reviewed
+            ? acceptedStatus()
+            : reviewBut()
+          : acceptBut()}
       </td>
+      {showCollect ? (
+        <CollectOrderModal
+          address={{
+            postcode: props.postcode,
+            street: props.street,
+            town: props.town,
+          }}
+          id={props.id}
+          setShowModal={setShowCollect}
+        ></CollectOrderModal>
+      ) : null}
+      {showReview ? (
+        <ReviewModal
+          restaurantId={props.restaurantId}
+          orderId={props.orderId}
+          setShowModal={setShowReview}
+          handleAccept={props.handleAccept}
+        ></ReviewModal>
+      ) : null}
     </tr>
   );
 }
