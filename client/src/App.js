@@ -40,6 +40,7 @@ function App(props) {
     if (sessionUpdate == 0) {
       checkSessionExists();
     }
+    updateCurrentSlotsMidnight();
   });
 
   async function checkSessionExists() {
@@ -60,6 +61,21 @@ function App(props) {
       }
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async function updateCurrentSlotsMidnight() {
+    const today = new Date();
+    const currentTime =
+      today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
+    if (currentTime === "00:00:00") {
+      await fetch("http://localhost:8080/api/restaurants/reset", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
     }
   }
 

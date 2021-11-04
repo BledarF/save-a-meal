@@ -21,7 +21,6 @@ function SearchBar(props) {
       const json = await response.json();
       console.log(json);
       const restaurantsList = json.restaurantDetails;
-      console.log(restaurantsList);
       setRestaurants(restaurantsList);
       if (json.message === "Already Booked!") {
         setBookingStatus(false);

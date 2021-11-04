@@ -55,8 +55,9 @@ router.get(
   async function (req, res) {
     const client = await pool.connect();
     const { postcodeVal, proximity } = req.params;
-    // const today = new Date();
-    // const currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    const today = new Date();
+    const currentTime =
+      today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
     ///OBTAINING POSTCODE OF RESTAURANTS FROM DATABASE////
 
@@ -76,13 +77,18 @@ router.get(
 
     try {
       const restaurantDetails = await client.query(
-        "SELECT id,name,town,start_time,end_time,distance_from_post,imageurl FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid WHERE distance_from_post < $1",
+        "SELECT id,name,town,start_time,end_time,distance_from_post,imageurl,current_slots FROM restaurants JOIN addresses ON restaurants.address_id = addresses.uuid WHERE distance_from_post < $1 AND CURRENT_TIMESTAMP::time < end_time ORDER BY distance_from_post ASC",
         [proximity]
       );
 
       const filteredRestaurantDetails = restaurantDetails.rows.map(
         (restaurant) => {
-          if (restaurant.current_slots === 0) {
+          console.log(restaurant.current_slots);
+          if (
+            restaurant.current_slots === 0 ||
+            currentTime > restaurant.end_time
+          ) {
+            console.log(restaurant);
             restaurant.available = false;
             return restaurant;
           } else {
@@ -418,8 +424,8 @@ router.put("/:id/availability", async function (req, res) {
       [M, TU, W, TH, F, SA, SU, id]
     );
     await client.query(
-      "UPDATE restaurants SET start_time = $1, end_time = $2, current_slots = $3",
-      [start_time, end_time, current_slots]
+      "UPDATE restaurants SET start_time = $1, end_time = $2, current_slots = $3 WHERE id = $4",
+      [start_time, end_time, current_slots, id]
     );
 
     res.status(200).json({ message: "Your availability has been updated!" });
