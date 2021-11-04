@@ -30,6 +30,7 @@ function RestaurantModal(props) {
         "Content-Type": "application/json",
       },
     };
+
     const response = await fetch(
       `http://localhost:8080/api/restaurants/${restaurantId}`,
       requestOptions
@@ -73,6 +74,7 @@ function RestaurantModal(props) {
       slots: slots,
       review: restaurantReview,
     });
+
   }
 
   const { setShowModal } = props;

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 function AddressTab(props) {
   const [editMode, setEditMode] = useState(false);
-  console.log(props.days.tuesday);
+
   const [days, setDays] = useState({
     M: props.days.monday,
     TU: props.days.tuesday,
@@ -12,7 +12,7 @@ function AddressTab(props) {
     SA: props.days.saturday,
     SU: props.days.sunday,
   });
-  console.log(days);
+
   const [startTime, setStartTime] = useState(props.startTime);
   const [endTime, setEndTime] = useState(props.endTime);
   const [capacity, setCapacity] = useState(props.capacity);
@@ -79,25 +79,42 @@ function AddressTab(props) {
           <div className="table-row">
             <div className="table-cell pb-1">Start Time: </div>
             {editMode ? (
-              <input onChange={(e) => setStartTime(e.target.value)} placeholder={props.startTime} type="time"></input>
+              <input
+                onChange={(e) => setStartTime(e.target.value)}
+                placeholder={props.startTime}
+                type="time"
+              ></input>
             ) : (
-              <div className="table-cell">{startTime ? startTime : props.startTime}</div>
+              <div className="table-cell">
+                {startTime ? startTime : props.startTime}
+              </div>
             )}
           </div>
           <div className="table-row">
             <div className="table-cell pb-1">End Time: </div>
             {editMode ? (
-              <input onChange={(e) => setEndTime(e.target.value)} placeholder={props.endTime} type="time"></input>
+              <input
+                onChange={(e) => setEndTime(e.target.value)}
+                placeholder={props.endTime}
+                type="time"
+              ></input>
             ) : (
-              <div className="table-cell">{endTime ? endTime : props.endTime}</div>
+              <div className="table-cell">
+                {endTime ? endTime : props.endTime}
+              </div>
             )}
           </div>
           <div className="table-row">
             <div className="table-cell pb-1">Capacity: </div>
             {editMode ? (
-              <input onChange={(e) => setCapacity(e.target.value)} placeholder={props.capacity}></input>
+              <input
+                onChange={(e) => setCapacity(e.target.value)}
+                placeholder={props.capacity}
+              ></input>
             ) : (
-              <div className="table-cell">{capacity ? capacity : props.capacity}</div>
+              <div className="table-cell">
+                {capacity ? capacity : props.capacity}
+              </div>
             )}
           </div>
         </div>
@@ -120,42 +137,112 @@ function AddressTab(props) {
               <tr>
                 <td>
                   {" "}
-                  <input type="checkbox" onChange={() => toggleCheckbox("M")} checked={days.M ? days.M : props.days.monday}></input>
+                  <input
+                    type="checkbox"
+                    onChange={() => toggleCheckbox("M")}
+                    checked={days.M ? days.M : props.days.monday}
+                  ></input>
                 </td>
                 <td>
                   {" "}
-                  <input type="checkbox" onChange={() => toggleCheckbox("TU")} checked={days.TU ? days.TU : props.days.tuesday}></input>
+                  <input
+                    type="checkbox"
+                    onChange={() => toggleCheckbox("TU")}
+                    checked={days.TU ? days.TU : props.days.tuesday}
+                  ></input>
                 </td>
                 <td>
                   {" "}
-                  <input type="checkbox" onChange={() => toggleCheckbox("W")} checked={days.W ? days.W : props.days.wednesday}></input>
+                  <input
+                    type="checkbox"
+                    onChange={() => toggleCheckbox("W")}
+                    checked={days.W ? days.W : props.days.wednesday}
+                  ></input>
                 </td>
                 <td>
                   {" "}
-                  <input type="checkbox" onChange={() => toggleCheckbox("TH")} checked={days.TH ? days.TH : props.days.thursday}></input>
+                  <input
+                    type="checkbox"
+                    onChange={() => toggleCheckbox("TH")}
+                    checked={days.TH ? days.TH : props.days.thursday}
+                  ></input>
                 </td>
                 <td>
                   {" "}
-                  <input type="checkbox" onChange={() => toggleCheckbox("F")} checked={days.F ? days.F : props.days.friday}></input>
+                  <input
+                    type="checkbox"
+                    onChange={() => toggleCheckbox("F")}
+                    checked={days.F ? days.F : props.days.friday}
+                  ></input>
                 </td>
                 <td>
                   {" "}
-                  <input type="checkbox" onChange={() => toggleCheckbox("SA")} checked={days.SA ? days.SA : props.days.saturday}></input>
+                  <input
+                    type="checkbox"
+                    onChange={() => toggleCheckbox("SA")}
+                    checked={days.SA ? days.SA : props.days.saturday}
+                  ></input>
                 </td>
                 <td>
                   {" "}
-                  <input type="checkbox" onChange={() => toggleCheckbox("SU")} checked={days.SU ? days.SU : props.days.sunday}></input>
+                  <input
+                    type="checkbox"
+                    onChange={() => toggleCheckbox("SU")}
+                    checked={days.SU ? days.SU : props.days.sunday}
+                  ></input>
                 </td>
               </tr>
             ) : (
               <tr>
-                <td>{(days.M ? days.M : props.days.monday) ? <span>&#10003;</span> : <span>&#x2717;</span>}</td>
-                <td>{(days.TU ? days.TU : props.days.tuesday) ? <span>&#10003;</span> : <span>&#x2717;</span>}</td>
-                <td>{(days.W ? days.W : props.days.wednesday) ? <span>&#10003;</span> : <span>&#x2717;</span>}</td>
-                <td>{(days.TH ? days.TH : props.days.thursday) ? <span>&#10003;</span> : <span>&#x2717;</span>}</td>
-                <td>{(days.F ? days.F : props.days.friday) ? <span>&#10003;</span> : <span>&#x2717;</span>}</td>
-                <td>{(days.SA ? days.SA : props.days.saturday) ? <span>&#10003;</span> : <span>&#x2717;</span>}</td>
-                <td>{(days.SU ? days.SU : props.days.sunday) ? <span>&#10003;</span> : <span>&#x2717;</span>}</td>
+                <td>
+                  {(days.M ? days.M : props.days.monday) ? (
+                    <span>&#10003;</span>
+                  ) : (
+                    <span>&#x2717;</span>
+                  )}
+                </td>
+                <td>
+                  {(days.TU ? days.TU : props.days.tuesday) ? (
+                    <span>&#10003;</span>
+                  ) : (
+                    <span>&#x2717;</span>
+                  )}
+                </td>
+                <td>
+                  {(days.W ? days.W : props.days.wednesday) ? (
+                    <span>&#10003;</span>
+                  ) : (
+                    <span>&#x2717;</span>
+                  )}
+                </td>
+                <td>
+                  {(days.TH ? days.TH : props.days.thursday) ? (
+                    <span>&#10003;</span>
+                  ) : (
+                    <span>&#x2717;</span>
+                  )}
+                </td>
+                <td>
+                  {(days.F ? days.F : props.days.friday) ? (
+                    <span>&#10003;</span>
+                  ) : (
+                    <span>&#x2717;</span>
+                  )}
+                </td>
+                <td>
+                  {(days.SA ? days.SA : props.days.saturday) ? (
+                    <span>&#10003;</span>
+                  ) : (
+                    <span>&#x2717;</span>
+                  )}
+                </td>
+                <td>
+                  {(days.SU ? days.SU : props.days.sunday) ? (
+                    <span>&#10003;</span>
+                  ) : (
+                    <span>&#x2717;</span>
+                  )}
+                </td>
               </tr>
             )}
           </tbody>
@@ -163,15 +250,24 @@ function AddressTab(props) {
       </div>
       {editMode ? (
         <div>
-          <button onClick={handleEdit} className="bg-green-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full ">
+          <button
+            onClick={handleEdit}
+            className="bg-green-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full "
+          >
             Save
           </button>
-          <button onClick={editToggle} className="bg-red-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full ">
+          <button
+            onClick={editToggle}
+            className="bg-red-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full "
+          >
             Cancel
           </button>
         </div>
       ) : (
-        <button onClick={editToggle} className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full ">
+        <button
+          onClick={editToggle}
+          className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full "
+        >
           Edit
         </button>
       )}

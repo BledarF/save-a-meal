@@ -23,7 +23,7 @@ function Home() {
             Save. A. Meal.
           </h1>
           <h1 className="text-2xl font-bold text-black w-header-text text-left">
-            Your favourite food collected hot & fresh
+            From your favorite shops and restaurants.
           </h1>
         </div>
       </section>
@@ -42,27 +42,26 @@ function Home() {
       <section className="info-section flex justify-start items-start">
         <div className="info flex justify-end items-start">
           <div className="flex flex-col self-end justify-center align-middle p-2 w-1/2 text-left text-black">
-            <h1 className="text-base font-extrabold text-yellow-500 mb-7">
-              Our Mission
-            </h1>
-            <h1 className="text-5xl font-extrabold mb-14">
-              Become your local food hero
-            </h1>
+
+            <h1 className="text-5xl font-extrabold mb-14">Our mission</h1>
+
             <p className="info-text w-2/3 mb-10">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae,
-              quisquam sequi laboriosam veritatis assumenda in cumque
-              dignissimos consequatur modi dolorem unde ex ab quibusdam veniam
-              blanditiis perferendis rem incidunt asperiores minima quas eius
-              necessitatibus id quaerat dolores. Libero, natus expedita.
+              Every day, thousands of restaurants, cafes, supermarkets and other
+              institutions throw away huge amounts of edible food. This is a
+              massive loss for businesses - as they are throwing away stock that
+              they could make money from. It is also a massive loss for people
+              too, especially as poverty and food prices are on the rise.
             </p>
-            <ul className="list-none flex justify-between items-center text-center w-2/3">
-              {getQuickFact(
-                "15,847",
-                "million people finding and saving delicious food"
-              )}
+            <p className="info-text w-2/3 mb-10">
+              Our aim is to connect businesses and individuals who would like to
+              tackle the issue of food waste. We have built a system where
+              businesses can sign up and customers can order from them.
+            </p>
+            {/* <ul className="list-none flex justify-between items-center text-center w-2/3">
+              {getQuickFact("1/3", "of food is wasted")}
               {getQuickFact("6.9", "businesses reducing their food waste")}
               {getQuickFact("7.4", "million Magic Bags rescued so far")}
-            </ul>
+            </ul> */}
             <div className="pie-wrapper flex flex-row items-center justify-evenly p-5 my-10"></div>
           </div>
         </div>
@@ -89,22 +88,29 @@ function Home() {
           <img src="" alt="" />
           <h1 className="text-yellow-500 text-base">Instructions</h1>
           <h1 className="font-weight-bolder text-5xl">How it works</h1>
-          <h1 className="text-lg w-96 self-center mt-4">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex nulla
-            provident reiciendis omnis illum quibusdam sunt exercitationem
-            voluptas non vero!
+
+          <h1 className="text-base w-2/3 self-center mt-4">
+            We have created an intuitive system for customers to place orders.
+            For the fair allocation of food, each customer is limited to one
+            order each day. We cannot guarantee what exactly the restaurant will
+            give you but it will be equivalent to one meal worth of food, or
+            more.
           </h1>
           <div className="instruction-card-wrapper grid grid-cols-3 gap-14">
             {instructionsCard(
               faHamburger,
-              "Pick Meal",
-              "Use the Search page to find your local restaurants"
+              "Pick a meal",
+              "Use the Search page to find participating local restaurants."
             )}
-            {instructionsCard(faHandPointer, "Place order", "Place the order")}
+            {instructionsCard(
+              faHandPointer,
+              "Place order",
+              "Place the order. You can only make one daily order."
+            )}
             {instructionsCard(
               faStoreAlt,
               "Collect",
-              "Bring proof of ID to the store"
+              "Bring your ID to the store during the allocated time."
             )}
           </div>
         </div>
