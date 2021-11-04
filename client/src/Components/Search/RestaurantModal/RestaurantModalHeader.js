@@ -9,8 +9,8 @@ function RestaurantModalHeader(props) {
   const { setShowModal } = props;
 
   return (
-    <div className="flex items-center px-3 py-4 justify-around border-b border-solid border-blueGray-200 rounded-t">
-      <img className="w-20" src={logo} alt={`${name} Logo`} />
+    <div className="flex items-center p-3 justify-around border-b border-solid border-blueGray-200 rounded-t">
+      <img className="w-14" src={logo} alt={`${name} Logo`} />
       <h3 className="text-2xl font-semibold">
         {name} - {town}
       </h3>
