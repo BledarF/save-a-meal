@@ -46,6 +46,7 @@ function App(props) {
 		updateCurrentSlotsMidnight();
 	});
 
+
 	async function checkSessionExists() {
 		setSessionUpdate(1);
 		try {
@@ -66,6 +67,7 @@ function App(props) {
 			console.log(error);
 		}
 	}
+
 
 	async function updateCurrentSlotsMidnight() {
 		const today = new Date();

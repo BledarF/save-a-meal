@@ -3,20 +3,19 @@ import React, { useState } from "react";
 function AccountTab(props) {
   const [editMode, setEditMode] = useState(false);
   const [email, setEmail] = useState(props.email);
-  const [password, setPassword] = useState(props.email);
-  const [telephone, setTelephone] = useState(props.email);
+  const [password, setPassword] = useState(props.password);
+  const [telephone, setTelephone] = useState(props.telephone);
   const [error, setError] = useState("");
 
   const editToggle = () => {
     setEditMode(!editMode);
   };
 
-
   async function fetchEditUrl(url) {
     const values = {
-      email: email,
-      password: password,
-      telephone: telephone,
+      email: email ? email : props.email,
+      password: password ? password : props.password,
+      telephone: telephone ? telephone : props.telephone,
     };
 
     try {
