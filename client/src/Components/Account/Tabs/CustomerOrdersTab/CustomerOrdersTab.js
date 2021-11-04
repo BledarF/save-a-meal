@@ -14,14 +14,12 @@ function CustomerOrdersTab(props) {
   }, [props.customerId]);
 
   async function getTodaysOrders() {
-    //console.log("FETCH ORDERS");
     try {
-      console.log(props.customerId);
       const response = await fetch(
         `http://localhost:8080/api/customers/${props.customerId}/orders/today`
       );
       const jsonResponse = await response.json();
-      //console.log(jsonResponse);
+      console.log(jsonResponse);
       setTodaysOrders(jsonResponse);
 
       return jsonResponse;
@@ -32,13 +30,11 @@ function CustomerOrdersTab(props) {
 
   async function getHistoryOrders() {
     try {
-      console.log(props.customerId);
       const response = await fetch(
         `http://localhost:8080/api/customers/${props.customerId}/orders/`
       );
       const jsonResponse = await response.json();
-      console.log("HISTORY");
-      console.log(jsonResponse);
+
       setHistoryOrders(jsonResponse);
 
       return jsonResponse;

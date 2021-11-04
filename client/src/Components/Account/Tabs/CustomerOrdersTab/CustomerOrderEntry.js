@@ -1,11 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
+import CollectOrderModal from "./CollectOrderModal";
 
 function CustomerOrderEntry(props) {
+  const [showCollect, setShowCollect] = useState(false);
+
   function acceptBut() {
     return (
-      <a href="#" class="px-4 py-1 text-sm text-white bg-yellow-500 rounded">
+      <button
+        onClick={() => {
+          setShowCollect(true);
+        }}
+        href="#"
+        class="px-4 py-1 text-sm text-white bg-yellow-500 rounded"
+      >
         Collect
-      </a>
+      </button>
     );
   }
 
@@ -30,6 +39,9 @@ function CustomerOrderEntry(props) {
       <td class="px-8 py-4">
         {props.collected ? acceptedStatus() : acceptBut()}
       </td>
+      {showCollect ? (
+        <CollectOrderModal setShowModal={setShowCollect}></CollectOrderModal>
+      ) : null}
     </tr>
   );
 }

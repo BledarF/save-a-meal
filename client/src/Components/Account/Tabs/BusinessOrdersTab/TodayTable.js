@@ -3,6 +3,7 @@ import BusinessOrderEntry from "./BusinessOrderEntry";
 
 function TodayTable(props) {
   const orders = props.data.ordersToday;
+
   return (
     <div className="flex justify-start m-0">
       <div className="flex flex-col">
