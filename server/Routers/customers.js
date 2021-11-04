@@ -196,6 +196,7 @@ router.put("/:id/account", async function (req, res) {
   const client = await pool.connect();
   const { id } = req.params;
   const { email, telephone, password } = req.body;
+  const activeSession = await req.cookies.sessionID;
 
   console.log(req.body);
 
@@ -209,17 +210,21 @@ router.put("/:id/account", async function (req, res) {
     return res.status(400).json({ message: "Phone is invalid" });
   } else {
     try {
-      await client.query(
-        "UPDATE users SET email = $1 , password = $2 WHERE customer_id = $3",
-        [email, password, id]
-      );
-      await client.query(
-        "UPDATE customers SET telephone = $1 WHERE customers.id = $2",
-        [telephone, id]
-      );
-      res
-        .status(200)
-        .json({ message: "Your login details have been updated!" });
+      if (checkValidUser(user, activeSession)) {
+        await client.query(
+          "UPDATE users SET email = $1 , password = $2 WHERE customer_id = $3",
+          [email, password, id]
+        );
+        await client.query(
+          "UPDATE customers SET telephone = $1 WHERE customers.id = $2",
+          [telephone, id]
+        );
+        res
+          .status(200)
+          .json({ message: "Your login details have been updated!" });
+      } else {
+        res.status(400).json({ message: "Request sent by unauthorised user." });
+      }
     } catch (err) {
       console.log(err);
       res.status(400).json({ message: "Failed to update login details" });
@@ -234,15 +239,20 @@ router.put("/:id/address/:uuid", async function (req, res) {
   const client = await pool.connect();
   const { uuid } = req.params;
   const { streetname, postcode, town } = req.body;
+  const activeSession = await req.cookies.sessionID;
 
   try {
-    await client.query(
-      "UPDATE addresses SET streetname = $1 , postcode = $2, town = $3 WHERE uuid = $4",
-      [streetname, postcode, town, uuid]
-    );
-    res
-      .status(200)
-      .json({ message: "Your address details have been updated!" });
+    if (checkValidUser(user, activeSession)) {
+      await client.query(
+        "UPDATE addresses SET streetname = $1 , postcode = $2, town = $3 WHERE uuid = $4",
+        [streetname, postcode, town, uuid]
+      );
+      res
+        .status(200)
+        .json({ message: "Your address details have been updated!" });
+    } else {
+      res.status(400).json({ message: "Request made by unauthorised user." });
+    }
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "Failed to update address details" });
@@ -256,15 +266,20 @@ router.put("/:id/details", async function (req, res) {
   const client = await pool.connect();
   const { id } = req.params;
   const { firstname, secondname, telephone } = req.body;
+  const activeSession = await req.cookies.sessionID;
 
   try {
-    await client.query(
-      "UPDATE customers SET firstname = $1 , secondname = $2, telephone = $3 WHERE id = $4",
-      [firstname, secondname, telephone, id]
-    );
-    res
-      .status(200)
-      .json({ message: "Your personal details have been updated!" });
+    if (checkValidUser(user, activeSession)) {
+      await client.query(
+        "UPDATE customers SET firstname = $1 , secondname = $2, telephone = $3 WHERE id = $4",
+        [firstname, secondname, telephone, id]
+      );
+      res
+        .status(200)
+        .json({ message: "Your personal details have been updated!" });
+    } else {
+      res.status(400).json({ message: "Request made by unauthorised user " });
+    }
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "Failed to update personal details" });
