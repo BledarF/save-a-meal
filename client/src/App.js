@@ -6,6 +6,8 @@ import {
   BrowserRouter as Router,
   useHistory,
   Switch,
+  Redirect,
+  NavLink,
 } from "react-router-dom";
 import Home from "./Components/Home/Home";
 import Navbar from "./Components/Navbar/Navbar";
@@ -13,6 +15,7 @@ import Footer from "./Components/Footer/Footer";
 import Register from "./Components/Register/Register";
 import SearchPage from "./Components/Search/SearchPage";
 import Account from "./Components/Account/Account";
+import ErrorPage from "./Components/ErrorPage";
 
 // CONTEXT API
 
