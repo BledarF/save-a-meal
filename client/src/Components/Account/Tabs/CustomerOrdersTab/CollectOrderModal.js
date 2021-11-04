@@ -3,36 +3,6 @@ import { useEffect, useState } from "react";
 function CollectOrderModal(props) {
   const [error, setError] = useState("");
 
-  async function fetchCollect() {
-    const url = `/api/restaurants/orders/${props.id}`;
-    try {
-      const response = await fetch(url, {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const responseJson = await response.json();
-      console.log(responseJson);
-      props.handleAccept(props.id);
-
-      props.setShowModal(false);
-
-      if (response.status === 400) {
-        setError(responseJson.message);
-      } else {
-        setError("");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const handleCollect = () => {
-    fetchCollect();
-  };
   return (
     <>
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
@@ -59,12 +29,20 @@ function CollectOrderModal(props) {
               <div className="table w-full text-left pl-14">
                 <div className="table-row-group">
                   <div className="table-row">
-                    <div className="table-cell pb-1">Location: </div>
-                    <div className="table-cell">LOCATION / ADDRESS</div>
-                  </div>
-                  <div className="table-row">
                     <div className="table-cell pb-1">Booking ID: </div>
                     <div className="table-cell">{props.id}</div>
+                  </div>
+                  <div className="table-row">
+                    <div className="table-cell pb-1">Address: </div>
+                    <div className="table-cell">{props.address.street}</div>
+                  </div>
+                  <div className="table-row">
+                    <div className="table-cell pb-1">Town: </div>
+                    <div className="table-cell">{props.address.town}</div>
+                  </div>
+                  <div className="table-row">
+                    <div className="table-cell pb-1">Postcode: </div>
+                    <div className="table-cell">{props.address.postcode}</div>
                   </div>
                 </div>
               </div>

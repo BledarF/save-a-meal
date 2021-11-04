@@ -40,7 +40,15 @@ function CustomerOrderEntry(props) {
         {props.collected ? acceptedStatus() : acceptBut()}
       </td>
       {showCollect ? (
-        <CollectOrderModal setShowModal={setShowCollect}></CollectOrderModal>
+        <CollectOrderModal
+          address={{
+            postcode: props.postcode,
+            street: props.street,
+            town: props.town,
+          }}
+          id={props.id}
+          setShowModal={setShowCollect}
+        ></CollectOrderModal>
       ) : null}
     </tr>
   );

@@ -19,7 +19,7 @@ function CustomerOrdersTab(props) {
         `http://localhost:8080/api/customers/${props.customerId}/orders/today`
       );
       const jsonResponse = await response.json();
-      console.log(jsonResponse);
+      //console.log(jsonResponse);
       setTodaysOrders(jsonResponse);
 
       return jsonResponse;
@@ -34,7 +34,7 @@ function CustomerOrdersTab(props) {
         `http://localhost:8080/api/customers/${props.customerId}/orders/`
       );
       const jsonResponse = await response.json();
-
+      console.log(jsonResponse);
       setHistoryOrders(jsonResponse);
 
       return jsonResponse;
@@ -59,7 +59,7 @@ function CustomerOrdersTab(props) {
       </div>
       <div>
         <h4>History</h4>
-        {historyOrders ? (
+        {historyOrders && historyOrders.order.length > 0 ? (
           getHistoryTable(historyOrders)
         ) : (
           <p> No past orders. </p>
