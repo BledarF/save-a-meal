@@ -40,9 +40,10 @@ function Account() {
         {/* ADD LOGIC HERE TO DETERMINE IF USER OR BUSINESS IS LOGGED IN */}
         {type && type === "customer" ? (
           <UserAccount accountDetails={details}></UserAccount>
-        ) : (
+        ) : null}
+        {type && type === "restaurant" ? (
           <BusinessAccount accountDetails={details}></BusinessAccount>
-        )}
+        ) : null}
       </div>
     </>
   );

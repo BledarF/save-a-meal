@@ -1,41 +1,71 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import HistoryTable from "./HistoryTable";
 import TodayTable from "./TodayTable";
 
 function BusinessOrdersTab(props) {
+  const [todaysOrders, setTodaysOrders] = useState(null);
+  const [historyOrders, setHistoryOrders] = useState(null);
+
   useEffect(() => {
-    //FETCH ORDERS DATA
-  }, []);
+    console.log(props.restaurantId);
+    if (props.restaurantId) {
+      getTodaysOrders();
+      getHistoryOrders();
+    }
+  }, [props.customerId]);
 
   async function getTodaysOrders() {
     try {
-      const response = await fetch(`/api/restaurant/${props.restaurantId}/orders/today`);
+      const response = await fetch(
+        `/api/restaurants/${props.restaurantId}/orders/today`
+      );
 
       const jsonResponse = await response.json();
+      console.log(jsonResponse);
+      setTodaysOrders(jsonResponse);
     } catch (err) {
       console.log(err);
     }
   }
 
-  function getTodayTable() {
-    return <TodayTable></TodayTable>;
+  async function getHistoryOrders() {
+    try {
+      console.log(props.customerId);
+      const response = await fetch(
+        `api/restaurants/${props.restaurantId}/orders/`
+      );
+      const jsonResponse = await response.json();
+      console.log("HISTORY");
+      console.log(jsonResponse);
+      setHistoryOrders(jsonResponse);
+
+      return jsonResponse;
+    } catch (err) {
+      console.log(err);
+    }
   }
 
-  function getHistoryTable() {
-    return <HistoryTable></HistoryTable>;
+  function getTodayTable(data) {
+    return <TodayTable data={data}></TodayTable>;
+  }
+
+  function getHistoryTable(data) {
+    return <HistoryTable data={data}></HistoryTable>;
   }
 
   return (
     <div className="flex flex-col text-left">
       <div>
         <h4>Today</h4>
-        <p>No orders Today</p>
-        {getTodayTable()}
+        {todaysOrders ? getTodayTable(todaysOrders) : <p>No order Today</p>}
       </div>
       <div>
         <h4>History</h4>
-        <p>You have had no orders</p>
-        {getHistoryTable()}
+        {historyOrders ? (
+          getHistoryTable(historyOrders)
+        ) : (
+          <p> No past orders. </p>
+        )}
       </div>
     </div>
   );
