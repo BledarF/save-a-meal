@@ -16,7 +16,6 @@ import Register from "./Components/Register/Register";
 import SearchPage from "./Components/Search/SearchPage";
 import Account from "./Components/Account/Account";
 import ErrorPage from "./Components/Error/ErrorPage";
-import About from "./Components/Home/About/About";
 
 // CONTEXT API
 

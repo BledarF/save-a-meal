@@ -1,7 +1,7 @@
-import adnanPhoto from "../TeamPhotos/Adnan.jpg";
-import sohailPhoto from "../TeamPhotos/Sohail.jpg";
-import bledarPhoto from "../TeamPhotos/Bledar.jpg";
-import gpPhoto from "../TeamPhotos/Gurpratap.jpg";
+import adnanPhoto from "../images/TeamPhotos/Adnan.jpg";
+import sohailPhoto from "../images/TeamPhotos/Sohail.jpg";
+import bledarPhoto from "../images/TeamPhotos/Bledar.jpg";
+import gpPhoto from "../images/TeamPhotos/Gurpratap.jpg";
 import AboutCard from "./AboutCard";
 
 function About() {
