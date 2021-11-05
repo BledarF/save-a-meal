@@ -11,7 +11,6 @@ function RestaurantCard(props) {
     available,
   } = props.details;
 
-
   const { setShowModal, setModalDetails } = props;
   startTime = startTime.slice(0, 5);
   endTime = endTime.slice(0, 5);
@@ -33,10 +32,7 @@ function RestaurantCard(props) {
           <img src={imgUrl} alt={name} className="min-h-full" />
         </div>
         <div className="card-text-wrapper p-2 flex flex-col justify-start items-start h-1/2 text-center ml-3">
-          <h1 className="text-2xl">
-            {name}
-            <span className="text-base text-yellow-900"> {town}</span>
-          </h1>
+          <h1 className="text-2xl">{name}</h1>
           <div className="card-details-wrapper">
             <p className="text-xl">
               {town} - {distance} miles
