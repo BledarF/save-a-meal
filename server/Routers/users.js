@@ -9,7 +9,9 @@ const isImageUrl = require("is-image-url");
 router.use(cookieParser());
 
 const pool = new Pool({
-	connectionString: "postgres://localhost:5432/saveameal",
+  connectionString:
+    process.env.POSTGRES || "postgres://localhost:5432/saveameal",
+
 });
 
 router.post("/customer", async function (req, res) {

@@ -8,7 +8,8 @@ const { Pool, Client } = require("pg");
 router.use(cookieParser());
 
 const pool = new Pool({
-  connectionString: "postgres://localhost:5432/saveameal",
+  connectionString:
+    process.env.POSTGRES || "postgres://localhost:5432/saveameal",
 });
 
 //Make a order
@@ -90,7 +91,6 @@ router.get("/:id/orders", async function (req, res) {
 
   try {
     const orderHistory = await client.query(
-
       "SELECT orders.created_at, orders.collected, orders.id AS orderid, orders.booking_id, reviews.id AS reviewsid, restaurants.* FROM orders JOIN customers ON orders.customer_id = customers.id JOIN restaurants ON orders.restaurant_id = restaurants.id LEFT JOIN reviews ON orders.id = reviews.order_id WHERE customer_id = $1 AND (CURRENT_TIMESTAMP::date != created_at::date) ",
 
       [id]

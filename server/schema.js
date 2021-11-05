@@ -21,7 +21,7 @@ async function createDatabase() {
   createSessionsTable();
   createOrdersTable();
   createReviewsTable();
-  addSeedData();
+  //addSeedData();
 
   return;
 }

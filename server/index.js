@@ -7,14 +7,16 @@ const sessions = require("./Routers/sessions");
 const restaurants = require("./Routers/restaurants");
 const customers = require("./Routers/customers");
 
+console.log(process.env.POSTGRES);
+
 const PORT = process.env.PORT || 8080;
 const POSTGRES_URL =
-	process.env.POSTGRES || "postgres://localhost:5432/saveameal";
+  process.env.POSTGRES || "postgres://localhost:5432/saveameal";
 
 const { Pool, Client } = require("pg");
 
 const pool = new Pool({
-	connectionString: POSTGRES_URL,
+  connectionString: POSTGRES_URL,
 });
 
 const app = express();
@@ -23,7 +25,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/api", (req, res) => {
-	res.json({ message: "Hello from server!" });
+  res.json({ message: "Hello from server!" });
 });
 
 app.use("/api/users", users);
@@ -37,5 +39,5 @@ app.use("/api/customers", customers);
 // });
 
 app.listen(PORT, () => {
-	console.log(`Server listening on http://localhost:${PORT}`);
+  console.log(`Server listening on http://localhost:${PORT}`);
 });
