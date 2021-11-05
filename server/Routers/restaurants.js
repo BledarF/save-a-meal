@@ -64,6 +64,7 @@ router.get(
     const postcodeObj = await client.query(
       "SELECT postcode FROM addresses JOIN restaurants ON addresses.uuid = restaurants.address_id"
     );
+
     const postcodeObjRows = postcodeObj.rows;
     let postcode = [postcodeVal];
     for (let i = 0; i < postcodeObjRows.length; i++) {
