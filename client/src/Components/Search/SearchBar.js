@@ -27,7 +27,7 @@ function SearchBar(props) {
         },
       };
       const response = await fetch(
-        `http://localhost:8080/api/restaurants/details/search/${userInput}/proximity/${20}`,
+        `${SERVER_URL}/restaurants/details/search/${userInput}/proximity/${20}`,
         requestOptions
       );
       const json = await response.json();
