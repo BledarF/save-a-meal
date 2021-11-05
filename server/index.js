@@ -24,6 +24,8 @@ app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(express.static(path.join(__dirname, "../client/build/")));
+
 app.get("/api", (req, res) => {
   res.json({ message: "Hello from server!" });
 });
@@ -33,10 +35,10 @@ app.use("/api/sessions", sessions);
 app.use("/api/restaurants", restaurants);
 app.use("/api/customers", customers);
 
-// All other GET requests not handled before will return our React app
-// app.get("*", (req, res) => {
-// 	res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
-// });
+//ll other GET requests not handled before will return our React app
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../client/build/", "index.html"));
+});
 
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
