@@ -15,7 +15,8 @@ import Footer from "./Components/Footer/Footer";
 import Register from "./Components/Register/Register";
 import SearchPage from "./Components/Search/SearchPage";
 import Account from "./Components/Account/Account";
-import ErrorPage from "./Components/ErrorPage";
+import ErrorPage from "./Components/Error/ErrorPage";
+
 
 // CONTEXT API
 

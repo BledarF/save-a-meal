@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 
 function Footer() {
-  const columnItem = function getColumnItemComponent(itemName) {
+  const columnItem = function getColumnItemComponent(itemName, endpoint) {
+    const redirectLink = endpoint
+      ? `/${itemName}`
+      : `https://www.${itemName}.com`;
     return (
       <span className="my-2">
         <a
-          href={`https://www.${itemName}.com`}
+          href={redirectLink}
           className="text-yellow-500  text-md hover:text-yellow-900"
         >
           {itemName}
@@ -19,7 +22,7 @@ function Footer() {
         <span className="font-bold text-gray-700 uppercase mb-2">
           {colName}
         </span>
-        {colItems.map((item) => columnItem(item))}
+        {colItems.map((item) => columnItem(item, colName === "Site Map"))}
       </div>
     );
   };
