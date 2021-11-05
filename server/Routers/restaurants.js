@@ -15,7 +15,8 @@ router.use(cookieParser());
 const print = (val) => console.log(val);
 
 const pool = new Pool({
-  connectionString: "postgres://localhost:5432/saveameal",
+  connectionString:
+    process.env.POSTGRES || "postgres://localhost:5432/saveameal",
 });
 
 //Get all data regarding both restaurant details and corresponding addresses
