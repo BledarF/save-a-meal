@@ -2,11 +2,33 @@ import { useEffect, useContext, useState } from "react";
 import SearchBar from "./SearchBar";
 import Results from "./Results";
 import "./SearchPage.css";
+import loadingGif from "./loading.gif";
 
 function SearchPage() {
   const [restaurants, setRestaurants] = useState([]);
   const [bookingStatus, setBookingStatus] = useState(true);
   const [searchStatus, setSearchStatus] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    console.log(restaurants);
+    if (restaurants.length > 1) {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+      }, 3000);
+    }
+  }, [restaurants]);
+
+  const loadingComponent = function getLoadingComponent() {
+    return (
+      <img
+        className="loading-gif"
+        src={loadingGif}
+        alt="loading restaurants gif"
+      />
+    );
+  };
 
   return (
     <div className="search-page-wrapper flex flex-col">
@@ -17,14 +39,18 @@ function SearchPage() {
           setSearchStatus={setSearchStatus}
         />
       </div>
-      <div className="flex flex-row justify-center">
-        <Results
-          restaurants={restaurants}
-          bookingStatus={bookingStatus}
-          setBookingStatus={setBookingStatus}
-          searchStatus={searchStatus}
-        />
-      </div>
+      {loading ? (
+        loadingComponent()
+      ) : (
+        <div className="flex flex-row justify-center">
+          <Results
+            restaurants={restaurants}
+            bookingStatus={bookingStatus}
+            setBookingStatus={setBookingStatus}
+            searchStatus={searchStatus}
+          />
+        </div>
+      )}
     </div>
   );
 }
