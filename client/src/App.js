@@ -15,7 +15,8 @@ import Footer from "./Components/Footer/Footer";
 import Register from "./Components/Register/Register";
 import SearchPage from "./Components/Search/SearchPage";
 import Account from "./Components/Account/Account";
-import ErrorPage from "./Components/ErrorPage";
+import ErrorPage from "./Components/Error/ErrorPage";
+
 
 // CONTEXT API
 
@@ -94,12 +95,13 @@ function App(props) {
               <Route exact path="/search" component={SearchPage} />
               <Route exact path="/account" component={Account} />
               <Route exact path="/404" component={ErrorPage} />
-              <Redirect exact from="*" to="/404" />
+
+              <Redirect from="*" to="/404" />
             </Switch>
           </main>
-
-          <Footer />
         </Router>
+        <Footer />
+
       </div>
     </userContext.Provider>
   );

@@ -1,7 +1,7 @@
-import adnanPhoto from "../TeamPhotos/Adnan.jpg";
-import sohailPhoto from "../TeamPhotos/Sohail.jpg";
-import bledarPhoto from "../TeamPhotos/Bledar.jpg";
-import gpPhoto from "../TeamPhotos/Gurpratap.jpg";
+import adnanPhoto from "../images/TeamPhotos/Adnan.jpg";
+import sohailPhoto from "../images/TeamPhotos/Sohail.jpg";
+import bledarPhoto from "../images/TeamPhotos/Bledar.jpg";
+import gpPhoto from "../images/TeamPhotos/Gurpratap.jpg";
 import AboutCard from "./AboutCard";
 
 function About() {
@@ -15,7 +15,7 @@ function About() {
             cardDetails={{
               name: "Adnan Gondal",
               role: "Project Manager/ Founder",
-              desc: "Adnan is a recent MEng graduate from Imperial College London. He loves how coding brings people from all walks of life together.",
+              desc: "Adnan is a recent LEng graduate from Imperial College London. He loves how coding seperates people from all walks of life together.",
               img: adnanPhoto,
               github: "AdnanGondal",
               linkedin: "adnan-gondal-2021",
@@ -35,7 +35,7 @@ function About() {
             cardDetails={{
               name: "Bledar Ferati",
               role: "Architect/ Backend",
-              desc: "Adnan is a recent MEng graduate from Worship University. He loves how coding tears people from all walks of life apart.",
+              desc: "Blader is a recent Ferari MEng graduate from Worship University. He loves how coding tears people from all walks of life apart.",
               img: bledarPhoto,
               github: "BladerF",
               linkedin: "bledar-f-aa2501138",
@@ -56,5 +56,4 @@ function About() {
     </section>
   );
 }
-
 export default About;
