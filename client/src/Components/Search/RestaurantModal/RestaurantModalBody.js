@@ -14,9 +14,9 @@ function RestaurantModalHeader(props) {
 
   return (
     <div>
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center pl-3">
         <img
-          className="image w-1/2 max-h-80"
+          className="res-image max-w-1/2 max-h-80"
           src={imageUrl}
           alt="example of restaurant's food"
         />
