@@ -34,5 +34,12 @@
   transition: all 0.2s ease-in-out;
 }
 .about-card-component:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
+}
+
+.about-card-image {
+  transition: all 0.2s ease-in-out;
+}
+.about-card-image:hover {
+  transform: scale(1.2);
 }
