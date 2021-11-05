@@ -67,6 +67,7 @@ function Navbar(props) {
         {buttonComponent("Home")}
         {buttonComponent("Search")}
         {buttonComponent("Register")}
+        {buttonComponent("About")}
         {user ? buttonComponent("Account") : null}
         {user ? logoutButton() : null}
         {!user ? loginButton() : null}

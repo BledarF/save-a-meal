@@ -94,11 +94,13 @@ function App(props) {
               <Route exact path="/search" component={SearchPage} />
               <Route exact path="/account" component={Account} />
               <Route exact path="/404" component={ErrorPage} />
+
               <Redirect from="*" to="/404" />
             </Switch>
           </main>
         </Router>
         <Footer />
+
       </div>
     </userContext.Provider>
   );
