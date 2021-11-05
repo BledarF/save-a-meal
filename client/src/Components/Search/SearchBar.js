@@ -60,6 +60,7 @@ function SearchBar(props) {
         />
 
         <div class="p-4">
+          :{" "}
           <button
             onClick={() => handleSearch()}
             class="bg-yellow-500 text-white rounded-full p-2 hover:bg-yellow-900 focus:outline-none w-12 h-12 flex items-center justify-center"
