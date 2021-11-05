@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+const SERVER_URL =
+  process.env.REACT_APP_SERVER_URL || "http://localhost:8080/api";
 
 function AddressTab(props) {
   const [editMode, setEditMode] = useState(false);
@@ -30,7 +32,7 @@ function AddressTab(props) {
   }
 
   async function fetchEditUrl(values) {
-    const url = `http://localhost:8080/api/restaurants/${props.restaurantId}/availability`;
+    const url = `${SERVER_URL}/restaurants/${props.restaurantId}/availability`;
 
     values = {
       M: days.M ? days.M : props.days.monday,

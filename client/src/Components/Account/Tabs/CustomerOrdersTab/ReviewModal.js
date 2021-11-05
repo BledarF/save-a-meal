@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import StarRatings from "react-star-ratings";
+const SERVER_URL =
+  process.env.REACT_APP_SERVER_URL || "http://localhost:8080/api";
 
 function ReviewModal(props) {
   const [error, setError] = useState("");
   const [rating, setRating] = useState(0);
 
   async function fetchReview(orderId, restaurantId) {
-    const url = `/api/customers/reviews/restaurant/${restaurantId}/order/${orderId}`;
+    const url = `${SERVER_URL}/customers/reviews/restaurant/${restaurantId}/order/${orderId}`;
     const values = { score: rating };
     try {
       const response = await fetch(url, {
@@ -41,7 +43,7 @@ function ReviewModal(props) {
 
   return (
     <>
-      <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+      <div className="review-modal-component justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
         <div className="relative w-auto my-6 mx-auto max-w-6xl">
           {/*content*/}
           <div className=" pb-8 border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">

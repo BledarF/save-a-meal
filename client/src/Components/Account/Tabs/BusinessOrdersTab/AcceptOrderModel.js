@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+const SERVER_URL =
+  process.env.REACT_APP_SERVER_URL || "http://localhost:8080/api";
 
 function AcceptOrderModal(props) {
   const [error, setError] = useState("");
 
   async function fetchCollect() {
-    const url = `/api/restaurants/orders/${props.id}`;
+    const url = `${SERVER_URL}/restaurants/orders/${props.id}`;
     try {
       const response = await fetch(url, {
         method: "PUT",

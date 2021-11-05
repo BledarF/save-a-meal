@@ -3,6 +3,7 @@ import sohailPhoto from "../images/TeamPhotos/Sohail.jpg";
 import bledarPhoto from "../images/TeamPhotos/Bledar.jpg";
 import gpPhoto from "../images/TeamPhotos/Gurpratap.jpg";
 import AboutCard from "./AboutCard";
+import snail from "../images/TeamPhotos/snail.png";
 
 function About() {
   return (
@@ -15,7 +16,7 @@ function About() {
             cardDetails={{
               name: "Adnan Gondal",
               role: "Project Manager/ Founder",
-              desc: "Adnan is a recent LEng graduate from Imperial College London. He loves how coding seperates people from all walks of life together.",
+              desc: "Adnan is a recent MEng graduate from Imperial College London. He loves how coding brings people from all walks of life together. He wants to make the world a better place.",
               img: adnanPhoto,
               github: "AdnanGondal",
               linkedin: "adnan-gondal-2021",
@@ -23,9 +24,9 @@ function About() {
           />
           <AboutCard
             cardDetails={{
-              name: "Sohail Saiedi the snail",
-              role: "UI/UX, Front-End",
-              desc: "You like what you see? Well, I made it!",
+              name: "Sohail Saiedi",
+              role: "UI/UX, Front-End, Refactorer",
+              desc: "Computer Science Graduate from Brunel University. He/I love to solve problems beautifully.",
               img: sohailPhoto,
               github: "SohailSaiedi",
               linkedin: "sohailsaiedi",
@@ -35,7 +36,7 @@ function About() {
             cardDetails={{
               name: "Bledar Ferati",
               role: "Architect/ Backend",
-              desc: "Bledar is a recent Ferari MEng graduate from Worship University. He loves how coding tears people from all walks of life apart.",
+              desc: "Bledar recently graduated from Warwick University. He loves solving challenging problems in new and creative ways whilst making a positive impact to society.",
               img: bledarPhoto,
               github: "BledarF",
               linkedin: "bledar-f-aa2501138",
@@ -43,9 +44,9 @@ function About() {
           />
           <AboutCard
             cardDetails={{
-              name: "Gurpartarp",
-              role: "DevOps/ Jokeman",
-              desc: "General Practitioner is a recent MEng graduate from War University. He loves how coding brings guys from all sprints of life together.",
+              name: "Gurpartap Singh",
+              role: "CTO/ Backend",
+              desc: "Gurpartap is a recent BEng Engineering graduate from Warwick University. He's an avid listener of TedTalks Daily and enjoys making functional applications.",
               img: gpPhoto,
               github: "gsinghlak12",
               linkedin: "gurpartap-s-a1236a139",

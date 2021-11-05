@@ -1,0 +1,24 @@
+{
+  "name": "save-a-meal",
+  "version": "1.0.1",
+  "description": "Save a meal app.",
+  "main": "server/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cd server && npm start",
+    "build": "cd server && npm install &&npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BledarF/save-a-meal.git"
+  },
+  "author": "Adnan Consulting",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BledarF/save-a-meal/issues"
+  },
+  "homepage": "https://github.com/BledarF/save-a-meal#readme",
+  "engines": {
+    "node": "16.11.1"
+  }
+}

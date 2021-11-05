@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+const SERVER_URL =
+  process.env.REACT_APP_SERVER_URL || "http://localhost:8080/api";
 
 function AddressTab(props) {
   const [editMode, setEditMode] = useState(false);
@@ -44,7 +46,7 @@ function AddressTab(props) {
   }
 
   const handleEdit = () => {
-    fetchEditUrl(`/api/users/address/${props.uuid}`);
+    fetchEditUrl(`${SERVER_URL}/api/users/address/${props.uuid}`);
   };
 
   return (
