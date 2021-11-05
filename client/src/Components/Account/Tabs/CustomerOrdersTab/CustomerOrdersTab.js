@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import HistoryTable from "./HistoryTable";
 import TodayTable from "./TodayTable";
+const SERVER_URL =
+  process.env.REACT_APP_SERVER_URL || "http://localhost:8080/api";
 
 function CustomerOrdersTab(props) {
   const [todaysOrders, setTodaysOrders] = useState(null);
@@ -16,7 +18,7 @@ function CustomerOrdersTab(props) {
   async function getTodaysOrders() {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/customers/${props.customerId}/orders/today`
+        `${SERVER_URL}/customers/${props.customerId}/orders/today`
       );
       const jsonResponse = await response.json();
       console.log(jsonResponse);
@@ -31,7 +33,7 @@ function CustomerOrdersTab(props) {
   async function getHistoryOrders() {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/customers/${props.customerId}/orders/`
+        `${SERVER_URL}/customers/${props.customerId}/orders/`
       );
       const jsonResponse = await response.json();
       //console.log(jsonResponse);

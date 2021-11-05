@@ -2,6 +2,8 @@ import React, { useEffect, useContext, useState } from "react";
 import UserAccount from "./userAccount";
 import BusinessAccount from "./BusinessAccount";
 import { userContext } from "../../App";
+const SERVER_URL =
+  process.env.REACT_APP_SERVER_URL || "http://localhost:8080/api";
 
 function Account() {
   //const { accountDetails, setAccountDetails } = useState({});
@@ -11,7 +13,7 @@ function Account() {
   async function fetchAccount() {
     try {
       console.log("Fething");
-      const res = await fetch(`http://localhost:8080/api/users/`, {
+      const res = await fetch(`${SERVER_URL}/users/`, {
         method: "GET",
         credentials: "include",
         headers: {

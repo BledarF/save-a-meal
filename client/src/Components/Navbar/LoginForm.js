@@ -2,6 +2,8 @@ import { useEffect, useState, useContext } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { userContext } from "../../App";
+const SERVER_URL =
+  process.env.REACT_APP_SERVER_URL || "http://localhost:8080/api";
 
 function LoginForm(props) {
   const { user, setUser } = useContext(userContext);
@@ -11,7 +13,7 @@ function LoginForm(props) {
   async function postSession(values) {
     setSessionCount(1);
     try {
-      const response = await fetch(`http://localhost:8080/api/sessions/`, {
+      const response = await fetch(`${SERVER_URL}/api/sessions/`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -60,7 +62,7 @@ function LoginForm(props) {
             body: JSON.stringify(values),
           };
           const response = await fetch(
-            "http://localhost:8080/api/users/verify",
+            `${SERVER_URL}/users/verify`,
             requestOptions
           );
           const json = await response.json();

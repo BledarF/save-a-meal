@@ -4,9 +4,11 @@ import LoginModal from "./LoginModal";
 import { userContext } from "../../App";
 import "./Navbar.css";
 import { NavLink } from "react-router-dom";
+const SERVER_URL =
+  process.env.REACT_APP_SERVER_URL || "http://localhost:8080/api";
 
 async function deleteCookie() {
-  await fetch(`http://localhost:8080/api/sessions`, {
+  await fetch(`${SERVER_URL}/sessions`, {
     method: "DELETE",
     credentials: "include",
     headers: {
@@ -52,7 +54,7 @@ function Navbar(props) {
           e.preventDefault();
           deleteCookie();
           setUser(null);
-          window.location.href = "http://localhost:3000/";
+          window.location.href = "https://saveameal.herokuapp.com/";
         }}
         className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full"
       >

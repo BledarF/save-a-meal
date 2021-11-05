@@ -3,6 +3,8 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { FormikStepper, FormikStep, InputField } from "formik-stepper";
 import passwordValidator from "password-validator";
+const SERVER_URL =
+  process.env.REACT_APP_SERVER_URL || "http://localhost:8080/api";
 
 const validationSchema = Yup.object().shape({
   firstName: Yup.string().required("Your first name is required"),
@@ -52,7 +54,7 @@ function UserRegisterForm(props) {
     };
     try {
       const response = await fetch(
-        "http://localhost:8080/api/users/customer",
+        `${SERVER_URL}/users/customer`,
         requestOptions
       );
       const json = await response.json();

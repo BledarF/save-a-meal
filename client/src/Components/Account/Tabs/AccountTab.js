@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+const SERVER_URL =
+  process.env.REACT_APP_SERVER_URL || "http://localhost:8080/api";
 
 function AccountTab(props) {
   const [editMode, setEditMode] = useState(false);
@@ -16,7 +18,6 @@ function AccountTab(props) {
       email: email ? email : props.email,
       password: password ? password : props.password,
       telephone: telephone ? telephone : props.telephone,
-
     };
 
     try {
@@ -44,9 +45,9 @@ function AccountTab(props) {
 
   const handleEdit = () => {
     if (props.restaurantId) {
-      fetchEditUrl(`/api/restaurants/${props.restaurantId}/account`);
+      fetchEditUrl(`${SERVER_URL}/restaurants/${props.restaurantId}/account`);
     } else if (props.customerId) {
-      fetchEditUrl(`/api/customers/${props.customerId}/account`);
+      fetchEditUrl(`${SERVER_URL}/customers/${props.customerId}/account`);
     }
   };
 
