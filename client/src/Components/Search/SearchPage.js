@@ -11,13 +11,9 @@ function SearchPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log(restaurants);
-    if (restaurants.length > 1) {
-      setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
-      }, 3000);
-    }
+    console.log("loading");
+    console.log(loading);
+    setLoading(false);
   }, [restaurants]);
 
   const loadingComponent = function getLoadingComponent() {
@@ -34,6 +30,7 @@ function SearchPage() {
     <div className="search-page-wrapper flex flex-col">
       <div className="pt-10 flex items-center justify-center">
         <SearchBar
+          setLoading={setLoading}
           setRestaurants={setRestaurants}
           setBookingStatus={setBookingStatus}
           setSearchStatus={setSearchStatus}

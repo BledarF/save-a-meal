@@ -22,9 +22,9 @@ function AboutCard(props) {
   const { img, name, desc, role, github, linkedin } = props.cardDetails;
   return (
     <div className="about-card-component w-full bg-white rounded-lg sahdow-lg overflow-hidden flex flefx-col md:flex-row shadow-2xl ">
-      <div className="w-full md:w-2/5 h-80">
+      <div className="w-full md:w-2/5 h-80 overflow-hidden">
         <img
-          className="object-center object-cover w-full h-full"
+          className="about-card-image object-center object-cover w-full h-full"
           src={img}
           alt={`professional headshot of ${name}`}
         />

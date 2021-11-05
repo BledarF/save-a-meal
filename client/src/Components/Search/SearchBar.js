@@ -4,11 +4,17 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useContext, useState } from "react";
 
 function SearchBar(props) {
-  const { setRestaurants, setBookingStatus, restaurants, setSearchStatus } =
-    props;
+  const {
+    setRestaurants,
+    setBookingStatus,
+    restaurants,
+    setSearchStatus,
+    setLoading,
+  } = props;
   const [userInput, setUserInput] = useState("");
 
   const handleSearch = async function handleSearch() {
+    setLoading(true);
     try {
       const requestOptions = {
         method: "GET",
@@ -25,6 +31,7 @@ function SearchBar(props) {
       const json = await response.json();
       console.log(response.status);
       if (response.status === 400) {
+        setLoading(false);
         setSearchStatus(false);
       } else {
         const restaurantsList = json.restaurantDetails;
