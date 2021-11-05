@@ -33,6 +33,13 @@ function TodayTable(props) {
                         startTime={order.start_time}
                         endTime={order.end_time}
                         collected={order.collected}
+                        postcode={order.postcode}
+                        town={order.town}
+                        street={order.streetname}
+                        reviewed={order.reviewed}
+                        restaurantId={order.id}
+                        orderId={order.orderid}
+                        handleAccept={props.handleAccept}
                       ></CustomerOrderEntry>
                     );
                   })}
