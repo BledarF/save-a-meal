@@ -6,6 +6,7 @@ import AboutCard from "./AboutCard";
 import snail from "../images/TeamPhotos/snail.png";
 
 function About() {
+
 	return (
 		<section className="about">
 			<div className="header-wrapper">

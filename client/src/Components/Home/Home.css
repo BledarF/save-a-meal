@@ -23,9 +23,16 @@
 
 .about {
   width: 900px;
-  height: 100vh;
+  min-height: 110vh;
 }
 
 .w-header-text {
   width: 510px;
+}
+
+.about-card-component {
+  transition: all 0.2s ease-in-out;
+}
+.about-card-component:hover {
+  transform: scale(1.1);
 }

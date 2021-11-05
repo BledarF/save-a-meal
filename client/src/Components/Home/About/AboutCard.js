@@ -21,7 +21,7 @@ const socialMediaComponent = function getSocialMediaComponent(icon) {
 function AboutCard(props) {
   const { img, name, desc, role, github, linkedin } = props.cardDetails;
   return (
-    <div className="w-full bg-white rounded-lg sahdow-lg overflow-hidden flex flefx-col md:flex-row shadow-2xl ">
+    <div className="about-card-component w-full bg-white rounded-lg sahdow-lg overflow-hidden flex flefx-col md:flex-row shadow-2xl ">
       <div className="w-full md:w-2/5 h-80">
         <img
           className="object-center object-cover w-full h-full"
