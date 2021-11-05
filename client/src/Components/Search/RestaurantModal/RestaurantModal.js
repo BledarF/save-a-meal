@@ -4,6 +4,8 @@ import RestaurantModalHeader from "./RestaurantModalHeader";
 import RestaurantModalBody from "./RestaurantModalBody";
 import { userContext } from "../../../App";
 // import set from "date-fns/set/index";
+const SERVER_URL =
+  process.env.REACT_APP_SERVER_URL || "http://localhost:8080/api";
 
 function RestaurantModal(props) {
   const { user, setUser } = useContext(userContext);
@@ -32,7 +34,7 @@ function RestaurantModal(props) {
     };
 
     const response = await fetch(
-      `http://localhost:8080/api/restaurants/${restaurantId}`,
+      `${SERVER_URL}/restaurants/${restaurantId}`,
       requestOptions
     );
     const jsonResponse = await response.json();
@@ -93,7 +95,7 @@ function RestaurantModal(props) {
       };
 
       const response = await fetch(
-        `http://localhost:8080/api/customers/${user}/restaurant/${restaurantId}/order`,
+        `${SERVER_URL}/customers/${user}/restaurant/${restaurantId}/order`,
         requestOptions
       );
       const jsonResponse = await response.json();

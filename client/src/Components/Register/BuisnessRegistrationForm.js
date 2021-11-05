@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import * as Yup from "yup";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { FormikStepper, FormikStep, InputField } from "formik-stepper";
+const SERVER_URL =
+  process.env.REACT_APP_SERVER_URL || "http://localhost:8080/api";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("Your business name is required"),
@@ -50,7 +52,7 @@ function BuisnessRegistrationForm(props) {
     };
     try {
       const response = await fetch(
-        "http://localhost:8080/api/users/restaurant",
+        `${SERVER_URL}/users/restaurant`,
         requestOptions
       );
       const json = await response.json();

@@ -17,8 +17,9 @@ import SearchPage from "./Components/Search/SearchPage";
 import Account from "./Components/Account/Account";
 import ErrorPage from "./Components/Error/ErrorPage";
 
-
 // CONTEXT API
+const SERVER_URL =
+  process.env.REACT_APP_SERVER_URL || "http://localhost:8080/api";
 
 export const userContext = React.createContext({
   // MAYBE GET FROM COOKIES INITIALLY?
@@ -41,6 +42,7 @@ function App(props) {
   const value = { user, setUser };
 
   useEffect(() => {
+    console.log(SERVER_URL);
     if (sessionUpdate == 0) {
       checkSessionExists();
     }
@@ -50,7 +52,7 @@ function App(props) {
   async function checkSessionExists() {
     setSessionUpdate(1);
     try {
-      const response = await fetch(`http://localhost:8080/api/sessions/check`, {
+      const response = await fetch(`${SERVER_URL}/sessions/check`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -74,7 +76,7 @@ function App(props) {
       today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
     if (currentTime === "00:00:00") {
-      await fetch("http://localhost:8080/api/restaurants/reset", {
+      await fetch(`${SERVER_URL}/restaurants/reset`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -101,7 +103,6 @@ function App(props) {
           </main>
         </Router>
         <Footer />
-
       </div>
     </userContext.Provider>
   );
