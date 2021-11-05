@@ -5,6 +5,7 @@ function SearchBar(props) {
 		props;
 	const [userInput, setUserInput] = useState("");
 
+
 	const handleSearch = async function handleSearch() {
 		try {
 			const requestOptions = {
@@ -35,6 +36,7 @@ function SearchBar(props) {
 			console.log(error);
 		}
 	};
+
 
 	return (
 		<section className="p-10 w-2/3 text-2xl">

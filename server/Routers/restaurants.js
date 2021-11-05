@@ -51,6 +51,7 @@ router.get("/addresses", async function (req, res) {
 });
 
 router.get(
+
 	"/details/search/:postcodeVal/proximity/:proximity",
 	async function (req, res) {
 		const client = await pool.connect();
@@ -113,6 +114,7 @@ router.get(
 
 		client.release();
 	}
+
 );
 
 //Get desired restaurant
