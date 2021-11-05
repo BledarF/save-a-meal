@@ -35,9 +35,9 @@ function About() {
             cardDetails={{
               name: "Bledar Ferati",
               role: "Architect/ Backend",
-              desc: "Blader is a recent Ferari MEng graduate from Worship University. He loves how coding tears people from all walks of life apart.",
+              desc: "Bledar is a recent Ferari MEng graduate from Worship University. He loves how coding tears people from all walks of life apart.",
               img: bledarPhoto,
-              github: "BladerF",
+              github: "BledarF",
               linkedin: "bledar-f-aa2501138",
             }}
           />
