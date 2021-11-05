@@ -7,7 +7,7 @@ import AboutCard from "./AboutCard";
 function About() {
   return (
     <section className="about">
-      <div className="header-wrapper">
+      <div className="about-wrapper">
         <h1 className="text-yellow-500 text-base mb-1">About us</h1>
         <h1 className="font-weight-bolder text-5xl mb-5">The Team</h1>
         <div className="team-photo-wrapper grid grid-cols-2 gap-10">
