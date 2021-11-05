@@ -1,51 +1,19 @@
 {
   "name": "save-a-meal",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "1.0.1",
+  "description": "Save a meal app.",
+  "main": "server/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server/index.js",
-    "build": "cd client && npm install && npm run build"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/BledarF/save-a-meal.git"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Adnan Consulting",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/BledarF/save-a-meal/issues"
   },
-  "homepage": "https://github.com/BledarF/save-a-meal#readme",
-  "dependencies": {
-    "bcrypt": "^5.0.1",
-    "cookie-parser": "^1.4.5",
-    "cors": "^2.8.5",
-    "cross-fetch": "^3.1.4",
-    "crypto": "^1.0.1",
-    "crypto-random-string": "^4.0.0",
-    "date-fns": "^2.25.0",
-    "deg2rad": "^1.0.0",
-    "dotenv": "^10.0.0",
-    "express": "^4.17.1",
-    "formik-stepper": "^0.0.1",
-    "haversine": "^1.1.1",
-    "https": "^1.0.0",
-    "is-image-url": "^1.1.8",
-    "node-fetch": "^3.0.0",
-    "nodemon": "^2.0.14",
-    "pg": "^8.7.1",
-    "react-router-dom": "^5.3.0",
-    "request": "^2.88.2",
-    "uuid": "^8.3.2",
-    "validator": "^13.6.0"
-  },
-  "engines": {
-    "node": "16.11.1"
-  },
-  "devDependencies": {
-    "eslint-config-prettier": "^8.3.0"
-  }
+  "homepage": "https://github.com/BledarF/save-a-meal#readme"
 }
