@@ -1,6 +1,6 @@
 # Save a meal. 
 
-![image](https://user-images.githubusercontent.com/43793942/140720221-d86b40f9-35cd-481a-9850-c3ee10f543d2.png)
+![image](https://user-images.githubusercontent.com/43793942/140721187-6f044142-ac0b-495d-997e-db9469225a0f.png)
 
 
 ## About
@@ -36,6 +36,7 @@ Future plans for this project include:
 
 * Fixing deployment bugs. (CSS issues, search page loading screen). 
 * Adding a proximity filter in the Search Page. 
+* Mobile responsive frontend. 
 
 
 ## Authors
